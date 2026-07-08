@@ -61,6 +61,10 @@ window.ACTIVITIES = [
     title: "ปีสุดท้ายของไอสไตน์",
     desc: "เรื่องราวสร้างแรงบันดาลใจผ่านมุมมองช่วงสุดท้ายของไอน์สไตน์" },
 
+   { grade: 6, category: "TCAS", file: "thai-universities-guide.html",
+    title: "รู้จักมหาวิทยาลัยไทย",
+    desc: "ทำความรู้จักมหาวิทยาลัยในประเทศไทย" },
+
    { grade: 6, category: "TCAS", file: "tcas70_lesson.html",
   title: "รู้จัก TCAS70",
   desc: "ทำความเข้าใจระบบ TCAS แบบละเอียด" },
