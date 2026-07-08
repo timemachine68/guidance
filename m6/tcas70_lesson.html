@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คู่มือเอาตัวรอด TCAS70 — บทเรียน Dek70</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Sriracha&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#fbfaf5; --ink:#4a4540; --sage:#a9c7a0; --sage-d:#7ba874;
+  --peach:#f6c6a8; --peach-d:#e89b73; --butter:#fbe7a1; --butter-d:#f3cd5b;
+  --rose:#f3b8c0; --rose-d:#e58a98; --ice:#bcd6e8; --ice-d:#7fb0d0;
+  --coral:#f08c84; --tape:rgba(169,199,160,.55); --dot:#dfe3d8;
+  --card:#fffdf8; --shadow:0 6px 16px rgba(120,110,90,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Sarabun',sans-serif;color:var(--ink);background:var(--paper);
+  background-image:radial-gradient(var(--dot) 1.3px,transparent 1.3px);
+  background-size:22px 22px;line-height:1.65;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:960px;margin:0 auto;padding:18px 16px 70px}
+h1,h2,h3,.disp{font-family:'Mali',sans-serif}
+.hl{background:linear-gradient(transparent 55%,var(--butter-d) 55%);padding:0 2px;border-radius:2px;font-weight:600}
+.hl.g{background:linear-gradient(transparent 55%,var(--sage) 55%)}
+.hl.p{background:linear-gradient(transparent 55%,var(--rose) 55%)}
+.hl.b{background:linear-gradient(transparent 55%,var(--ice) 55%)}
+
+/* header */
+.hero{position:relative;background:var(--card);border-radius:18px;padding:34px 26px 30px;
+  box-shadow:var(--shadow);text-align:center;margin-bottom:18px;overflow:hidden;
+  border:1px dashed #e3ddcf}
+.hero:before,.hero:after{content:"";position:absolute;width:120px;height:26px;background:var(--tape);
+  top:-9px;transform:rotate(-3deg)}
+.hero:before{left:24px}.hero:after{right:24px;transform:rotate(3deg);background:rgba(243,184,192,.5)}
+.hero .eye{font-family:'Sriracha';color:var(--sage-d);font-size:15px;letter-spacing:.5px}
+.hero h1{font-size:clamp(28px,6vw,42px);color:#5a534b;margin:4px 0 6px;line-height:1.15}
+.hero h1 b{color:var(--coral)}
+.hero p{font-family:'Mali';color:#857c70;font-size:15px}
+
+/* tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 20px}
+.tab{font-family:'Mali';font-weight:600;font-size:14px;border:none;cursor:pointer;
+  padding:9px 15px;border-radius:14px;background:var(--card);color:#7a7268;
+  box-shadow:0 3px 0 #ece6d8;transition:transform .12s,box-shadow .12s}
+.tab:hover{transform:translateY(-2px)}
+.tab.active{color:#4a4540}
+.tab[data-c=a].active{background:var(--sage);box-shadow:0 3px 0 var(--sage-d)}
+.tab[data-c=b].active{background:var(--butter);box-shadow:0 3px 0 var(--butter-d)}
+.tab[data-c=c].active{background:var(--peach);box-shadow:0 3px 0 var(--peach-d)}
+.tab[data-c=d].active{background:var(--rose);box-shadow:0 3px 0 var(--rose-d)}
+.tab[data-c=e].active{background:var(--ice);box-shadow:0 3px 0 var(--ice-d)}
+.tab[data-c=f].active{background:#d8c6a8;box-shadow:0 3px 0 #b89f78}
+.tab[data-c=q].active{background:var(--coral);color:#fff;box-shadow:0 3px 0 #c96b63}
+
+/* progress */
+.prog{height:9px;background:#ece6d8;border-radius:9px;overflow:hidden;margin:0 auto 22px;max-width:560px}
+.prog>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sage),var(--butter-d),var(--peach));transition:width .4s}
+
+/* panels */
+.panel{display:none;animation:fade .4s}
+.panel.show{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+.sec-h{font-size:clamp(22px,4.4vw,30px);color:#5a534b;margin:6px 0 16px;position:relative;display:inline-block}
+.sec-h:after{content:"";position:absolute;left:0;right:-6px;bottom:2px;height:11px;background:var(--butter-d);
+  opacity:.55;z-index:-1;border-radius:3px}
+
+/* cards */
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border-radius:16px;padding:18px 18px 16px;box-shadow:var(--shadow);
+  position:relative;border:1px solid #efe9db}
+.card h3{font-size:18px;margin-bottom:7px;color:#5a534b;display:flex;align-items:center;gap:7px}
+.card p,.card li{font-size:14.5px}
+.card ul{list-style:none;margin-top:6px}
+.card li{padding-left:20px;position:relative;margin:4px 0}
+.card li:before{content:"✦";position:absolute;left:0;color:var(--sage-d);font-size:13px;top:1px}
+.badge{position:absolute;top:-12px;right:-8px;background:var(--coral);color:#fff;font-family:'Mali';
+  font-weight:700;font-size:12px;padding:4px 10px;border-radius:20px;transform:rotate(8deg);box-shadow:0 3px 6px rgba(0,0,0,.12)}
+.note{background:var(--butter);border-radius:4px 4px 10px 10px;padding:16px;font-family:'Mali';
+  box-shadow:var(--shadow);position:relative;margin-top:8px}
+.note:before{content:"";position:absolute;top:-8px;left:50%;transform:translateX(-50%) rotate(-2deg);
+  width:80px;height:18px;background:rgba(243,184,192,.6)}
+.callout{background:#fff4f3;border:2px dashed var(--rose-d);border-radius:14px;padding:15px 16px;margin-top:14px;font-size:14.5px}
+.callout b{color:var(--rose-d)}
+.tip{background:#f2f7ee;border-left:6px solid var(--sage-d);border-radius:10px;padding:13px 15px;margin-top:14px;font-size:14.5px}
+
+/* round selector */
+.picker{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 16px}
+.pchip{font-family:'Mali';font-weight:600;cursor:pointer;border:2px solid #e3ddcf;background:#fff;
+  border-radius:30px;padding:9px 16px;font-size:14px;transition:.15s}
+.pchip:hover{border-color:var(--sage-d)}
+.pchip.on{background:var(--sage);border-color:var(--sage-d);color:#3f4a3c}
+.rbox{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);border:1px solid #efe9db;min-height:120px}
+.rbox h3{font-family:'Mali';font-size:20px;color:#5a534b;margin-bottom:6px}
+.rbox .tag{display:inline-block;background:var(--butter);font-family:'Mali';font-weight:600;font-size:12px;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+
+/* reveal */
+.reveal{background:var(--card);border-radius:14px;box-shadow:var(--shadow);border:1px solid #efe9db;margin:10px 0;overflow:hidden}
+.reveal>button{width:100%;text-align:left;font-family:'Mali';font-weight:600;font-size:16px;color:#5a534b;
+  background:none;border:none;cursor:pointer;padding:15px 18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.reveal>button .ar{transition:.25s;color:var(--peach-d)}
+.reveal.open>button .ar{transform:rotate(90deg)}
+.reveal .body{max-height:0;overflow:hidden;transition:max-height .35s ease;padding:0 18px}
+.reveal.open .body{max-height:520px;padding-bottom:16px}
+
+/* timeline */
+.tl{position:relative;padding-left:26px;margin-top:10px}
+.tl:before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:3px;background:repeating-linear-gradient(var(--sage-d) 0 6px,transparent 6px 12px)}
+.tl .ev{position:relative;background:var(--card);border-radius:12px;padding:12px 15px;margin-bottom:12px;box-shadow:var(--shadow);border:1px solid #efe9db}
+.tl .ev:before{content:"";position:absolute;left:-22px;top:16px;width:13px;height:13px;border-radius:50%;background:var(--peach);border:3px solid var(--card)}
+.tl .ev b{font-family:'Mali';color:var(--peach-d)}
+
+/* quiz */
+.q{background:var(--card);border-radius:16px;padding:18px;box-shadow:var(--shadow);border:1px solid #efe9db;margin-bottom:16px}
+.q .num{font-family:'Mali';font-weight:700;color:var(--coral);font-size:14px}
+.q .qt{font-family:'Mali';font-weight:600;font-size:16.5px;margin:4px 0 12px;color:#5a534b}
+.opt{display:block;width:100%;text-align:left;border:2px solid #ece6d8;background:#fff;border-radius:12px;
+  padding:11px 14px;margin:7px 0;font-family:'Sarabun';font-size:14.5px;cursor:pointer;transition:.13s}
+.opt:hover{border-color:var(--ice-d)}
+.opt.correct{background:#eef7e9;border-color:var(--sage-d)}
+.opt.wrong{background:#fdeeee;border-color:var(--rose-d)}
+.opt:disabled{cursor:default}
+.fb{font-family:'Mali';font-size:13.5px;margin-top:8px;display:none;padding:8px 12px;border-radius:10px}
+.fb.show{display:block}
+.fb.ok{background:#eef7e9;color:#5b7a4f}.fb.no{background:#fdeeee;color:#b56470}
+#submit{display:block;margin:6px auto 0;font-family:'Mali';font-weight:700;font-size:17px;color:#fff;
+  background:var(--coral);border:none;border-radius:30px;padding:13px 34px;cursor:pointer;box-shadow:0 4px 0 #c96b63}
+#submit:hover{filter:brightness(1.04)}
+#result{display:none;text-align:center;background:var(--card);border-radius:18px;padding:26px;box-shadow:var(--shadow);
+  border:2px dashed var(--sage-d);margin-top:18px}
+#result.show{display:block;animation:fade .4s}
+#result .score{font-family:'Mali';font-weight:700;font-size:46px;color:var(--coral);line-height:1}
+#result .msg{font-family:'Mali';font-size:17px;margin-top:8px;color:#5a534b}
+#retry{margin-top:14px;font-family:'Mali';font-weight:600;background:var(--sage);border:none;border-radius:24px;
+  padding:9px 22px;cursor:pointer;color:#3f4a3c;box-shadow:0 3px 0 var(--sage-d)}
+.foot{text-align:center;font-family:'Sriracha';color:#a89e90;font-size:13px;margin-top:30px}
+@media(max-width:520px){.wrap{padding:14px 10px 60px}.tab{font-size:13px;padding:8px 11px}}
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:12px;left:12px;z-index:99999;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#1E1B4B;font-family:'Prompt',system-ui,sans-serif;font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;box-shadow:0 6px 18px -6px rgba(30,27,75,.35);text-decoration:none;">← หน้าหลัก</a>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="eye">กางแผนที่ เตรียมตัวสอบเข้ามหาลัยฯ ไปด้วยกันนะ!</div>
+    <h1>คู่มือเอาตัวรอด <b>TCAS70</b> ฉบับสมบูรณ์</h1>
+    <p>สรุปครบ จบทุกกฎ • เปลี่ยนเรื่องยากให้เข้าใจง่าย • สไตล์ Dek70 🌿</p>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-c="a" data-t="0">🏠 TCAS คืออะไร</button>
+    <button class="tab" data-c="b" data-t="1">💰 ของฟรี & ข้อสอบ</button>
+    <button class="tab" data-c="c" data-t="2">🗺️ 4 รอบ TCAS</button>
+    <button class="tab" data-c="d" data-t="3">⚖️ บริหารสิทธิ์</button>
+    <button class="tab" data-c="e" data-t="4">📅 ปฏิทินสอบ</button>
+    <button class="tab" data-c="f" data-t="5">💡 เคล็ดลับ & แผน</button>
+    <button class="tab" data-c="q" data-t="6">🎯 แบบทดสอบ</button>
+  </div>
+  <div class="prog"><i id="bar"></i></div>
+
+  <!-- PANEL A -->
+  <section class="panel show" data-p="0">
+    <h2 class="sec-h">TCAS คืออะไร? ใครสมัครได้บ้าง?</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>🎯 เป้าหมายของระบบ</h3>
+        <ul><li>ลดการสอบซ้ำซ้อน</li><li>ประหยัดค่าใช้จ่าย</li><li>สร้างความเท่าเทียมให้เด็กทุกคน</li></ul>
+      </div>
+      <div class="card">
+        <h3>🎓 ใครสมัครได้?</h3>
+        <ul><li>ม.6 ปีปัจจุบัน (Dek70)</li><li>เด็กซิ่ว (อยากเปลี่ยนคณะ/มหาลัยฯ)</li><li>เทียบเท่า (ปวช. / สอบเทียบ GED)</li></ul>
+      </div>
+    </div>
+    <div class="note">💡 จำง่ายๆ: TCAS คือ<span class="hl">ตั๋วเครื่องบินและระบบจัดการที่นั่ง</span> ที่จะพาน้องๆ ไปสู่มหาลัยฯ ในฝัน! ✈️</div>
+
+    <h2 class="sec-h" style="margin-top:26px">🚨 อัปเดตด่วน! TCAS70 เปลี่ยนอะไรบ้าง</h2>
+    <div class="grid">
+      <div class="card"><span class="badge">NEW!</span><h3>📅 เลื่อนสอบ!</h3><p>TGAT/TPAT ขยับมาสอบ <span class="hl">ม.ค. 70</span> (ติดกับ A-Level เลย ต้องฟิตร่างกายให้พร้อม)</p></div>
+      <div class="card"><span class="badge">NEW!</span><h3>📝 Bye Bye คอมพิวเตอร์</h3><p>ยกเลิกสอบแบบ CBT ใช้<span class="hl g">ข้อสอบกระดาษ (PBT) 100%</span> ทุกวิชา</p></div>
+      <div class="card"><span class="badge">NEW!</span><h3>⏰ คนลืมยิ้มออก</h3><p>มีระบบเปิดยื่นคำร้อง <span class="hl b">สมัครสอบล่าช้า</span> และสมัครรอบ 3 ล่าช้าได้แล้ว</p></div>
+      <div class="card"><span class="badge">NEW!</span><h3>📁 TCASFolio</h3><p>ทปอ. มีระบบทำพอร์ตให้ใช้ฟรีเป็นมาตรฐานกลาง (แต่จะออกแบบเองก็ยังได้!)</p></div>
+    </div>
+  </section>
+
+  <!-- PANEL B -->
+  <section class="panel" data-p="1">
+    <h2 class="sec-h">💰 เซฟเงินในกระเป๋า! ของฟรีปี 70</h2>
+    <div class="grid">
+      <div class="card" style="background:#fdf6db"><h3>FREE 100% 🎟️</h3><p>ฟรีค่าสมัครสอบ <b>TGAT, TPAT1–5</b> สนับสนุน<span class="hl">วิชาละ 140 บาท</span></p></div>
+      <div class="card" style="background:#edf6ef"><h3>FREE 100% 🎟️</h3><p>ฟรีค่าสมัครสอบ <b>A-Level</b> สูงสุด 7 วิชา (วิชาละ 100 บาท)</p></div>
+      <div class="card" style="background:#fdeee6"><h3>FREE 100% 🎟️</h3><p>ฟรีค่าจัดอันดับ <b>Admission</b> รอบ 3 สูงสุด <span class="hl p">7 อันดับแรก</span></p></div>
+    </div>
+    <div class="callout">⚠️ <b>หมายเหตุ:</b> คนสอบ TPAT1 (กสพท.) ต้องจ่ายส่วนต่างเพิ่ม • เลือกอันดับ 8–10 จ่ายเพิ่มอันดับละ 100 บาท</div>
+
+    <h2 class="sec-h" style="margin-top:26px">⚔️ อาวุธประจำกาย: รู้จัก 3 ข้อสอบหลัก</h2>
+    <div class="grid">
+      <div class="card" style="background:#fdf6db"><h3>🧠 TGAT</h3><p><b>วัดสมรรถนะทั่วไป</b> (ตรรกะ, อังกฤษ, การทำงานในอนาคต)</p><div class="tip" style="margin-top:10px">⭐ <b>สำคัญมาก!</b> ใช้ยื่นเกือบทุกคณะ เป็นไอเทมที่ต้องมีติดตัว</div></div>
+      <div class="card" style="background:#fdeee6"><h3>🔧 TPAT</h3><p><b>วัดความถนัดวิชาชีพ</b> แบ่ง 5 รหัส:</p><ul><li>TPAT1 แพทย์/กสพท</li><li>TPAT2 ศิลปกรรม</li><li>TPAT3 วิศวะ/วิทย์</li><li>TPAT4 สถาปัตย์</li><li>TPAT5 ครุศาสตร์</li></ul></div>
+      <div class="card" style="background:#edf6ef"><h3>🎓 A-Level</h3><p><b>วัดความรู้เชิงวิชาการ</b> (เนื้อหา ม.ปลายเน้นๆ)</p><p style="margin-top:6px">คณิต, วิทย์, ไทย, สังคม, ภาษาต่างประเทศ — สายวิชาการต้องลุยสนามนี้!</p></div>
+    </div>
+  </section>
+
+  <!-- PANEL C -->
+  <section class="panel" data-p="2">
+    <h2 class="sec-h">🗺️ กางแผนที่ TCAS 4 รอบ</h2>
+    <p style="margin-bottom:4px">แตะเลือกรอบ เพื่อดูว่าเหมาะกับใคร & ใช้อะไรบ้าง 👇</p>
+    <div class="picker" id="picker">
+      <button class="pchip on" data-r="0">🌱 รอบ 1 Portfolio</button>
+      <button class="pchip" data-r="1">🌿 รอบ 2 Quota</button>
+      <button class="pchip" data-r="2">🌸 รอบ 3 Admission</button>
+      <button class="pchip" data-r="3">🧺 รอบ 4 Direct</button>
+    </div>
+    <div class="rbox" id="rbox"></div>
+
+    <h2 class="sec-h" style="margin-top:26px">🔍 เจาะลึกแต่ละรอบ</h2>
+    <div class="reveal"><button>🌱 รอบ 1 Portfolio (เริ่ม 15 ส.ค. 69) <span class="ar">▶</span></button>
+      <div class="body"><p><b>เรียบง่าย จริงใจ ตรงโจทย์</b> — ไม่จำเป็นต้องจ้างทำพอร์ตแพงๆ อาจารย์ดูที่เนื้อหา ไม่ใช่ความสวยของกราฟิก</p><div class="tip">เกียรติบัตร 100 ใบ ไม่สู้ผลงานเดียวที่<span class="hl g">ตรงกับสิ่งที่คณะต้องการ</span>!</div></div></div>
+    <div class="reveal"><button>🌿 รอบ 2 Quota (เริ่ม 13 มี.ค. 70) <span class="ar">▶</span></button>
+      <div class="body"><p><b>โอกาสทองของเด็กภูมิภาค</b> — คู่แข่งน้อยลงเพราะจำกัดพื้นที่</p><div class="callout">⚠️ <b>เช็กเงื่อนไขให้ดี!</b> บางโควตาบังคับว่าต้องมีคะแนนสอบ TGAT/TPAT ขั้นต่ำถึงจะยื่นได้</div></div></div>
+    <div class="reveal"><button>🌸 รอบ 3 Admission — มหาสงคราม 10 อันดับ <span class="ar">▶</span></button>
+      <div class="body"><p>ยื่นได้สูงสุด 10 อันดับ (ฟรี 7 อันดับแรก) จัดอันดับตาม<span class="hl p">'ความชอบ' ไว้บนสุด</span> ไม่ใช่เรียงตามคะแนน!</p>
+      <div class="callout"><b>The Secret Weapon — ขอประมวลผลครั้งที่ 2:</b> ถ้าติดอันดับล่างๆ (เช่น อันดับ 3) ขอให้ระบบประมวลผลใหม่เผื่อมีคนสละสิทธิ์อันดับ 1–2 • <b>Trick:</b> ต้องเลือก<span class="hl">อันดับเดิม</span>ติดไว้เสมอ เพื่อการันตีว่าถ้าไม่ติดที่สูงกว่า จะยังได้เรียนที่เดิมแน่ๆ</div></div></div>
+    <div class="reveal"><button>🧺 รอบ 4 Direct Admission <span class="ar">▶</span></button>
+      <div class="body"><p>รอบเก็บตก/รับตรงอิสระ — ที่นั่งเหลือจากรอบก่อน มหาลัยฯ กำหนดเกณฑ์และเปิดรับสมัครเองโดยตรง</p></div></div>
+  </section>
+
+  <!-- PANEL D -->
+  <section class="panel" data-p="3">
+    <h2 class="sec-h">⚖️ กฎการบริหารสิทธิ์ (กดผิดชีวิตเปลี่ยน!)</h2>
+    <p>สอบติดแล้ว... เอาไงต่อ? เลือกสถานการณ์ของเธอ 👇</p>
+    <div class="grid" style="margin-top:10px">
+      <div class="card" style="background:#edf6ef"><h3>👉 อยากเรียนที่นี่!</h3><p>กดปุ่ม <b>ยืนยันสิทธิ์</b> → จบปิ๊ง! เตรียมตัวเป็นเฟรชชี่ได้เลย 🎉</p></div>
+      <div class="card" style="background:#fdf6db"><h3>👉 ติดนะ แต่อยากลุ้นรอบหน้า</h3><p>กดปุ่ม <span class="hl">ไม่ใช้สิทธิ์</span> → ลุยสมัครรอบต่อไปได้เลย (กดแบบนี้กี่ครั้งก็ได้ทุกรอบ)</p></div>
+      <div class="card" style="background:#fdeeee"><h3>👉 ยืนยันไปแล้ว แต่เปลี่ยนใจ</h3><p>กดปุ่ม <b>สละสิทธิ์</b></p></div>
+    </div>
+    <div class="callout"><b>🚦 กฎเหล็ก:</b> ชีวิตนี้<span class="hl p">สละสิทธิ์ได้แค่ 1 ครั้งเท่านั้น!</span> ถ้าสละแล้วไปสอบรอบหน้าไม่ติด จะขอกลับมาเอาคณะเดิมไม่ได้แล้ว</div>
+
+    <h2 class="sec-h" style="margin-top:26px">🩺 กฎเหล็กคนอยากเป็น "หมอ" ที่พลาดแล้วพัง!</h2>
+    <div class="grid">
+      <div class="card" style="border:2px solid var(--rose-d)"><h3>⚠️ กฎข้อ 1: กั๊กที่นั่งไม่ได้</h3><p>ถ้าสอบติด <span class="hl p">แพทย์ / ทันตแพทย์ / เภสัช</span> ในรอบ 1 หรือ 2 ไปแล้ว จะ<b>สละสิทธิ์เพื่อกลับมาคณะเดิมในระบบ กสพท. (รอบ 3) ไม่ได้อีก!</b> (กันการกั๊กที่นั่งเพื่อนๆ)</p></div>
+      <div class="card" style="border:2px solid var(--rose-d)"><h3>⚠️ กฎข้อ 2: ยืนยัน 2 ทาง</h3><p>การติดมหาลัยฯ รอบ 1 และ 2 บางแห่งบังคับให้<span class="hl">ยืนยันสิทธิ์กับมหาลัยโดยตรง และยืนยันในระบบ myTCAS ด้วย</span> ถ้าทำไม่ครบ ถือว่าหลุดสิทธิ์ทันที — อ่านระเบียบการให้ละเอียด</p></div>
+    </div>
+  </section>
+
+  <!-- PANEL E -->
+  <section class="panel" data-p="4">
+    <h2 class="sec-h">📅 ปฏิทินสอบฉบับพกพา — ครึ่งปีแรก (ก.ค.69 – ก.พ.70)</h2>
+    <div class="tl">
+      <div class="ev"><b>15 ก.ค. 69</b> — ลงทะเบียน myTCAS (สร้างบัญชีส่วนตัว)</div>
+      <div class="ev"><b>15 ส.ค. 69</b> เป็นต้นไป — มหาลัยฯ เริ่มรับสมัคร รอบ 1 Portfolio</div>
+      <div class="ev"><b>4–10 พ.ย. 69</b> — สมัครสอบ TGAT / TPAT 2–5</div>
+      <div class="ev"><b>ม.ค. 70</b> — 14–20 ม.ค. สมัครสอบ A-Level • 30 ม.ค.–1 ก.พ. ✏️ ลุยสนามสอบ TGAT / TPAT 2–5!</div>
+      <div class="ev"><b>ก.พ. 70</b> — 13 ก.พ. สอบ TPAT1 (กสพท.) • 28 ก.พ. ประกาศผลคะแนน TGAT/TPAT</div>
+    </div>
+    <h2 class="sec-h" style="margin-top:26px">🎓 ครึ่งปีหลัง (มี.ค.70 – มิ.ย.70)</h2>
+    <div class="tl">
+      <div class="ev"><b>มี.ค. 70</b> — 10 มี.ค. ประกาศผลรอบ 1 • 13 มี.ค. รับสมัครรอบ 2 Quota • 13–15 มี.ค. ✏️ ลุยสนามสอบ A-Level!</div>
+      <div class="ev"><b>เม.ย. 70</b> — 20 เม.ย. ประกาศผลคะแนน A-Level</div>
+      <div class="ev"><b>พ.ค. 70</b> — 3 พ.ค. ประกาศผลรอบ 2 • 7–11 พ.ค. ยื่นสมัครรอบ 3 Admission (สนามใหญ่!) • 22/27 พ.ค. ประกาศผลรอบ 3</div>
+      <div class="ev"><b>มิ.ย. 70</b> — รับสมัครและประกาศผลรอบ 4 Direct Admission 🚪</div>
+    </div>
+  </section>
+
+  <!-- PANEL F -->
+  <section class="panel" data-p="5">
+    <h2 class="sec-h">💡 3 บทเรียน TCAS ที่โรงเรียนไม่ได้สอน</h2>
+    <div class="grid">
+      <div class="card"><h3>1️⃣ GPAX ทิ้งไม่ได้เด็ดขาด!</h3><p>แม้บางคณะใช้คะแนนสอบ 100% แต่หลายที่กำหนด<span class="hl">เกรดขั้นต่ำ</span> ในการยื่น (เช่น ต้องเกิน 3.00) รักษาระดับไว้ให้ดี!</p></div>
+      <div class="card"><h3>2️⃣ คะแนนสูงลิ่ว ≠ เข้ายากเสมอไป</h3><p>คณะที่คะแนน 80+ อาจใช้แค่เกรด (GPAX 100%) ส่วนคณะ 60+ อาจใช้ข้อสอบที่ยากมาก — ดูที่<span class="hl b">เกณฑ์น้ำหนักคะแนน</span>เป็นหลัก</p></div>
+      <div class="card"><h3>3️⃣ เด็กสายศิลป์ก็สอบเข้าสายวิทย์ได้ (บางที่)</h3><p>ระบบ กสพท. เปิดกว้างทุกสายการเรียน ใครอยู่สายศิลป์แต่อยากเป็นหมอ/ทันตะ/เภสัช/สัตวแพทย์ ก็<span class="hl g">ลุยสอบได้เลย!</span></p></div>
+    </div>
+
+    <h2 class="sec-h" style="margin-top:26px">✅ Action Plan: ตอนนี้ Dek70 ต้องทำอะไร?</h2>
+    <div class="grid">
+      <div class="card"><h3>Phase 1 (ช่วงนี้ – ก.ค.69)</h3><ul><li>ค้นหาตัวเอง ดูเกณฑ์คะแนนคณะในฝัน</li><li>ตั้งใจเรียนเก็บเกรด (GPAX)</li><li>สะสมผลงาน/เกียรติบัตรไว้ทำพอร์ต</li></ul></div>
+      <div class="card"><h3>Phase 2 (ส.ค. – ต.ค.69)</h3><ul><li>ลุยทำ Portfolio ให้เสร็จ (คนยื่นรอบ 1)</li><li><span class="hl">เริ่มจัดตารางอ่านหนังสือ</span> และทำโจทย์ข้อสอบเก่า!</li></ul></div>
+      <div class="card"><h3>Phase 3 (พ.ย. – ธ.ค.69)</h3><ul><li>อย่าลืมสมัครสอบ TGAT/TPAT ให้ทันเวลา</li><li>ฝึกจับเวลาทำข้อสอบเสมือนจริง (Mock Test)</li></ul></div>
+      <div class="card"><h3>Phase 4 (ม.ค.70 เป็นต้นไป)</h3><ul><li>รักษาสุขภาพ เตรียมร่างกายให้พร้อม ลุยสนามสอบรัวๆ!</li></ul></div>
+    </div>
+    <div class="note">🌻 เส้นทางนี้อาจจะเหนื่อย แต่ปลายทางสวยงามเสมอ — ขอให้ Dek70 ทุกคนเชื่อมั่นในตัวเอง อดทนอีกนิด แล้วไปฉลองชุดนักศึกษาด้วยกันนะ!</div>
+  </section>
+
+  <!-- PANEL Q -->
+  <section class="panel" data-p="6">
+    <h2 class="sec-h">🎯 แบบทดสอบความรู้ท้ายบทเรียน</h2>
+    <p style="margin-bottom:14px">มี 10 ข้อ — เลือกคำตอบที่ถูกที่สุด แล้วกด "ตรวจคำตอบ" ท้ายแบบทดสอบเพื่อดูคะแนน 💪</p>
+    <div id="quiz"></div>
+    <button id="submit">✏️ ตรวจคำตอบ</button>
+    <div id="result">
+      <div class="score" id="scoreText">0/10</div>
+      <div class="msg" id="msgText"></div>
+      <button id="retry">↺ ทำใหม่อีกครั้ง</button>
+    </div>
+  </section>
+
+  <div class="foot">คู่มือเอาตัวรอด TCAS70 • สื่อการเรียนรู้แนะแนว ระดับชั้น ม.6 🌿</div>
+</div>
+
+<script>
+/* ---------- tab switching ---------- */
+const tabs=[...document.querySelectorAll('.tab')];
+const panels=[...document.querySelectorAll('.panel')];
+const bar=document.getElementById('bar');
+let seen=new Set([0]);
+function go(t){
+  tabs.forEach(b=>b.classList.toggle('active',+b.dataset.t===t));
+  panels.forEach(p=>p.classList.toggle('show',+p.dataset.p===t));
+  seen.add(t);
+  bar.style.width=(seen.size/tabs.length*100)+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+tabs.forEach(b=>b.addEventListener('click',()=>go(+b.dataset.t)));
+bar.style.width=(1/tabs.length*100)+'%';
+
+/* ---------- round picker ---------- */
+const rounds=[
+ {t:'🌱 รอบ 1 Portfolio',tag:'ไม่เน้นสอบข้อเขียน',who:'สายกิจกรรม ผลงานปัง มีความสามารถ',crit:'GPAX + แฟ้มสะสมผลงาน (ไม่ต้องสอบข้อเขียน หรือใช้น้อยมาก)'},
+ {t:'🌿 รอบ 2 Quota',tag:'จำกัดพื้นที่',who:'เด็กพื้นที่ โควตาโรงเรียนเครือข่าย',crit:'GPAX + คะแนนสอบส่วนกลาง (TGAT/TPAT/A-Level) หรือคะแนนภูมิภาค'},
+ {t:'🌸 รอบ 3 Admission',tag:'สนามใหญ่สุด',who:'สายสอบ เลือกได้ 10 อันดับ',crit:'คะแนนสอบล้วนๆ + GPAX ขั้นต่ำ'},
+ {t:'🧺 รอบ 4 Direct Admission',tag:'รอบเก็บตก',who:'รับตรงอิสระ (ที่นั่งเหลือจากรอบก่อน)',crit:'มหาลัยฯ กำหนดเกณฑ์และเปิดรับสมัครเองโดยตรง'}
+];
+const rbox=document.getElementById('rbox');
+const chips=[...document.querySelectorAll('.pchip')];
+function showRound(i){
+  const r=rounds[i];
+  rbox.innerHTML=`<span class="tag">${r.tag}</span><h3>${r.t}</h3>
+    <p><b>เหมาะกับ:</b> ${r.who}</p><p style="margin-top:6px"><b>เกณฑ์คัดเลือก:</b> ${r.crit}</p>`;
+  chips.forEach((c,k)=>c.classList.toggle('on',k===i));
+}
+chips.forEach(c=>c.addEventListener('click',()=>showRound(+c.dataset.r)));
+showRound(0);
+
+/* ---------- reveal accordions ---------- */
+document.querySelectorAll('.reveal>button').forEach(b=>{
+  b.addEventListener('click',()=>b.parentElement.classList.toggle('open'));
+});
+
+/* ---------- quiz ---------- */
+const QS=[
+ {q:'TCAS70 เปลี่ยนรูปแบบการสอบจากคอมพิวเตอร์ (CBT) ไปเป็นแบบใด 100% ทุกวิชา?',o:['ข้อสอบกระดาษ (PBT)','สอบออนไลน์ที่บ้าน','สอบปากเปล่า','สอบผ่านมือถือ'],a:0,e:'ปี 70 ยกเลิก CBT ใช้ข้อสอบกระดาษ (PBT) ทุกวิชา'},
+ {q:'ปี 70 ข้อสอบ TGAT/TPAT 2–5 ขยับไปสอบช่วงเดือนใด?',o:['พฤศจิกายน 69','มกราคม 70','มีนาคม 70','พฤษภาคม 70'],a:1,e:'TGAT/TPAT เลื่อนมาสอบ ม.ค. 70 (ติดกับ A-Level)'},
+ {q:'รอบใดเหมาะกับคนที่มีผลงาน/แฟ้มสะสมผลงาน และเกือบไม่ต้องสอบข้อเขียน?',o:['รอบ 1 Portfolio','รอบ 2 Quota','รอบ 3 Admission','รอบ 4 Direct'],a:0,e:'รอบ 1 Portfolio ใช้ GPAX + แฟ้มสะสมผลงานเป็นหลัก'},
+ {q:'รอบ 3 Admission ยื่นเลือกคณะได้สูงสุดกี่อันดับ?',o:['5 อันดับ','7 อันดับ','10 อันดับ','ไม่จำกัด'],a:2,e:'ยื่นได้สูงสุด 10 อันดับ (ฟรี 7 อันดับแรก)'},
+ {q:'เมื่อ "ขอประมวลผลครั้งที่ 2" ในรอบ 3 ควรทำอย่างไรกับอันดับที่ติดอยู่เดิม?',o:['ลบอันดับเดิมออกทั้งหมด','เลือกอันดับเดิมติดไว้เสมอ','เลือกเฉพาะอันดับ 1','ไม่ต้องเลือกอะไรเลย'],a:1,e:'ต้องเลือกอันดับเดิมติดไว้เสมอ การันตีว่าไม่ติดที่สูงกว่าก็ยังได้ที่เดิม'},
+ {q:'ตลอดกระบวนการ TCAS น้องสามารถ "สละสิทธิ์" ได้กี่ครั้ง?',o:['ไม่จำกัด','3 ครั้ง','2 ครั้ง','1 ครั้งเท่านั้น'],a:3,e:'สละสิทธิ์ได้แค่ 1 ครั้งเท่านั้นตลอดทั้งระบบ'},
+ {q:'สอบติดแล้ว แต่อยากลุ้นรอบต่อไปโดยไม่เสียโอกาส ควรกดปุ่มใด?',o:['ยืนยันสิทธิ์','ไม่ใช้สิทธิ์','สละสิทธิ์','ลบบัญชี'],a:1,e:'กด "ไม่ใช้สิทธิ์" เพื่อไปสมัครรอบต่อไปได้ (กดได้ทุกรอบ)'},
+ {q:'ค่าสมัครสอบ TGAT/TPAT1–5 ปี 70 รัฐสนับสนุนให้ฟรีวิชาละกี่บาท?',o:['100 บาท','120 บาท','140 บาท','200 บาท'],a:2,e:'ฟรีค่าสมัคร TGAT/TPAT สนับสนุนวิชาละ 140 บาท'},
+ {q:'คนที่สอบติดแพทย์/ทันตะ/เภสัช ในรอบ 1 หรือ 2 แล้ว จะทำสิ่งใดไม่ได้?',o:['ยืนยันสิทธิ์','สละสิทธิ์เพื่อกลับมาคณะเดิมใน กสพท. รอบ 3','สมัครคณะอื่นในรอบ 4','ลงทะเบียนเรียน'],a:1,e:'กฎข้อ 1: กั๊กที่นั่งไม่ได้ — สละกลับมาคณะเดิมในรอบ 3 ไม่ได้อีก'},
+ {q:'ข้อสอบ TGAT มีหน้าที่หลักวัดอะไร?',o:['ความถนัดวิชาชีพเฉพาะทาง','ความรู้วิชาการ ม.ปลาย','สมรรถนะทั่วไป (ตรรกะ อังกฤษ การทำงาน)','ทักษะศิลปะ'],a:2,e:'TGAT วัดสมรรถนะทั่วไป ใช้ยื่นเกือบทุกคณะ'}
+];
+const quiz=document.getElementById('quiz');
+let answers=Array(QS.length).fill(null);
+function buildQuiz(){
+  quiz.innerHTML='';answers=Array(QS.length).fill(null);
+  QS.forEach((item,qi)=>{
+    const d=document.createElement('div');d.className='q';
+    d.innerHTML=`<div class="num">ข้อ ${qi+1}/10</div><div class="qt">${item.q}</div>`;
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=opt;
+      b.onclick=()=>{if(b.disabled)return;
+        [...d.querySelectorAll('.opt')].forEach(x=>x.classList.remove('correct','wrong'));
+        answers[qi]=oi;b.classList.add('correct');b.style.borderColor='var(--ice-d)';b.style.background='#eaf3fa';};
+      d.appendChild(b);
+    });
+    const fb=document.createElement('div');fb.className='fb';d.appendChild(fb);
+    quiz.appendChild(d);
+  });
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('submit').style.display='block';
+}
+document.getElementById('submit').onclick=()=>{
+  let score=0;
+  [...quiz.children].forEach((d,qi)=>{
+    const opts=[...d.querySelectorAll('.opt')];const fb=d.querySelector('.fb');
+    opts.forEach((b,oi)=>{b.disabled=true;b.classList.remove('correct','wrong');b.style.background='';b.style.borderColor='';
+      if(oi===QS[qi].a)b.classList.add('correct');
+      if(oi===answers[qi]&&answers[qi]!==QS[qi].a)b.classList.add('wrong');});
+    if(answers[qi]===QS[qi].a){score++;fb.className='fb show ok';fb.textContent='✔ ถูกต้อง! '+QS[qi].e;}
+    else{fb.className='fb show no';fb.textContent='✘ '+(answers[qi]===null?'ยังไม่ได้ตอบ — ':'')+'เฉลย: '+QS[qi].e;}
+  });
+  const r=document.getElementById('result');
+  document.getElementById('scoreText').textContent=score+'/10';
+  let m;
+  if(score===10)m='🏆 เต็ม! พร้อมลุย TCAS70 สุดๆ Dek70 ตัวจริง!';
+  else if(score>=7)m='🌟 เก่งมาก! เข้าใจระบบดีเลย ทบทวนอีกนิดก็เพอร์เฟกต์';
+  else if(score>=4)m='💪 มาถูกทางแล้ว ลองกลับไปอ่านแท็บที่ยังไม่แน่นอีกรอบนะ';
+  else m='🌱 ไม่เป็นไร! ลองทบทวนบทเรียนแต่ละแท็บแล้วทำใหม่ได้เลย';
+  document.getElementById('msgText').textContent=m;
+  document.getElementById('submit').style.display='none';
+  r.classList.add('show');r.scrollIntoView({behavior:'smooth'});
+};
+document.getElementById('retry').onclick=()=>{buildQuiz();quiz.scrollIntoView({behavior:'smooth'});};
+buildQuiz();
+</script>
+</body>
+</html>
