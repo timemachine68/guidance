@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>แนะนำมหาวิทยาลัยไทย — บทเรียนแนะแนว ม.6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Thai+2:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --cream:#FFFDF8;--ink:#43474F;--ink-soft:#7B8089;--line:#EAE3D7;
+    --pri:#5B7CC2;--pri-d:#3C579A;
+    --shadow:0 10px 28px rgba(80,90,140,.12);--radius:18px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;font-family:'Sarabun',sans-serif;color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(640px 440px at 88% -6%, #E3ECFB 0%, transparent 60%),
+      radial-gradient(600px 440px at -8% 4%, #FBE8EF 0%, transparent 58%),
+      radial-gradient(680px 500px at 50% 104%, #E6F5EE 0%, transparent 60%),
+      var(--cream);
+    background-attachment:fixed;}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 20px;}
+  h1,h2,h3{font-family:'Baloo Thai 2',sans-serif;font-weight:700;line-height:1.25;}
+
+  header.hero{padding:54px 0 22px;text-align:center;}
+  .eyebrow{font-family:'Baloo Thai 2';font-weight:600;font-size:.84rem;letter-spacing:1px;color:var(--pri-d);background:#fff;border-radius:999px;padding:6px 18px;box-shadow:var(--shadow);display:inline-block;}
+  .hero h1{font-size:clamp(2rem,6vw,3rem);margin:16px 0 10px;background:linear-gradient(120deg,#5B7CC2,#A77BC9 55%,#54C0A0);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p{font-size:1.08rem;color:var(--ink-soft);max-width:56ch;margin:0 auto;}
+
+  .toolbar{position:sticky;top:0;z-index:20;background:rgba(255,253,248,.92);backdrop-filter:blur(8px);padding:14px 0;border-bottom:1px solid var(--line);}
+  .search{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:10px 18px;box-shadow:0 4px 14px rgba(80,90,140,.06);}
+  .search input{border:0;outline:0;flex:1;font-family:'Sarabun';font-size:1rem;background:transparent;color:var(--ink);}
+  .search .ic{font-size:1.1rem;}
+  .filters{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px;align-items:center;}
+  .flabel{font-family:'Baloo Thai 2';font-weight:600;font-size:.8rem;color:var(--ink-soft);margin-right:2px;}
+  .chip{font-family:'Sarabun';font-size:.86rem;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer;color:var(--ink-soft);transition:.15s;white-space:nowrap;}
+  .chip:hover{border-color:var(--pri);}
+  .chip.on{color:#fff;border-color:transparent;font-weight:500;}
+  .chip.on.c-ty{background:var(--pri);} .chip.on.c-rg{background:#54A0A8;}
+  .chip.star.on{background:#F0A93C;}
+  .sep{width:1px;height:22px;background:var(--line);margin:0 4px;}
+
+  .count{font-family:'Baloo Thai 2';font-weight:500;font-size:.9rem;color:var(--ink-soft);margin:18px 0 12px;}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  @media(max-width:760px){.grid{grid-template-columns:1fr;}}
+  .card{background:#fff;border-radius:var(--radius);box-shadow:0 8px 22px rgba(80,90,140,.07);padding:20px 22px;border-top:5px solid var(--tc);transition:.18s;position:relative;}
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+  .card .star{position:absolute;top:16px;right:18px;font-size:1.1rem;}
+  .ab{font-family:'Baloo Thai 2';font-weight:700;font-size:.72rem;letter-spacing:1px;color:var(--tc);}
+  .card h3{margin:2px 0 8px;font-size:1.12rem;padding-right:24px;}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  .tag{font-size:.74rem;padding:3px 11px;border-radius:999px;font-family:'Baloo Thai 2';font-weight:500;}
+  .tag.ty{color:#fff;} .tag.rg{background:#EEF3FA;color:#4A6597;}
+  .hl{font-size:.92rem;color:var(--ink);margin:0 0 12px;}
+  .fh{font-family:'Baloo Thai 2';font-weight:600;font-size:.8rem;color:var(--ink-soft);margin-bottom:6px;}
+  .facs{display:flex;flex-wrap:wrap;gap:6px;}
+  .fac{font-size:.8rem;padding:4px 11px;border-radius:8px;background:var(--fb);color:var(--tc);}
+
+  .noresult{text-align:center;color:var(--ink-soft);padding:50px 0;font-size:1rem;}
+
+  footer{text-align:center;padding:34px 0;color:var(--ink-soft);font-size:.86rem;}
+  footer b{font-family:'Baloo Thai 2';color:var(--ink);}
+  .disc{max-width:62ch;margin:18px auto 0;background:#FFF7E8;border:1px solid #F0E2BD;border-radius:14px;padding:13px 18px;font-size:.86rem;color:#7a5a16;text-align:left;}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto;}}
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:12px;left:12px;z-index:99999;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#1E1B4B;font-family:'Prompt',system-ui,sans-serif;font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;box-shadow:0 6px 18px -6px rgba(30,27,75,.35);text-decoration:none;">← หน้าหลัก</a>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">บทเรียนแนะแนว · ม.6 · รู้จักมหาวิทยาลัย</span>
+    <h1>แนะนำมหาวิทยาลัยไทย</h1>
+    <p>ค้นหาและกรองตามประเภท ภูมิภาค หรือชื่อคณะ เพื่อดูจุดเด่นและคณะที่น่าสนใจของแต่ละที่ ใช้เป็นจุดเริ่มต้นก่อนเจาะลึกในเว็บไซต์ของมหาวิทยาลัยจริง</p>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="wrap">
+    <div class="search">
+      <span class="ic">🔍</span>
+      <input id="q" type="text" placeholder="พิมพ์ชื่อมหาวิทยาลัย หรือคณะ เช่น พยาบาล วิศวะ การบิน นิเทศ ..." />
+    </div>
+    <div class="filters" id="fType">
+      <span class="flabel">ประเภท:</span>
+      <button class="chip c-ty on" data-ty="all">ทั้งหมด</button>
+      <button class="chip c-ty" data-ty="รัฐ">รัฐ</button>
+      <button class="chip c-ty" data-ty="ราชมงคล">ราชมงคล</button>
+      <button class="chip c-ty" data-ty="ราชภัฏ">ราชภัฏ</button>
+      <button class="chip c-ty" data-ty="เอกชน">เอกชน</button>
+      <button class="chip c-ty" data-ty="เฉพาะทาง">เฉพาะทาง</button>
+    </div>
+    <div class="filters" id="fReg">
+      <span class="flabel">ภูมิภาค:</span>
+      <button class="chip c-rg on" data-rg="all">ทั้งหมด</button>
+      <button class="chip c-rg" data-rg="กรุงเทพฯ–ปริมณฑล">กรุงเทพฯ–ปริมณฑล</button>
+      <button class="chip c-rg" data-rg="ภาคตะวันออก">ภาคตะวันออก</button>
+      <button class="chip c-rg" data-rg="ภาคเหนือ">ภาคเหนือ</button>
+      <button class="chip c-rg" data-rg="ภาคอีสาน">ภาคอีสาน</button>
+      <button class="chip c-rg" data-rg="ภาคใต้">ภาคใต้</button>
+      <button class="chip c-rg" data-rg="ทั่วประเทศ">ทั่วประเทศ</button>
+      <span class="sep"></span>
+      <button class="chip star" id="starBtn">★ เฉพาะที่ทำเครื่องหมาย</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="count" id="count"></div>
+  <div class="grid" id="grid"></div>
+  <div class="noresult" id="noresult" style="display:none;">😅 ไม่พบมหาวิทยาลัยที่ตรงกับเงื่อนไข ลองปรับคำค้นหรือตัวกรองดูนะ</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <b>บทเรียนแนะแนว · แนะนำมหาวิทยาลัยไทย</b><br/>
+    รวม 34 สถาบันจากรายชื่อที่กำหนด
+    <div class="disc">ℹ️ ข้อมูลจุดเด่นและคณะเป็นภาพรวมเพื่อแนะแนวเบื้องต้น คณะ/หลักสูตร ค่าเล่าเรียน และเกณฑ์รับสมัครเปลี่ยนแปลงได้ทุกปี ก่อนตัดสินใจควรตรวจสอบจากเว็บไซต์ทางการของแต่ละมหาวิทยาลัยและระบบ mytcas อีกครั้งเสมอ</div>
+  </div>
+</footer>
+
+<script>
+const U = [{"n":"มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ","ab":"KMUTNB","ty":"รัฐ","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"แถวหน้าสายวิศวกรรม–เทคโนโลยี–อุตสาหกรรม เน้นปฏิบัติจริงและสหกิจศึกษา จบแล้วตลาดแรงงานต้องการสูง","fac":["วิศวกรรมศาสตร์","ครุศาสตร์อุตสาหกรรม","วิทยาศาสตร์ประยุกต์","เทคโนโลยีสารสนเทศ (IT)","สถาปัตยกรรมและการออกแบบ","อุตสาหกรรมเกษตร"]},{"n":"มหาวิทยาลัยบูรพา","ab":"BUU","ty":"รัฐ","rg":"ภาคตะวันออก","mark":true,"hl":"มหาวิทยาลัยหลักของภาคตะวันออก รองรับ EEC ติดทะเลบางแสน โดดเด่นวิทยาศาสตร์ทางทะเลและสายสุขภาพ","fac":["แพทยศาสตร์","พยาบาลศาสตร์","สหเวชศาสตร์","วิทยาศาสตร์/เทคโนโลยีทางทะเล","โลจิสติกส์","อัญมณี (จันทบุรี)"]},{"n":"สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง","ab":"KMITL","ty":"รัฐ","rg":"กรุงเทพฯ–ปริมณฑล","mark":true,"hl":"ผู้นำด้านวิศวกรรม สถาปัตย์ และเทคโนโลยี เน้นนวัตกรรม มีหลักสูตรแพทย์–วิศวะนานาชาติใหม่ ๆ","fac":["วิศวกรรมศาสตร์","สถาปัตยกรรม ศิลปะและการออกแบบ","เทคโนโลยีสารสนเทศ","อุตสาหกรรมอาหาร","วิทยาศาสตร์","แพทยศาสตร์ (นานาชาติ)"]},{"n":"มหาวิทยาลัยหัวเฉียวเฉลิมพระเกียรติ","ab":"HCU","ty":"เอกชน","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"เอกชนเด่นสายวิทยาศาสตร์สุขภาพและจีนศึกษา มีการแพทย์แผนจีนโดยตรง ค่าเล่าเรียนเข้าถึงได้","fac":["พยาบาลศาสตร์","เทคนิคการแพทย์","การแพทย์แผนจีน","เภสัชศาสตร์","ภาษาและวัฒนธรรมจีน","สาธารณสุขศาสตร์"]},{"n":"มหาวิทยาลัยเทคโนโลยีราชมงคลกรุงเทพ","ab":"RMUTK","ty":"ราชมงคล","rg":"กรุงเทพฯ–ปริมณฑล","mark":true,"hl":"สายวิชาชีพ–เทคโนโลยี เรียนแล้วทำงานได้จริง เด่นคหกรรม อาหาร สิ่งทอ–แฟชั่น และการโรงแรม","fac":["เทคโนโลยีคหกรรมศาสตร์","อุตสาหกรรมสิ่งทอ","ศิลปศาสตร์ (โรงแรม/ท่องเที่ยว)","บริหารธุรกิจ","วิศวกรรมศาสตร์","วิทยาศาสตร์และเทคโนโลยี"]},{"n":"มหาวิทยาลัยศิลปากร","ab":"SU","ty":"รัฐ","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"เบอร์หนึ่งด้านศิลปะและการออกแบบของไทย พร้อมสายวิทย์–สังคม–เภสัชครบ ทำเลวังท่าพระและนครปฐม","fac":["จิตรกรรม ประติมากรรมและภาพพิมพ์","มัณฑนศิลป์","สถาปัตยกรรมศาสตร์","เภสัชศาสตร์","อักษรศาสตร์","ดุริยางคศาสตร์"]},{"n":"มหาวิทยาลัยศรีนครินทรวิโรฒ","ab":"SWU","ty":"รัฐ","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"รากฐานครุศาสตร์ที่แข็งแกร่ง ครบสายสุขภาพ (แพทย์–ทันตะ–เภสัช) ทำเลใจกลางเมืองประสานมิตร","fac":["ศึกษาศาสตร์","แพทยศาสตร์","ทันตแพทยศาสตร์","เภสัชศาสตร์","นวัตกรรมสื่อสารสังคม","ศิลปกรรมศาสตร์"]},{"n":"มหาวิทยาลัยสวนดุสิต","ab":"SDU","ty":"รัฐ","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"อัตลักษณ์โดดเด่นเรื่องอาหาร ปฐมวัย และการบริการ เล็กแต่เชี่ยวชาญเฉพาะทาง","fac":["โรงเรียนการเรือน (อาหาร)","ครุศาสตร์ (ปฐมวัย)","พยาบาลศาสตร์","ท่องเที่ยวและการโรงแรม","นิเทศศาสตร์"]},{"n":"วิทยาลัยพยาบาลบรมราชชนนี","ab":"BCN","ty":"เฉพาะทาง","rg":"ทั่วประเทศ","mark":false,"hl":"ในสังกัดสถาบันพระบรมราชชนก ผลิตพยาบาลป้อนระบบสาธารณสุข มีหลายจังหวัด เรียนจบมีงานรองรับ","fac":["พยาบาลศาสตรบัณฑิต","สาธารณสุขศาสตร์ (บางแห่ง)"]},{"n":"มหาวิทยาลัยแม่ฟ้าหลวง","ab":"MFU","ty":"รัฐ","rg":"ภาคเหนือ","mark":true,"hl":"สอนเป็นภาษาอังกฤษทั้งมหาวิทยาลัย แคมปัสสวยที่เชียงราย เด่นทันตะ แพทย์ และวิทยาศาสตร์เครื่องสำอาง","fac":["ทันตแพทยศาสตร์","แพทยศาสตร์","วิทยาศาสตร์เครื่องสำอาง","การแพทย์บูรณาการ","จีนวิทยา","การจัดการ (นานาชาติ)"]},{"n":"มหาวิทยาลัยพะเยา","ab":"UP","ty":"รัฐ","rg":"ภาคเหนือ","mark":true,"hl":"มหาวิทยาลัยภาคเหนือตอนบนที่ครบสายสุขภาพ บรรยากาศติดกว๊านพะเยา ค่าใช้จ่ายไม่สูง","fac":["แพทยศาสตร์","เภสัชศาสตร์","พยาบาลศาสตร์","สหเวชศาสตร์","วิทยาศาสตร์การแพทย์","นิติศาสตร์"]},{"n":"มหาวิทยาลัยศรีปทุม","ab":"SPU","ty":"เอกชน","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"เอกชนเน้นเรียนแล้วทำงานได้จริง เครือข่ายธุรกิจกว้าง เด่นบริหาร นิเทศ ดิจิทัล และการบิน","fac":["บริหารธุรกิจ","นิเทศศาสตร์/ดิจิทัลมีเดีย","โลจิสติกส์และซัพพลายเชน","การบิน","บัญชี","วิศวกรรมศาสตร์"]},{"n":"มหาวิทยาลัยราชภัฏจันทรเกษม","ab":"CRU","ty":"ราชภัฏ","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"ราชภัฏใจกลางเมือง เดินทางสะดวก เด่นสายนิเทศ–สื่อ การศึกษา และวิทยาการจัดการ","fac":["วิทยาการจัดการ (นิเทศศาสตร์)","ศึกษาศาสตร์","มนุษยศาสตร์และสังคมศาสตร์","วิทยาศาสตร์","เกษตรและชีวภาพ"]},{"n":"มหาวิทยาลัยเกษตรศาสตร์","ab":"KU","ty":"รัฐ","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"ผู้นำด้านการเกษตร อาหาร และสิ่งแวดล้อมของไทย ครบทุกสายตั้งแต่วิศวะถึงสัตวแพทย์","fac":["เกษตร","ประมง","วนศาสตร์","อุตสาหกรรมเกษตร","สัตวแพทยศาสตร์","วิศวกรรมศาสตร์","เศรษฐศาสตร์"]},{"n":"มหาวิทยาลัยราชภัฏสวนสุนันทา","ab":"SSRU","ty":"ราชภัฏ","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"ราชภัฏอันดับต้น ๆ ของไทย ทำเลในเมือง เด่นบริหาร นิเทศ การโรงแรม และสหเวชศาสตร์","fac":["วิทยาการจัดการ (นิเทศ/โลจิสติกส์)","การโรงแรมและท่องเที่ยว","ศิลปกรรมศาสตร์","สหเวชศาสตร์","ครุศาสตร์"]},{"n":"มหาวิทยาลัยธรรมศาสตร์","ab":"TU","ty":"รัฐ","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"ผู้นำด้านสังคมศาสตร์ นิติ–รัฐ–เศรษฐศาสตร์ และครบสายสุขภาพ/วิศวะ บรรยากาศเสรี","fac":["นิติศาสตร์","รัฐศาสตร์","เศรษฐศาสตร์","พาณิชยศาสตร์และการบัญชี","วารสารศาสตร์","แพทยศาสตร์","วิศวกรรมศาสตร์ (SIIT)"]},{"n":"มหาวิทยาลัยรามคำแหง","ab":"RU","ty":"รัฐ","rg":"ทั่วประเทศ","mark":false,"hl":"มหาวิทยาลัยเปิด รับไม่จำกัด เรียนได้ทุกคน ค่าเทอมประหยัด ยืดหยุ่น เรียนไปทำงานไปได้","fac":["นิติศาสตร์","บริหารธุรกิจ","รัฐศาสตร์","มนุษยศาสตร์","ศึกษาศาสตร์","เศรษฐศาสตร์"]},{"n":"มหาวิทยาลัยเทคโนโลยีสุรนารี","ab":"SUT","ty":"รัฐ","rg":"ภาคอีสาน","mark":false,"hl":"มหาวิทยาลัยวิจัยเน้นวิทยาศาสตร์–เทคโนโลยี ระบบไตรภาค ต้นแบบสหกิจศึกษาของไทย มีสายแพทย์ครบ","fac":["วิศวกรรมศาสตร์","แพทยศาสตร์","พยาบาลศาสตร์","ทันตแพทยศาสตร์","วิทยาศาสตร์","เทคโนโลยีการเกษตร"]},{"n":"มหาวิทยาลัยราชภัฏนครปฐม","ab":"NPRU","ty":"ราชภัฏ","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"ราชภัฏภาคกลางตะวันตก เด่นครุศาสตร์ พยาบาล และวิทยาศาสตร์ ใกล้กรุงเทพฯ","fac":["พยาบาลศาสตร์","ครุศาสตร์","วิทยาศาสตร์และเทคโนโลยี","มนุษยศาสตร์และสังคมศาสตร์","วิทยาการจัดการ"]},{"n":"มหาวิทยาลัยสงขลานครินทร์","ab":"PSU","ty":"รัฐ","rg":"ภาคใต้","mark":false,"hl":"มหาวิทยาลัยหลักและมหาวิทยาลัยวิจัยชั้นนำของภาคใต้ ครบสายสุขภาพ–วิศวะ มีวิทยาเขตภูเก็ตเด่นนานาชาติ","fac":["แพทยศาสตร์","วิศวกรรมศาสตร์","เภสัชศาสตร์","ทันตแพทยศาสตร์","วิทยาการจัดการ","การบริการและการท่องเที่ยว (ภูเก็ต)"]},{"n":"มหาวิทยาลัยกรุงเทพสุวรรณภูมิ","ab":"BSU","ty":"เอกชน","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"เอกชนย่านสุวรรณภูมิ–สมุทรปราการ เน้นสายสุขภาพ บริหาร และโลจิสติกส์ ค่าเล่าเรียนเข้าถึงได้","fac":["พยาบาลศาสตร์","สาธารณสุขศาสตร์","บริหารธุรกิจ","โลจิสติกส์","รัฐศาสตร์"]},{"n":"มหาวิทยาลัยกรุงเทพ","ab":"BU","ty":"เอกชน","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"เอกชนชั้นนำสายครีเอทีฟ นิเทศ ดิจิทัล และธุรกิจ แคมปัสสวย เครือข่ายศิษย์เก่าในวงการสื่อ–บันเทิง","fac":["นิเทศศาสตร์","ดิจิทัลมีเดียและศิลปะภาพยนตร์","บริหารธุรกิจ","การสร้างเจ้าของธุรกิจ","สถาปัตยกรรมศาสตร์","นานาชาติ"]},{"n":"มหาวิทยาลัยธุรกิจบัณฑิตย์","ab":"DPU","ty":"เอกชน","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"เอกชนเด่นบริหารธุรกิจ การบิน ท่องเที่ยว และมีวิทยาลัยนานาชาติจีน (CIBA) ที่แข็งแรง","fac":["บริหารธุรกิจ","การท่องเที่ยวและการโรงแรม","การบิน","นิเทศศาสตร์","นิติศาสตร์","วิทยาลัยนานาชาติจีน"]},{"n":"มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี","ab":"RMUTT","ty":"ราชมงคล","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"ราชมงคลขนาดใหญ่ที่ปทุมธานี เด่นวิศวกรรม เทคโนโลยี สื่อสารมวลชน และศิลปกรรม","fac":["วิศวกรรมศาสตร์","ครุศาสตร์อุตสาหกรรม","เทคโนโลยีสื่อสารมวลชน","สถาปัตยกรรมศาสตร์","ศิลปกรรมศาสตร์","บริหารธุรกิจ"]},{"n":"มหาวิทยาลัยเทคโนโลยีราชมงคลรัตนโกสินทร์","ab":"RMUTR","ty":"ราชมงคล","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"เด่นสถาปัตย์–ออกแบบ และศิลปะ มีวิทยาเขตเพาะช่างที่เลื่องชื่อด้านศิลปกรรม รวมถึงการโรงแรม","fac":["สถาปัตยกรรมศาสตร์และการออกแบบ","ศิลปกรรม (เพาะช่าง)","อุตสาหกรรมการโรงแรมและการท่องเที่ยว","บริหารธุรกิจ","วิศวกรรมศาสตร์"]},{"n":"มหาวิทยาลัยราชภัฏธนบุรี","ab":"DRU","ty":"ราชภัฏ","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"ราชภัฏฝั่งธนบุรีและสมุทรปราการ เด่นครุศาสตร์ บริหาร และเทคโนโลยี ใกล้บ้านสำหรับคนฝั่งธน","fac":["ครุศาสตร์","วิทยาการจัดการ","มนุษยศาสตร์และสังคมศาสตร์","วิทยาศาสตร์และเทคโนโลยี"]},{"n":"มหาวิทยาลัยมหาสารคาม","ab":"MSU","ty":"รัฐ","rg":"ภาคอีสาน","mark":false,"hl":"มหาวิทยาลัยหลักของอีสานกลาง ครบทุกสาย เด่นสายสุขภาพ สถาปัตย์ และศิลปกรรม","fac":["แพทยศาสตร์","เภสัชศาสตร์","พยาบาลศาสตร์","สถาปัตยกรรมศาสตร์ ผังเมืองและนฤมิตศิลป์","มนุษยศาสตร์และสังคมศาสตร์","วิทยาการสารสนเทศ"]},{"n":"มหาวิทยาลัยขอนแก่น","ab":"KKU","ty":"รัฐ","rg":"ภาคอีสาน","mark":false,"hl":"มหาวิทยาลัยวิจัยชั้นนำและมหาวิทยาลัยหลักของภาคอีสาน ครบวงจรสายสุขภาพ วิศวะ และเกษตร","fac":["แพทยศาสตร์","ทันตแพทยศาสตร์","เภสัชศาสตร์","วิศวกรรมศาสตร์","เกษตรศาสตร์","สัตวแพทยศาสตร์","บริหารธุรกิจและการบัญชี"]},{"n":"มหาวิทยาลัยรังสิต","ab":"RSU","ty":"เอกชน","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"เอกชนที่ครบสายสุขภาพมากที่สุดแห่งหนึ่ง มีแพทย์–ทันตะ–เภสัช และเด่นดนตรี ดิจิทัลอาร์ต การบิน","fac":["แพทยศาสตร์","ทันตแพทยศาสตร์","เภสัชศาสตร์","วิทยาลัยดนตรี","ดิจิทัลอาร์ต","การบิน","นิเทศศาสตร์"]},{"n":"นักเรียนจ่าทหารเรือ","ab":"NAVY","ty":"เฉพาะทาง","rg":"ภาคตะวันออก","mark":false,"hl":"หลักสูตรทหารเรือชั้นประทวน (สัตหีบ) เรียนฟรี มีเบี้ยเลี้ยง จบบรรจุรับราชการทันที มั่นคงสูง (รับ ม.6/ปวช. ต้องสอบและทดสอบร่างกาย)","fac":["พรรคนาวิน","พรรคกลิน (ช่างกล)","พรรคนาวิกโยธิน","พรรคพิเศษ (แพทย์/การเงิน/สื่อสาร)"]},{"n":"มหาวิทยาลัยนวมินทราธิราช","ab":"NMU","ty":"รัฐ","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"มหาวิทยาลัยในกำกับของกรุงเทพมหานคร เด่นสายสุขภาพและการบริหารเมือง (วชิรพยาบาล–เกื้อการุณย์)","fac":["แพทยศาสตร์วชิรพยาบาล","พยาบาลศาสตร์เกื้อการุณย์","วิทยาศาสตร์และเทคโนโลยีสุขภาพ","พัฒนาชุมชนเมือง","สาธารณสุขศาสตร์"]},{"n":"สถาบันเทคโนโลยีไทย-ญี่ปุ่น","ab":"TNI","ty":"เอกชน","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"เน้นเทคโนโลยี–วิศวกรรม–บริหารสไตล์ญี่ปุ่น (โมโนซุคุริ) ได้ภาษาญี่ปุ่น เครือข่ายบริษัทญี่ปุ่นแน่น","fac":["วิศวกรรมศาสตร์ (ยานยนต์/หุ่นยนต์)","เทคโนโลยีสารสนเทศ","บริหารธุรกิจ (การจัดการอุตสาหกรรม)","บริหารธุรกิจญี่ปุ่น"]},{"n":"มหาวิทยาลัยเกษมบัณฑิต","ab":"KBU","ty":"เอกชน","rg":"กรุงเทพฯ–ปริมณฑล","mark":false,"hl":"เอกชนเด่นด้านการบิน สถาปัตย์ นิเทศ และวิทยาศาสตร์การกีฬา มีหลักสูตรเฉพาะทางหลากหลาย","fac":["อุตสาหกรรมการบิน","สถาปัตยกรรมศาสตร์","นิเทศศาสตร์","วิทยาศาสตร์การกีฬา","จิตวิทยา","บริหารธุรกิจ"]},{"n":"มหาวิทยาลัยแม่โจ้","ab":"MJU","ty":"รัฐ","rg":"ภาคเหนือ","mark":true,"hl":"รากฐานการเกษตรของภาคเหนือที่เก่าแก่ เด่นเกษตร อาหาร สิ่งแวดล้อม สัตวศาสตร์ และเกษตรอินทรีย์","fac":["ผลิตกรรมการเกษตร","สัตวศาสตร์และเทคโนโลยี","เทคโนโลยีการประมงและทรัพยากรทางน้ำ","วิศวกรรมและอุตสาหกรรมเกษตร","เศรษฐศาสตร์","พัฒนาการท่องเที่ยว"]}];
+const TYC = {
+  "รัฐ":{c:"#5B9BD5",b:"#E8F1FB"},
+  "ราชมงคล":{c:"#E08A4C",b:"#FDEEE0"},
+  "ราชภัฏ":{c:"#5FAE64",b:"#E8F5E8"},
+  "เอกชน":{c:"#A77BC9",b:"#F1E9F8"},
+  "เฉพาะทาง":{c:"#3FA9AE",b:"#E0F4F4"}
+};
+let fTy="all", fRg="all", starOnly=false, q="";
+
+const grid=document.getElementById('grid'), countEl=document.getElementById('count'), noEl=document.getElementById('noresult');
+
+function render(){
+  const qq=q.trim().toLowerCase();
+  const list=U.filter(u=>{
+    if(fTy!=="all"&&u.ty!==fTy)return false;
+    if(fRg!=="all"&&u.rg!==fRg)return false;
+    if(starOnly&&!u.mark)return false;
+    if(qq){
+      const hay=(u.n+" "+u.ab+" "+u.hl+" "+u.fac.join(" ")).toLowerCase();
+      if(!hay.includes(qq))return false;
+    }
+    return true;
+  });
+  countEl.textContent="พบ "+list.length+" มหาวิทยาลัย";
+  noEl.style.display=list.length?"none":"block";
+  grid.innerHTML=list.map(u=>{
+    const t=TYC[u.ty];
+    const facs=u.fac.map(f=>`<span class="fac">${f}</span>`).join("");
+    const tags=`<span class="tag ty" style="background:${t.c}">${u.ty}</span><span class="tag rg">${u.rg}</span>`;
+    return `<div class="card" style="--tc:${t.c};--fb:${t.b}">
+      ${u.mark?'<span class="star">★</span>':''}
+      <div class="ab">${u.ab}</div>
+      <h3>${u.n}</h3>
+      <div class="tags">${tags}</div>
+      <p class="hl">${u.hl}</p>
+      <div class="fh">คณะ/สาขาที่น่าสนใจ</div>
+      <div class="facs">${facs}</div>
+    </div>`;
+  }).join("");
+}
+
+document.getElementById('q').addEventListener('input',e=>{q=e.target.value;render();});
+document.querySelectorAll('#fType .chip').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#fType .chip').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); fTy=b.dataset.ty; render();
+});
+document.querySelectorAll('#fReg .chip[data-rg]').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#fReg .chip[data-rg]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); fRg=b.dataset.rg; render();
+});
+document.getElementById('starBtn').onclick=function(){ starOnly=!starOnly; this.classList.toggle('on',starOnly); render(); };
+render();
+</script>
+</body>
+</html>
