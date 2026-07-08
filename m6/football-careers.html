@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ฟุตบอลโลกไม่ได้มีแค่นักฟุตบอล</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Baloo+Thai+2:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ── TOKENS ─────────────────────────────────────── */
+:root{
+  --pitch-deep:#030C14;
+  --pitch-mid:#041929;
+  --grass-a:#08381C;
+  --grass-b:#0A4B24;
+  --grass-c:#0C5C2C;
+  --line-w:rgba(255,255,255,.72);
+  --floodlight:rgba(255,248,200,.10);
+  --gold:#F0C040;
+  --gold-dim:#C09020;
+  --gold-glow:rgba(240,192,64,.22);
+  --green-score:#39D76A;
+  --red-card:#E03030;
+  --ink:#EEF4FF;
+  --muted:#7A98B8;
+  --card-bg:rgba(255,255,255,.04);
+  --card-border:rgba(255,255,255,.09);
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Sarabun',sans-serif;
+  color:var(--ink);
+  background:var(--pitch-deep);
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.bebas{font-family:'Bebas Neue',sans-serif;letter-spacing:.04em;}
+.baloo{font-family:'Baloo Thai 2',sans-serif;}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px;}
+
+/* ── PITCH HERO ──────────────────────────────────── */
+.hero{
+  position:relative;
+  min-height:540px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse 50% 40% at 20% 10%, rgba(255,248,160,.13) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 10%, rgba(255,248,160,.13) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 50% 50%, var(--pitch-mid) 0%, var(--pitch-deep) 100%);
+}
+
+/* CSS football pitch */
+.pitch-svg{
+  position:absolute;inset:0;width:100%;height:100%;opacity:.45;
+  pointer-events:none;
+}
+
+/* floodlight corners */
+.hero::before,.hero::after{
+  content:"";position:absolute;
+  width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle, rgba(255,248,160,.18) 0%, transparent 65%);
+  pointer-events:none;
+}
+.hero::before{top:-60px;left:-60px;}
+.hero::after{top:-60px;right:-60px;}
+
+.hero-content{position:relative;z-index:2;text-align:center;padding:60px 20px 50px;}
+
+.hero-eyebrow{
+  font-family:'Bebas Neue',sans-serif;letter-spacing:4px;font-size:.95rem;
+  color:var(--gold);
+  background:rgba(240,192,64,.12);
+  border:1px solid rgba(240,192,64,.35);
+  border-radius:4px;padding:5px 18px;
+  display:inline-block;margin-bottom:22px;
+}
+.hero-title{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(2.8rem,9vw,6rem);
+  letter-spacing:.03em;
+  line-height:.95;
+  margin-bottom:14px;
+}
+.hero-title .t-gold{color:var(--gold);}
+.hero-title .t-green{color:var(--green-score);}
+.hero-sub{
+  font-size:1.08rem;color:var(--muted);
+  max-width:50ch;margin:0 auto 30px;line-height:1.6;
+}
+.hero-btn{
+  font-family:'Baloo Thai 2',sans-serif;font-weight:700;
+  border:0;border-radius:3px;padding:14px 34px;font-size:1rem;
+  cursor:pointer;color:var(--pitch-deep);
+  background:var(--gold);
+  box-shadow:0 0 32px rgba(240,192,64,.45);
+  transition:.2s;text-transform:uppercase;letter-spacing:.04em;
+}
+.hero-btn:hover{background:#FFD84A;box-shadow:0 0 48px rgba(240,192,64,.65);transform:translateY(-2px);}
+
+/* ── SCOREBOARD TABS ─────────────────────────────── */
+.scoreboard{
+  position:sticky;top:0;z-index:40;
+  background:var(--pitch-deep);
+  border-bottom:2px solid rgba(240,192,64,.3);
+}
+.sb-inner{
+  display:flex;gap:0;overflow-x:auto;scrollbar-width:none;
+}
+.sb-inner::-webkit-scrollbar{display:none;}
+.sbtab{
+  font-family:'Bebas Neue',sans-serif;
+  letter-spacing:.06em;font-size:1rem;
+  padding:14px 20px;
+  color:var(--muted);
+  border:0;border-bottom:3px solid transparent;
+  background:transparent;cursor:pointer;white-space:nowrap;
+  transition:.15s;position:relative;
+}
+.sbtab:hover{color:var(--ink);}
+.sbtab.on{
+  color:var(--gold);
+  border-bottom-color:var(--gold);
+  background:rgba(240,192,64,.05);
+}
+.sbtab .num{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:.72rem;letter-spacing:2px;
+  color:var(--gold);opacity:.6;
+  display:block;margin-bottom:1px;
+}
+.sbtab.on .num{opacity:1;}
+
+/* ── SECTION SHELL ───────────────────────────────── */
+section.page{padding:44px 0 52px;display:none;}
+section.page.show{display:block;}
+
+.sec-eyebrow{
+  font-family:'Bebas Neue',sans-serif;letter-spacing:3px;font-size:.82rem;
+  color:var(--gold);margin-bottom:10px;display:block;
+}
+.sec-h{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(1.8rem,5vw,2.9rem);
+  letter-spacing:.03em;margin-bottom:8px;line-height:1.1;
+}
+.sec-p{color:var(--muted);font-size:.97rem;max-width:58ch;margin-bottom:26px;}
+
+/* grass stripe divider */
+.grass-stripe{
+  height:5px;
+  background:repeating-linear-gradient(
+    90deg,
+    var(--grass-a) 0 24px, var(--grass-b) 24px 48px
+  );
+  margin-bottom:28px;border-radius:2px;
+}
+
+/* ── CAREER CARDS ────────────────────────────────── */
+.cgrid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:12px;
+}
+@media(max-width:900px){.cgrid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.cgrid{grid-template-columns:1fr;}}
+
+.ccard{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:var(--r);
+  padding:18px 14px 14px;
+  cursor:pointer;
+  transition:.18s;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.ccard::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--gold-dim),var(--gold));
+  transform:scaleX(0);transform-origin:left;transition:.25s;
+}
+.ccard:hover{background:rgba(255,255,255,.07);transform:translateY(-3px);border-color:rgba(240,192,64,.3);}
+.ccard:hover::before{transform:scaleX(1);}
+.ccard.starred{
+  border-color:rgba(240,192,64,.5);
+  background:rgba(240,192,64,.07);
+}
+.ccard.starred::before{transform:scaleX(1);}
+.ccard .ico{font-size:2rem;margin-bottom:8px;display:block;}
+.ccard .cn{font-family:'Baloo Thai 2',sans-serif;font-weight:700;font-size:.96rem;line-height:1.3;}
+.ccard .en{font-size:.72rem;color:var(--muted);margin-top:3px;}
+.ccard .star-badge{
+  position:absolute;top:8px;right:9px;
+  font-size:.75rem;color:var(--gold);
+  opacity:0;transition:.15s;
+}
+.ccard.starred .star-badge{opacity:1;}
+
+/* modal */
+.modal-bg{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.8);backdrop-filter:blur(6px);
+  z-index:200;align-items:center;justify-content:center;padding:20px;
+}
+.modal-bg.show{display:flex;animation:fadein .2s ease;}
+@keyframes fadein{from{opacity:0;}to{opacity:1;}}
+.modal{
+  background:#0A1E2E;
+  border:1px solid rgba(240,192,64,.25);
+  border-top:3px solid var(--gold);
+  border-radius:var(--r);
+  padding:28px 26px 24px;
+  max-width:500px;width:100%;
+  position:relative;
+  box-shadow:0 30px 80px rgba(0,0,0,.7);
+  animation:slideup .22s ease;
+}
+@keyframes slideup{from{transform:translateY(16px);opacity:0;}to{transform:none;opacity:1;}}
+.modal-close{
+  position:absolute;top:14px;right:16px;
+  background:transparent;border:0;color:var(--muted);
+  font-size:1.3rem;cursor:pointer;line-height:1;
+}
+.modal-close:hover{color:var(--ink);}
+.modal-ico{font-size:2.4rem;margin-bottom:10px;}
+.modal-name{
+  font-family:'Bebas Neue',sans-serif;letter-spacing:.04em;
+  font-size:1.8rem;color:var(--gold);margin-bottom:2px;
+}
+.modal-en{font-size:.8rem;color:var(--muted);letter-spacing:.5px;margin-bottom:14px;}
+.modal-desc{font-size:.96rem;color:var(--ink);line-height:1.7;}
+.modal-btn{
+  margin-top:20px;
+  font-family:'Baloo Thai 2',sans-serif;font-weight:700;
+  border:0;border-radius:3px;padding:10px 22px;
+  font-size:.92rem;cursor:pointer;transition:.15s;
+  width:100%;
+}
+.modal-btn.add{background:var(--gold);color:var(--pitch-deep);}
+.modal-btn.add:hover{background:#FFD84A;}
+.modal-btn.remove{background:rgba(240,192,64,.12);color:var(--gold);border:1px solid rgba(240,192,64,.3);}
+.modal-btn.remove:hover{background:rgba(240,192,64,.2);}
+
+/* ── MATCHING ────────────────────────────────────── */
+.match-wrap{
+  display:grid;grid-template-columns:1fr 1fr;gap:24px;
+}
+@media(max-width:680px){.match-wrap{grid-template-columns:1fr;}}
+.match-col-h{
+  font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:.88rem;
+  color:var(--gold);margin-bottom:12px;
+}
+.mitem{
+  background:var(--card-bg);border:1.5px solid var(--card-border);
+  border-radius:10px;padding:13px 16px;margin-bottom:9px;
+  cursor:pointer;font-size:.95rem;transition:.15s;
+  user-select:none;
+}
+.mitem:hover{border-color:rgba(240,192,64,.4);background:rgba(255,255,255,.06);}
+.mitem.selected{border-color:var(--gold);background:rgba(240,192,64,.1);color:var(--gold);}
+.mitem.correct{
+  border-color:var(--green-score)!important;
+  background:rgba(57,215,106,.1)!important;
+  color:var(--green-score)!important;
+  cursor:default;
+}
+.mitem.wrong{
+  border-color:var(--red-card)!important;
+  background:rgba(224,48,48,.1)!important;
+  animation:shake .32s;
+}
+@keyframes shake{0%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}100%{transform:translateX(0);}}
+.match-feedback{
+  margin-top:16px;
+  font-family:'Baloo Thai 2',sans-serif;font-weight:700;
+  font-size:1.05rem;color:var(--green-score);
+  min-height:24px;
+}
+.btn-ghost{
+  font-family:'Baloo Thai 2',sans-serif;font-weight:600;
+  border:1.5px solid rgba(240,192,64,.4);
+  background:transparent;color:var(--gold);
+  border-radius:3px;padding:10px 22px;
+  cursor:pointer;font-size:.9rem;transition:.15s;
+  margin-top:14px;
+}
+.btn-ghost:hover{background:rgba(240,192,64,.1);}
+
+/* ── QUESTIONS ───────────────────────────────────── */
+.qbox{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:var(--r);
+  overflow:hidden;
+}
+.qbox-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 22px;border-bottom:1px solid var(--card-border);
+  flex-wrap:wrap;gap:10px;
+}
+.qptrack{
+  flex:1;min-width:140px;height:8px;
+  background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;
+}
+.qpfill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:4px;transition:.3s;}
+.qpnum{font-family:'Bebas Neue',sans-serif;letter-spacing:1px;font-size:.92rem;color:var(--muted);}
+.qlist{padding:4px 18px 12px;}
+.qrow{padding:16px 0;border-bottom:1px solid var(--card-border);}
+.qrow:last-child{border-bottom:0;}
+.qrow-num{
+  font-family:'Bebas Neue',sans-serif;font-size:.78rem;letter-spacing:2px;
+  color:var(--gold);margin-bottom:6px;
+}
+.qrow-text{font-size:1rem;font-weight:600;margin-bottom:10px;}
+.qrow textarea{
+  width:100%;
+  background:rgba(255,255,255,.04);
+  border:1.5px solid var(--card-border);
+  border-radius:10px;
+  color:var(--ink);
+  font-family:'Sarabun';font-size:.95rem;
+  padding:12px 14px;resize:vertical;min-height:86px;line-height:1.6;
+  transition:.18s;
+}
+.qrow textarea:focus{outline:0;border-color:rgba(240,192,64,.5);background:rgba(240,192,64,.04);}
+.qrow textarea::placeholder{color:#4A6880;}
+.qbox-foot{padding:16px 22px;text-align:center;border-top:1px solid var(--card-border);}
+.btn-gold{
+  font-family:'Baloo Thai 2',sans-serif;font-weight:700;
+  border:0;border-radius:3px;padding:12px 30px;font-size:1rem;
+  cursor:pointer;color:var(--pitch-deep);background:var(--gold);
+  box-shadow:0 4px 20px rgba(240,192,64,.3);transition:.18s;
+}
+.btn-gold:hover{background:#FFD84A;box-shadow:0 6px 28px rgba(240,192,64,.5);transform:translateY(-2px);}
+.save-toast{
+  font-family:'Baloo Thai 2',sans-serif;font-weight:600;
+  font-size:.88rem;color:var(--green-score);
+  margin-top:9px;min-height:20px;transition:.3s;
+}
+
+/* ── POSTER BUILDER ──────────────────────────────── */
+.pick-row{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 22px;}
+.pick-chip{
+  font-family:'Sarabun';font-size:.9rem;
+  background:var(--card-bg);border:1.5px solid var(--card-border);
+  border-radius:6px;padding:8px 14px;cursor:pointer;transition:.15s;
+}
+.pick-chip:hover{border-color:rgba(240,192,64,.4);}
+.pick-chip .ci{margin-right:5px;}
+.pick-chip.on{border-color:var(--gold);background:rgba(240,192,64,.1);color:var(--gold);font-weight:600;}
+
+.poster-form{
+  background:var(--card-bg);border:1px solid var(--card-border);
+  border-radius:var(--r);padding:24px;margin-bottom:18px;
+}
+.poster-form label{
+  font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;font-size:.78rem;
+  color:var(--muted);display:block;margin-bottom:6px;
+}
+.poster-form input,.poster-form textarea{
+  width:100%;
+  background:rgba(255,255,255,.04);
+  border:1.5px solid var(--card-border);
+  border-radius:8px;
+  color:var(--ink);font-family:'Sarabun';font-size:.97rem;
+  padding:11px 14px;margin-bottom:18px;transition:.18s;
+}
+.poster-form input:focus,.poster-form textarea:focus{outline:0;border-color:rgba(240,192,64,.5);}
+.poster-form textarea{min-height:80px;resize:vertical;line-height:1.6;}
+.poster-form input::placeholder,.poster-form textarea::placeholder{color:#4A6880;}
+
+/* the actual poster output */
+.poster-out{
+  display:none;
+  border-radius:var(--r);overflow:hidden;
+  box-shadow:0 24px 64px rgba(0,0,0,.7);
+  animation:fadein .3s ease;
+}
+.poster-out.show{display:block;}
+.poster-header{
+  background:linear-gradient(160deg,#0A3D1F 0%,#051824 55%,#0A3D1F 100%);
+  padding:32px 28px 24px;
+  position:relative;overflow:hidden;
+  /* pitch lines in poster */
+  background-image:
+    radial-gradient(ellipse 70% 60% at 50% 50%, rgba(255,255,255,.03) 0%, transparent 70%),
+    linear-gradient(to bottom, rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(160deg,#0A3D1F 0%,#051824 55%,#0A3D1F 100%);
+  background-size:auto, auto 48px, auto;
+}
+.poster-wc-badge{
+  font-family:'Bebas Neue',sans-serif;letter-spacing:4px;font-size:.72rem;
+  color:var(--gold);background:rgba(240,192,64,.15);
+  border:1px solid rgba(240,192,64,.3);border-radius:3px;
+  padding:4px 14px;display:inline-block;margin-bottom:14px;
+}
+.poster-header h2{
+  font-family:'Bebas Neue',sans-serif;letter-spacing:.04em;
+  font-size:clamp(1.8rem,6vw,3rem);color:var(--gold);
+  line-height:1;margin-bottom:6px;
+}
+.poster-header .p-sub{font-size:.82rem;color:rgba(255,255,255,.5);letter-spacing:1px;}
+.poster-body{
+  background:var(--pitch-mid);padding:26px 28px;
+  border-top:3px solid var(--gold);
+}
+.poster-section{margin-bottom:20px;}
+.poster-section:last-child{margin-bottom:0;}
+.ps-label{
+  font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:.72rem;
+  color:var(--gold);margin-bottom:6px;
+  display:flex;align-items:center;gap:8px;
+}
+.ps-label::after{content:"";flex:1;height:1px;background:rgba(240,192,64,.2);}
+.ps-text{font-size:.95rem;color:rgba(238,244,255,.85);line-height:1.65;}
+.poster-footer{
+  background:#030C14;padding:14px 28px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+}
+.poster-footer .pf-l{font-family:'Bebas Neue',sans-serif;letter-spacing:3px;font-size:.72rem;color:var(--muted);}
+.poster-footer .pf-r{font-size:.75rem;color:rgba(255,255,255,.3);}
+
+/* tip strip */
+.tip-strip{
+  border-left:3px solid var(--gold);
+  background:rgba(240,192,64,.06);
+  border-radius:0 var(--r) var(--r) 0;
+  padding:14px 18px;margin-top:26px;
+  font-size:.95rem;
+}
+.tip-strip b{color:var(--gold);}
+
+footer{
+  text-align:center;padding:28px 0;
+  border-top:1px solid var(--card-border);
+  color:var(--muted);font-size:.86rem;
+}
+footer strong{font-family:'Baloo Thai 2',sans-serif;font-weight:700;color:var(--ink);}
+
+@media(max-width:540px){.sbtab{font-size:.85rem;padding:13px 14px;}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto;}}
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:12px;left:12px;z-index:99999;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#1E1B4B;font-family:'Prompt',system-ui,sans-serif;font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;box-shadow:0 6px 18px -6px rgba(30,27,75,.35);text-decoration:none;">← หน้าหลัก</a>
+
+<!-- ─── HERO ──────────────────────────────────────── -->
+<header class="hero">
+  <!-- pitch SVG -->
+  <svg class="pitch-svg" viewBox="0 0 800 440" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- grass stripes -->
+    <rect width="800" height="440" fill="#041929"/>
+    <rect x="0" y="0" width="100" height="440" fill="rgba(255,255,255,.018)"/>
+    <rect x="200" y="0" width="100" height="440" fill="rgba(255,255,255,.018)"/>
+    <rect x="400" y="0" width="100" height="440" fill="rgba(255,255,255,.018)"/>
+    <rect x="600" y="0" width="100" height="440" fill="rgba(255,255,255,.018)"/>
+    <!-- pitch outline -->
+    <rect x="40" y="30" width="720" height="380" stroke="rgba(255,255,255,.55)" stroke-width="2"/>
+    <!-- halfway line -->
+    <line x1="400" y1="30" x2="400" y2="410" stroke="rgba(255,255,255,.55)" stroke-width="2"/>
+    <!-- centre circle -->
+    <circle cx="400" cy="220" r="66" stroke="rgba(255,255,255,.55)" stroke-width="2"/>
+    <circle cx="400" cy="220" r="3" fill="rgba(255,255,255,.7)"/>
+    <!-- left penalty area -->
+    <rect x="40" y="138" width="118" height="164" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>
+    <rect x="40" y="175" width="52" height="90" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>
+    <!-- left penalty arc -->
+    <path d="M158 185 A44 44 0 0 1 158 255" stroke="rgba(255,255,255,.45)" stroke-width="1.5" fill="none"/>
+    <!-- left goal -->
+    <rect x="26" y="192" width="14" height="56" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/>
+    <!-- right penalty area -->
+    <rect x="642" y="138" width="118" height="164" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>
+    <rect x="708" y="175" width="52" height="90" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>
+    <!-- right penalty arc -->
+    <path d="M642 185 A44 44 0 0 0 642 255" stroke="rgba(255,255,255,.45)" stroke-width="1.5" fill="none"/>
+    <!-- right goal -->
+    <rect x="760" y="192" width="14" height="56" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/>
+    <!-- corner arcs -->
+    <path d="M40 45 A14 14 0 0 1 54 30" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
+    <path d="M760 30 A14 14 0 0 1 760 44" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
+    <path d="M40 396 A14 14 0 0 0 54 410" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
+    <path d="M746 410 A14 14 0 0 0 760 396" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
+    <!-- penalty spots -->
+    <circle cx="128" cy="220" r="3" fill="rgba(255,255,255,.6)"/>
+    <circle cx="672" cy="220" r="3" fill="rgba(255,255,255,.6)"/>
+    <!-- floodlight glows -->
+    <ellipse cx="40" cy="30" rx="120" ry="80" fill="rgba(255,248,160,.07)"/>
+    <ellipse cx="760" cy="30" rx="120" ry="80" fill="rgba(255,248,160,.07)"/>
+    <ellipse cx="40" cy="410" rx="120" ry="80" fill="rgba(255,248,160,.05)"/>
+    <ellipse cx="760" cy="410" rx="120" ry="80" fill="rgba(255,248,160,.05)"/>
+  </svg>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">⚽ FIFA WORLD CUP · CAREER SPOTLIGHT</div>
+    <h1 class="hero-title bebas">
+      ฟุตบอลโลก<br/>
+      ไม่ได้มีแค่<span class="t-gold">นักฟุตบอล</span>
+    </h1>
+    <p class="hero-sub">เบื้องหลังการแข่งขันที่ยิ่งใหญ่ที่สุดในโลก คือผู้คนหลากหลายอาชีพที่ทำงานร่วมกัน<br/>มาค้นพบว่ามีอาชีพใดบ้างที่เป็นส่วนหนึ่งของมหกรรมนี้</p>
+    <button class="hero-btn" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">เริ่มเรียนรู้ →</button>
+  </div>
+</header>
+
+<!-- ─── SCOREBOARD TABS ─────────────────────────── -->
+<nav class="scoreboard" id="app">
+  <div class="wrap">
+    <div class="sb-inner">
+      <button class="sbtab on" data-s="1"><span class="num">01</span>รู้จักอาชีพ</button>
+      <button class="sbtab" data-s="2"><span class="num">02</span>จับคู่หน้าที่</button>
+      <button class="sbtab" data-s="3"><span class="num">03</span>คิดวิเคราะห์</button>
+      <button class="sbtab" data-s="4"><span class="num">04</span>สร้างโปสเตอร์</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── S1: CAREER EXPLORER ────────────────────── -->
+<section class="page show" id="s1">
+  <div class="wrap">
+    <span class="sec-eyebrow">CAREER EXPLORER</span>
+    <h2 class="sec-h bebas">อาชีพที่เกี่ยวข้องกับ<span style="color:var(--gold)"> FIFA World Cup</span></h2>
+    <p class="sec-p">แตะการ์ดเพื่ออ่านรายละเอียด แล้วกด ⭐ ทำเครื่องหมายอาชีพที่สนใจ</p>
+    <div class="grass-stripe"></div>
+    <div class="cgrid" id="cgrid"></div>
+    <div class="tip-strip">
+      <b>🏆 ข้อคิด:</b> ฟุตบอลโลกไม่ได้เกิดจากฝีเท้าของนักฟุตบอลเพียงอย่างเดียว แต่เกิดจากความร่วมมือของผู้คนในหลายร้อยอาชีพ — ทุกคนมีบทบาทที่ขาดไม่ได้
+    </div>
+  </div>
+</section>
+
+<!-- ─── S2: MATCHING ───────────────────────────── -->
+<section class="page" id="s2">
+  <div class="wrap">
+    <span class="sec-eyebrow">MATCH DAY CHALLENGE</span>
+    <h2 class="sec-h bebas">จับคู่อาชีพ<span style="color:var(--gold)"> กับหน้าที่</span></h2>
+    <p class="sec-p">เลือกอาชีพทางซ้าย แล้วแตะหน้าที่ทางขวาที่ตรงกัน ระบบตัดสินทันที</p>
+    <div class="grass-stripe"></div>
+    <div class="match-wrap">
+      <div><div class="match-col-h">⬤ อาชีพ</div><div id="matchL"></div></div>
+      <div><div class="match-col-h">⬤ หน้าที่</div><div id="matchR"></div></div>
+    </div>
+    <div class="match-feedback" id="mfb"></div>
+    <button class="btn-ghost" id="matchReset">↻ เริ่มเกมใหม่</button>
+    <div class="tip-strip">
+      <b>💡 เคล็ดลับ:</b> ไม่แน่ใจ? ลองกลับไปอ่านในกิจกรรมที่ 1 ก่อน แล้วค่อยกลับมาจับคู่ได้เลย
+    </div>
+  </div>
+</section>
+
+<!-- ─── S3: OPEN QUESTIONS ──────────────────────── -->
+<section class="page" id="s3">
+  <div class="wrap">
+    <span class="sec-eyebrow">ANALYST ROOM</span>
+    <h2 class="sec-h bebas">คำถาม<span style="color:var(--gold)"> คิดวิเคราะห์</span></h2>
+    <p class="sec-p">ตอบตามความคิดของตัวเอง ไม่มีคำตอบถูกผิด</p>
+    <div class="grass-stripe"></div>
+    <div class="qbox">
+      <div class="qbox-head">
+        <div class="qptrack"><div class="qpfill" id="qpf"></div></div>
+        <div class="qpnum" id="qpn">0 / 4 ข้อ</div>
+      </div>
+      <div class="qlist" id="qlist"></div>
+      <div class="qbox-foot">
+        <button class="btn-gold" id="saveBtn">บันทึกคำตอบ</button>
+        <div class="save-toast" id="saveToast"></div>
+      </div>
+    </div>
+    <div class="tip-strip">
+      <b>🧠 เคล็ดลับ:</b> ลองนึกถึงประสบการณ์หรือสิ่งที่เคยเห็น/ได้ยินเกี่ยวกับฟุตบอลโลกมาประกอบการตอบ
+    </div>
+  </div>
+</section>
+
+<!-- ─── S4: POSTER BUILDER ──────────────────────── -->
+<section class="page" id="s4">
+  <div class="wrap">
+    <span class="sec-eyebrow">MEDIA CENTRE</span>
+    <h2 class="sec-h bebas">สร้าง<span style="color:var(--gold)"> Spotlight Card</span></h2>
+    <p class="sec-p">เลือกอาชีพที่สนใจ กรอกข้อมูล แล้วดูการ์ดที่ระบบสร้างให้</p>
+    <div class="grass-stripe"></div>
+    <div class="pick-row" id="pickRow"></div>
+    <div class="poster-form">
+      <label>ชื่ออาชีพ</label>
+      <input id="p_name" readonly placeholder="— เลือกอาชีพจากด้านบนก่อน —"/>
+      <label>หน้าที่และความรับผิดชอบ</label>
+      <textarea id="p_duty" placeholder="เขียนหน้าที่หลักของอาชีพนี้..."></textarea>
+      <label>ทักษะ / คุณสมบัติที่จำเป็น</label>
+      <textarea id="p_skill" placeholder="ต้องมีความสามารถ ความรู้ หรือทักษะอะไรบ้าง..."></textarea>
+      <label>เหตุผลที่สนใจอาชีพนี้</label>
+      <textarea id="p_why" placeholder="บอกเหตุผลหรือแรงบันดาลใจของคุณ..."></textarea>
+      <button class="btn-gold" id="genBtn" disabled style="width:100%;">✨ สร้าง Spotlight Card</button>
+    </div>
+
+    <!-- POSTER OUTPUT -->
+    <div class="poster-out" id="posterOut">
+      <div class="poster-header">
+        <div class="poster-wc-badge">FIFA WORLD CUP · CAREER SPOTLIGHT</div>
+        <h2 id="pv_name"></h2>
+        <div class="p-sub" id="pv_en"></div>
+      </div>
+      <div class="poster-body">
+        <div class="poster-section">
+          <div class="ps-label">หน้าที่และความรับผิดชอบ</div>
+          <div class="ps-text" id="pv_duty"></div>
+        </div>
+        <div class="poster-section">
+          <div class="ps-label">ทักษะที่จำเป็น</div>
+          <div class="ps-text" id="pv_skill"></div>
+        </div>
+        <div class="poster-section">
+          <div class="ps-label">เหตุผลที่สนใจ</div>
+          <div class="ps-text" id="pv_why"></div>
+        </div>
+      </div>
+      <div class="poster-footer">
+        <span class="pf-l">⚽ WORLD CUP CAREER EXPLORER</span>
+        <span class="pf-r">บทเรียนแนะแนว · ม.6</span>
+      </div>
+    </div>
+
+    <div class="tip-strip">
+      <b>🌟 ข้อคิด:</b> ฟุตบอลโลกสอนเราว่าทุกอาชีพมีคุณค่า ตั้งแต่ผู้เล่นในสนามจนถึงทีมงานเบื้องหลัง — ความสำเร็จของทีมคือความสำเร็จของทุกคน
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <strong>บทเรียน Interactive · ฟุตบอลโลกไม่ได้มีแค่นักฟุตบอล</strong><br/>
+    อาชีพที่เกี่ยวข้องกับ FIFA World Cup · บทเรียนแนะแนว ม.6
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-ico" id="mIco"></div>
+    <div class="modal-name bebas" id="mName"></div>
+    <div class="modal-en" id="mEn"></div>
+    <div class="modal-desc" id="mDesc"></div>
+    <button class="modal-btn add" id="mStarBtn"></button>
+  </div>
+</div>
+
+<script>
+const CAREERS=[
+  {ico:"🟡",n:"ผู้ตัดสิน",en:"Referee",
+   desc:"ควบคุมกติกาการแข่งขัน ตัดสินฟาวล์ ออกใบเหลือง/แดง และดูแลความเป็นธรรมตลอด 90 นาที ต้องมีความรู้กติกาอย่างลึกซึ้ง ร่างกายแข็งแรง วิ่งได้ 10–13 กม./นัด และมีจิตใจมั่นคงสูงภายใต้ความกดดัน"},
+  {ico:"🚩",n:"ผู้ช่วยผู้ตัดสิน",en:"Assistant Referee",
+   desc:"วิ่งตามเส้นสนามตลอดเกม สังเกตการณ์ล้ำหน้า ลูกออก และฟาวล์ ส่งสัญญาณธงให้ผู้ตัดสินหลัก ต้องมีสายตาดี ตัดสินใจรวดเร็ว และประสานงานกับผู้ตัดสินได้อย่างแม่นยำ"},
+  {ico:"🖥️",n:"ผู้ควบคุม VAR",en:"Video Assistant Referee",
+   desc:"ตรวจสอบจังหวะสำคัญจากวิดีโอหลายมุมกล้อง เช่น ประตู ฟาวล์ จุดโทษ ใบแดง ทำงานในห้อง VAR Room แยกจากสนาม ต้องมีความรู้กติกาและเทคโนโลยีวิดีโอ และทำงานภายใต้ความกดดันสูง"},
+  {ico:"🏥",n:"แพทย์/นักกายภาพ",en:"Medical & Physio Team",
+   desc:"ดูแลสุขภาพและบาดเจ็บของนักเตะตลอดทัวร์นาเมนต์ ปฐมพยาบาลในสนาม ฟื้นฟูร่างกายหลังการแข่งขัน และประเมินความพร้อมก่อนลงสนาม ต้องมีใบประกอบวิชาชีพและประสบการณ์เฉพาะด้าน"},
+  {ico:"📋",n:"ผู้ฝึกสอน",en:"Head Coach",
+   desc:"วางกลยุทธ์การเล่น ฝึกซ้อม พัฒนาทักษะนักเตะ และตัดสินใจยุทธวิธีในสนาม ต้องมีใบอนุญาต UEFA/AFC Pro License ภาวะผู้นำสูง ทักษะการสื่อสาร และรับมือแรงกดดันสื่อและแฟนบอลได้"},
+  {ico:"📊",n:"นักวิเคราะห์ข้อมูล",en:"Performance Analyst",
+   desc:"เก็บและวิเคราะห์ข้อมูลการเล่นของทีมและคู่แข่ง เช่น ระยะวิ่ง ตำแหน่ง ความแม่นของการส่ง เพื่อช่วยโค้ชวางแผน ต้องถนัดสถิติ โปรแกรม Tableau/Python และเข้าใจฟุตบอลเชิงลึก"},
+  {ico:"🎙️",n:"ผู้ประกาศ/นักพากย์",en:"Commentator / Broadcaster",
+   desc:"บรรยายเกมให้ผู้ชมทั่วโลกผ่านโทรทัศน์ วิทยุ และสื่อออนไลน์ ต้องมีความรู้ฟุตบอลกว้างขวาง ทักษะภาษาและการพูดดี สามารถถ่ายทอดอารมณ์และสร้างความตื่นเต้นได้"},
+  {ico:"📷",n:"ช่างภาพ/ช่างวิดีโอ",en:"Photographer / Videographer",
+   desc:"บันทึกภาพและวิดีโอในสนามเพื่อสื่อมวลชนและการประชาสัมพันธ์ FIFA ต้องมีทักษะการถ่ายภาพในสภาพแสงยาก ตัดสินใจได้รวดเร็ว และเข้าใจองค์ประกอบภาพกีฬา"},
+  {ico:"📅",n:"เจ้าหน้าที่จัดการแข่งขัน",en:"Event Organizer / LOC",
+   desc:"ประสานงานการจัดการแข่งขันทั้งหมด ตั้งแต่ความปลอดภัย การเดินทาง ที่พัก พิธีการ ไปจนถึงการต้อนรับทีมชาติ ต้องมีทักษะการจัดการโครงการ แก้ปัญหาเฉพาะหน้า และทำงานข้ามวัฒนธรรมได้"},
+  {ico:"🙋",n:"อาสาสมัคร",en:"Volunteer",
+   desc:"ช่วยเหลือผู้ชม ทีมงาน และการดำเนินงานทั่วไปในพื้นที่การแข่งขัน เช่น การต้อนรับ การแปลภาษา การนำทาง เป็นโอกาสดีที่จะได้รับประสบการณ์ตรงระดับนานาชาติและขยายเครือข่าย"},
+];
+
+const PAIRS=[
+  {job:"ผู้ตัดสิน",duty:"ตัดสินกติกา ออกใบเหลือง–แดง"},
+  {job:"แพทย์/นักกายภาพ",duty:"ดูแลสุขภาพและปฐมพยาบาลนักเตะ"},
+  {job:"นักวิเคราะห์ข้อมูล",duty:"วิเคราะห์สถิติเพื่อวางกลยุทธ์"},
+  {job:"ผู้ประกาศ/นักพากย์",duty:"บรรยายเกมให้ผู้ชมทั่วโลก"},
+  {job:"อาสาสมัคร",duty:"ช่วยเหลือผู้ชมและทีมงานทั่วไป"},
+];
+
+const QUESTIONS=[
+  "ถ้าไม่มีผู้ตัดสิน เกมฟุตบอลจะเป็นอย่างไร และทำไมกติกาจึงสำคัญ",
+  "นักวิเคราะห์ข้อมูลช่วยให้ทีมชนะได้อย่างไร ยกตัวอย่างประกอบ",
+  "อาชีพใดเบื้องหลังที่ทำให้ฟุตบอลโลกน่าสนใจที่สุด เพราะเหตุใด",
+  "หากได้ทำงานในฟุตบอลโลก นักเรียนอยากทำอาชีพใด เพราะเหตุใด",
+];
+
+/* ─── S1 cards ─── */
+const starred=new Set();
+let curIdx=null;
+const cgrid=document.getElementById('cgrid');
+CAREERS.forEach((c,i)=>{
+  const el=document.createElement('div');
+  el.className='ccard'; el.id='cc'+i;
+  el.innerHTML=`<span class="star-badge">⭐</span><span class="ico">${c.ico}</span><div class="cn">${c.n}</div><div class="en">${c.en}</div>`;
+  el.onclick=()=>openModal(i);
+  cgrid.appendChild(el);
+});
+
+const modalBg=document.getElementById('modalBg');
+function openModal(i){
+  curIdx=i; const c=CAREERS[i];
+  document.getElementById('mIco').textContent=c.ico;
+  document.getElementById('mName').textContent=c.n;
+  document.getElementById('mEn').textContent=c.en;
+  document.getElementById('mDesc').textContent=c.desc;
+  const btn=document.getElementById('mStarBtn');
+  if(starred.has(i)){btn.textContent='✓ ทำเครื่องหมายแล้ว';btn.className='modal-btn remove';}
+  else{btn.textContent='⭐ ทำเครื่องหมายอาชีพนี้';btn.className='modal-btn add';}
+  modalBg.classList.add('show');
+}
+document.getElementById('modalClose').onclick=()=>modalBg.classList.remove('show');
+modalBg.onclick=e=>{if(e.target===modalBg)modalBg.classList.remove('show');};
+document.getElementById('mStarBtn').onclick=()=>{
+  if(curIdx===null)return;
+  const btn=document.getElementById('mStarBtn');
+  if(starred.has(curIdx)){starred.delete(curIdx);btn.textContent='⭐ ทำเครื่องหมายอาชีพนี้';btn.className='modal-btn add';}
+  else{starred.add(curIdx);btn.textContent='✓ ทำเครื่องหมายแล้ว';btn.className='modal-btn remove';}
+  document.getElementById('cc'+curIdx).classList.toggle('starred',starred.has(curIdx));
+};
+
+/* ─── S2 matching ─── */
+let selJob=null, solvedM=new Set();
+function initMatch(){
+  selJob=null; solvedM=new Set();
+  const sh=[...PAIRS].sort(()=>Math.random()-.5);
+  document.getElementById('matchL').innerHTML=PAIRS.map(p=>`<div class="mitem" data-j="${p.job}" id="mj-${p.job}">${p.job}</div>`).join('');
+  document.getElementById('matchR').innerHTML=sh.map(p=>`<div class="mitem" data-d="${p.duty}" id="md-${p.duty.slice(0,8)}">${p.duty}</div>`).join('');
+  document.getElementById('mfb').textContent='';
+  document.querySelectorAll('#matchL .mitem').forEach(b=>b.onclick=()=>{
+    if(b.classList.contains('correct'))return;
+    document.querySelectorAll('#matchL .mitem').forEach(x=>x.classList.remove('selected'));
+    b.classList.add('selected'); selJob=b.dataset.j;
+  });
+  document.querySelectorAll('#matchR .mitem').forEach(b=>b.onclick=()=>{
+    if(!selJob||b.classList.contains('correct'))return;
+    const ok=PAIRS.find(p=>p.job===selJob)?.duty===b.dataset.d;
+    if(ok){
+      document.getElementById('mj-'+selJob).classList.replace('selected','correct');
+      b.classList.add('correct'); solvedM.add(selJob); selJob=null;
+      if(solvedM.size===PAIRS.length)document.getElementById('mfb').textContent='🎉 จับคู่ครบทุกข้อ ยอดเยี่ยมมาก!';
+    } else {
+      b.classList.add('wrong');
+      setTimeout(()=>b.classList.remove('wrong'),380);
+    }
+  });
+}
+document.getElementById('matchReset').onclick=initMatch;
+
+/* ─── S3 questions ─── */
+const qlist=document.getElementById('qlist');
+QUESTIONS.forEach((q,i)=>{
+  const row=document.createElement('div'); row.className='qrow';
+  row.innerHTML=`<div class="qrow-num">QUESTION ${i+1} / ${QUESTIONS.length}</div>
+    <div class="qrow-text">${q}</div>
+    <textarea id="qa${i}" placeholder="พิมพ์คำตอบของคุณที่นี่..."></textarea>`;
+  qlist.appendChild(row);
+});
+function updProg(){
+  const done=QUESTIONS.filter((_,i)=>(document.getElementById('qa'+i)?.value.trim()||'').length>0).length;
+  document.getElementById('qpf').style.width=(done/QUESTIONS.length*100)+'%';
+  document.getElementById('qpn').textContent=done+' / '+QUESTIONS.length+' ข้อ';
+}
+qlist.querySelectorAll('textarea').forEach(t=>t.addEventListener('input',updProg));
+document.getElementById('saveBtn').onclick=()=>{
+  const toast=document.getElementById('saveToast');
+  toast.textContent='✓ บันทึกคำตอบแล้ว';
+  setTimeout(()=>toast.textContent='',2800);
+};
+
+/* ─── S4 poster ─── */
+let selC=null;
+const pickRow=document.getElementById('pickRow');
+CAREERS.forEach((c,i)=>{
+  const b=document.createElement('div'); b.className='pick-chip';
+  b.innerHTML=`<span class="ci">${c.ico}</span>${c.n}`;
+  b.onclick=()=>{
+    document.querySelectorAll('.pick-chip').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); selC=i;
+    document.getElementById('p_name').value=c.n+' ('+c.en+')';
+    document.getElementById('genBtn').disabled=false;
+    document.getElementById('posterOut').classList.remove('show');
+  };
+  pickRow.appendChild(b);
+});
+['p_duty','p_skill','p_why'].forEach(id=>document.getElementById(id).addEventListener('input',checkGen));
+function checkGen(){
+  const ok=selC!==null&&document.getElementById('p_duty').value.trim()&&document.getElementById('p_skill').value.trim()&&document.getElementById('p_why').value.trim();
+  document.getElementById('genBtn').disabled=!ok;
+}
+document.getElementById('genBtn').onclick=()=>{
+  const c=CAREERS[selC];
+  document.getElementById('pv_name').textContent=c.n;
+  document.getElementById('pv_en').textContent=c.en;
+  document.getElementById('pv_duty').textContent=document.getElementById('p_duty').value;
+  document.getElementById('pv_skill').textContent=document.getElementById('p_skill').value;
+  document.getElementById('pv_why').textContent=document.getElementById('p_why').value;
+  const po=document.getElementById('posterOut');
+  po.classList.add('show');
+  po.scrollIntoView({behavior:'smooth',block:'center'});
+};
+
+/* ─── tabs ─── */
+document.querySelectorAll('.sbtab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.sbtab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('section.page').forEach(x=>x.classList.remove('show'));
+  t.classList.add('on');
+  document.getElementById('s'+t.dataset.s).classList.add('show');
+  document.getElementById('app').scrollIntoView({behavior:'smooth'});
+});
+
+/* init */
+initMatch();
+updProg();
+</script>
+</body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>เลือกได้ — เกมการ์ดเส้นทางชีวิต ม.6</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2a2540;
+    --rose:#fb7185;
+    --amber:#f59e0b;
+    --sky:#38bdf8;
+    --emerald:#34d399;
+  }
+  *{ -webkit-tap-highlight-color: transparent; }
+  body{
+    font-family:'Sarabun',sans-serif;
+    color:var(--ink);
+    background:linear-gradient(160deg,#fde9ef 0%,#f3e8ff 45%,#e0f2fe 100%);
+    min-height:100dvh;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.font-display{ font-family:'Prompt',sans-serif; }
+
+  /* ป้องกัน select ตัวอักษรระหว่างเล่น */
+  .noselect{ user-select:none; -webkit-user-select:none; }
+
+  /* การ์ดเด้งเข้า */
+  @keyframes cardIn{
+    0%{ opacity:0; transform:translateY(28px) scale(.94) rotate(-1.5deg); }
+    100%{ opacity:1; transform:translateY(0) scale(1) rotate(0); }
+  }
+  .card-in{ animation:cardIn .5s cubic-bezier(.22,1,.36,1) both; }
+
+  @keyframes pop{
+    0%{ transform:scale(.6); opacity:0; }
+    60%{ transform:scale(1.06); opacity:1; }
+    100%{ transform:scale(1); opacity:1; }
+  }
+  .pop{ animation:pop .35s cubic-bezier(.22,1,.36,1) both; }
+
+  /* ตัวเลขเด้งลอยขึ้นตอนค่าเปลี่ยน */
+  @keyframes floatUp{
+    0%{ opacity:0; transform:translateY(6px) scale(.8); }
+    20%{ opacity:1; transform:translateY(-2px) scale(1); }
+    100%{ opacity:0; transform:translateY(-26px) scale(1); }
+  }
+  .float-up{ animation:floatUp 1.1s ease-out forwards; }
+
+  /* แถบค่าทักษะ */
+  .stat-bar{ transition:width .7s cubic-bezier(.22,1,.36,1); }
+
+  /* ปุ่มทางเลือก */
+  .choice{ transition:transform .15s ease, box-shadow .2s ease, background .2s ease; }
+  .choice:active{ transform:scale(.97); }
+
+  @keyframes glow{
+    0%,100%{ box-shadow:0 10px 30px -8px rgba(251,113,133,.45); }
+    50%{ box-shadow:0 14px 38px -6px rgba(168,85,247,.55); }
+  }
+  .glow{ animation:glow 2.6s ease-in-out infinite; }
+
+  @keyframes floaty{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-8px); }
+  }
+  .floaty{ animation:floaty 3.4s ease-in-out infinite; }
+
+  /* ดอท progress */
+  .dot{ transition:all .35s ease; }
+
+  /* confetti */
+  .confetti{ position:absolute; top:-12px; width:9px; height:14px; border-radius:2px; will-change:transform; }
+  @keyframes fall{
+    0%{ transform:translateY(-20px) rotate(0); opacity:1; }
+    100%{ transform:translateY(105dvh) rotate(540deg); opacity:1; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+  ::-webkit-scrollbar{ width:0; }
+</style>
+</head>
+<body class="noselect">
+
+<div id="app" class="max-w-md mx-auto px-5 py-6 min-h-[100dvh] flex flex-col"></div>
+
+<script>
+/* ============================================================
+   ข้อมูลเกม — การ์ดสถานการณ์ชีวิต ม.6
+   ค่าทักษะ: happy ❤️ความสุข | resp 💪รับผิดชอบ | friend 🤝มิตรภาพ | goal 🎯เป้าหมาย
+   ============================================================ */
+const STATS = {
+  happy:  { label:'ความสุข',      emoji:'❤️', color:'var(--rose)',    bg:'#fb7185' },
+  resp:   { label:'ความรับผิดชอบ', emoji:'💪', color:'var(--amber)',   bg:'#f59e0b' },
+  friend: { label:'มิตรภาพ',       emoji:'🤝', color:'var(--sky)',     bg:'#38bdf8' },
+  goal:   { label:'เป้าหมาย',      emoji:'🎯', color:'var(--emerald)', bg:'#34d399' },
+};
+
+const CARDS = [
+  {
+    tag:'ก่อนสอบ', emoji:'🏃',
+    title:'ชวนหนีคาบติว',
+    text:'เหลืออีกสองสัปดาห์จะสอบ TCAS โรงเรียนจัดคาบติวพิเศษให้ แต่เพื่อนกระซิบว่า "ไปคาเฟ่เปิดใหม่กันเถอะ คาบเดียวเอง" แดดข้างนอกก็น่าออกไปจริง ๆ',
+    choices:[
+      { t:'อยู่ติวต่อ แล้วชวนเพื่อนไปคาเฟ่หลังเลิกเรียนแทน', fx:{resp:2,goal:2,friend:1,happy:1}, r:'เพื่อนงอนนิดหน่อยตอนแรก แต่ตอนเย็นก็ได้ไปคาเฟ่ด้วยกันแบบสบายใจ ไม่มีอะไรค้างคา' },
+      { t:'ไปกับเพื่อน คาบเดียวคงไม่เป็นไร', fx:{happy:2,friend:2,goal:-2,resp:-1}, r:'บ่ายนั้นสนุกมาก แต่พอกลับบ้านมาเปิดชีตที่พลาดไป รู้สึกตามไม่ทันนิดหน่อย' },
+      { t:'อยู่ติว ปฏิเสธเพื่อนไปตรง ๆ', fx:{resp:2,goal:2,friend:-1}, r:'ได้เนื้อหาครบ แต่เพื่อนดูเสียใจที่ถูกปฏิเสธห้วน ๆ บางทีวิธีพูดก็สำคัญพอ ๆ กับสิ่งที่เลือก' },
+    ]
+  },
+  {
+    tag:'จัดเวลา', emoji:'⏳',
+    title:'สามชั่วโมงสุดท้าย',
+    text:'สี่ทุ่มแล้ว พรุ่งนี้สอบเช้า เหลือเวลาประมาณ 3 ชั่วโมงก่อนนอน สมองเริ่มล้า ในหัวมีทั้งบทที่ยังไม่อ่าน คลิปสรุปในฟีด และความง่วง',
+    choices:[
+      { t:'อ่านบทสำคัญ 2 ชม. แล้วนอนให้พอ', fx:{goal:2,resp:2,happy:1}, r:'ตื่นมาสมองโล่ง จำได้ดีกว่าที่คิด การพักก็เป็นส่วนหนึ่งของการเตรียมตัว' },
+      { t:'อัดทุกบทรวดเดียวถึงตีสอง', fx:{goal:1,resp:1,happy:-2}, r:'อ่านได้เยอะจริง แต่เช้ามาง่วงจนอ่านโจทย์ไม่ทัน เหนื่อยเกินจนพลังหาย' },
+      { t:'ดูคลิปสรุปในฟีดไปเรื่อย ๆ จนหลับ', fx:{happy:1,goal:-2,resp:-1}, r:'ผ่อนคลายดี แต่ตื่นมารู้สึกว่ายังไม่ได้เตรียมตัวจริงจังเลย' },
+    ]
+  },
+  {
+    tag:'เพื่อน', emoji:'📝',
+    title:'ขอลอกการบ้าน',
+    text:'เพื่อนสนิทส่งข้อความมาตอนเช้า "ขอลอกการบ้านหน่อยน้า เมื่อคืนไม่ได้ทำจริง ๆ" เขาช่วยเรามาหลายครั้ง และครูกำลังจะเก็บงานในอีกสิบนาที',
+    choices:[
+      { t:'ไม่ให้ลอก แต่ติวให้เร็ว ๆ ตรงที่เขาไม่เข้าใจ', fx:{friend:2,resp:2,goal:1}, r:'เขาทำเองได้ทันเวลา และเข้าใจขึ้นจริง ความช่วยเหลือที่ดีไม่ใช่การให้คำตอบเสมอไป' },
+      { t:'ให้ลอกเลย เพื่อนเคยช่วยเรามาเยอะ', fx:{friend:2,resp:-2,happy:1}, r:'เขาส่งทัน แต่ครั้งหน้าก็ยังทำไม่ได้อยู่ดี และเรารู้สึกไม่ค่อยสบายใจ' },
+      { t:'บอกว่าช่วยไม่ได้ แล้วเดินไปส่งงานเฉย ๆ', fx:{resp:1,friend:-2}, r:'เราทำถูกระเบียบ แต่เพื่อนรู้สึกถูกทิ้งในนาทีที่ลำบาก' },
+    ]
+  },
+  {
+    tag:'อนาคต', emoji:'🧭',
+    title:'คณะที่ใจอยากไป',
+    text:'พ่อแม่อยากให้เลือกคณะที่ "มั่นคง" แต่ใจเราอยากเรียนอีกสาขาที่ชอบจริง ๆ คืนนี้ที่โต๊ะอาหารบรรยากาศเริ่มตึง',
+    choices:[
+      { t:'หาข้อมูลอาชีพ-รายได้สาขาที่ชอบ แล้วคุยกับพ่อแม่ดี ๆ', fx:{goal:2,resp:2,happy:1,friend:1}, r:'พ่อแม่เริ่มเปิดใจฟังเมื่อเห็นว่าเราคิดมาอย่างรอบคอบ การสื่อสารเปลี่ยนความขัดแย้งเป็นบทสนทนา' },
+      { t:'ยอมตามพ่อแม่ไปก่อน ค่อยว่ากันทีหลัง', fx:{friend:1,happy:-2,goal:-1}, r:'ที่บ้านสงบลง แต่ลึก ๆ ยังค้างคาว่าเส้นทางนี้ใช่ตัวเองไหม' },
+      { t:'ยืนยันสิ่งที่ชอบแบบเถียงกลับทันที', fx:{goal:1,happy:-1,friend:-2}, r:'เราพูดสิ่งที่คิดออกมา แต่ทะเลาะกันแรง ความต้องการที่ดีถูกบดบังด้วยวิธีพูด' },
+    ]
+  },
+  {
+    tag:'ดูแลใจ', emoji:'🌧️',
+    title:'คืนที่ใจหนัก',
+    text:'ใกล้สอบเข้ามาทุกที ความกดดันสะสมจนคืนนี้นอนไม่หลับ ใจเต้นแรง คิดวนว่า "ถ้าทำไม่ได้จะเป็นยังไง" รู้สึกท่วมท้นไปหมด',
+    choices:[
+      { t:'หายใจช้า ๆ จดสิ่งที่กังวล แล้วแบ่งเป็นเรื่องเล็ก ๆ', fx:{happy:2,resp:2,goal:1}, r:'พอแยกก้อนความกังวลออกมา มันดูจัดการได้ขึ้นเยอะ ใจค่อย ๆ เบาลง' },
+      { t:'ทักไปคุยกับคนที่ไว้ใจ บอกว่ากำลังเครียด', fx:{happy:2,friend:2}, r:'แค่มีคนรับฟังก็เบาขึ้นมาก การขอความช่วยเหลือคือความเข้มแข็ง ไม่ใช่ความอ่อนแอ' },
+      { t:'ฝืนข่มความรู้สึก แล้วอ่านหนังสือต่อทั้งที่ใจไม่อยู่', fx:{goal:-1,happy:-2}, r:'อ่านไปก็ไม่เข้าหัว เพราะใจที่ยังไม่ได้ดูแลจะคอยฉุดเราไว้' },
+    ]
+  },
+  {
+    tag:'การเงิน', emoji:'💰',
+    title:'เงินก้อนที่ได้มา',
+    text:'ได้เงินพิเศษมา 2,000 บาท เพื่อนชวนซื้อรองเท้ารุ่นใหม่ที่อยากได้มานาน พอดีก็มีคอร์สติวออนไลน์ที่อยากลง และกระปุกออมก็ยังว่าง',
+    choices:[
+      { t:'แบ่งเป็นสามส่วน: เก็บ ลงคอร์ส และให้รางวัลตัวเองนิดหน่อย', fx:{resp:2,goal:1,happy:1}, r:'ได้ทั้งวินัย ได้พัฒนาตัวเอง และยังมีความสุขเล็ก ๆ สมดุลคือทักษะที่ใช้ได้ทั้งชีวิต' },
+      { t:'ซื้อรองเท้าเลย เดี๋ยวรุ่นนี้หมด', fx:{happy:2,resp:-2}, r:'ใส่แล้วฟินมาก แต่สิ้นเดือนเริ่มรู้สึกว่าน่าจะเก็บไว้บ้าง' },
+      { t:'เก็บทั้งหมดไว้ในกระปุก ไม่ใช้เลย', fx:{resp:2,happy:-1,goal:-1}, r:'มีวินัยดี แต่บางทีลงทุนกับตัวเองหรือให้รางวัลตัวเองบ้างก็จำเป็น' },
+    ]
+  },
+  {
+    tag:'เพื่อน', emoji:'💬',
+    title:'ข้อความตอนดึก',
+    text:'เที่ยงคืน เพื่อนสนิทส่งข้อความมาว่า "เหนื่อยจังเลย ไม่ไหวแล้ว" ช่วงนี้เขาเงียบผิดปกติ และเราเองก็ต้องตื่นเช้าไปสอบ',
+    choices:[
+      { t:'โทรหา/ทักกลับไปถามว่าเป็นยังไงบ้าง ฟังเขาก่อน', fx:{friend:2,happy:1,resp:1}, r:'เขาแค่ต้องการคนรับฟัง คืนนั้นเราอาจนอนดึกขึ้น แต่ได้อยู่ข้างเพื่อนในจังหวะที่เขาต้องการ' },
+      { t:'ส่งกำลังใจสั้น ๆ แล้วนัดคุยจริงจังพรุ่งนี้', fx:{friend:1,resp:1,goal:1}, r:'เพื่อนรู้ว่าเราไม่ได้ทิ้งเขา และเราก็ได้พักด้วย บางครั้งการดูแลคนอื่นกับดูแลตัวเองทำไปพร้อมกันได้' },
+      { t:'แกล้งไม่เห็น เดี๋ยวพรุ่งนี้ค่อยว่ากัน', fx:{goal:1,friend:-2,happy:-1}, r:'เราได้นอน แต่เช้ามาเห็นว่าเขาออนไลน์ทั้งคืน รู้สึกผิดที่ปล่อยให้เขาอยู่คนเดียว' },
+    ]
+  },
+  {
+    tag:'โอกาส', emoji:'🏆',
+    title:'ตัวแทนคนสุดท้าย',
+    text:'ครูเลือกเราเป็นตัวแทนแข่งทักษะระดับจังหวัด เป็นโอกาสที่ดีและน่าภูมิใจ แต่ช่วงซ้อมตรงกับสัปดาห์ที่ตั้งใจอ่านหนังสือสอบพอดี',
+    choices:[
+      { t:'รับ แล้ววางตารางใหม่ให้ลงตัวทั้งสองอย่าง', fx:{goal:2,resp:2,happy:1}, r:'เหนื่อยขึ้นจริง แต่การจัดลำดับความสำคัญทำให้ทำได้ทั้งคู่ และได้ประสบการณ์ที่หาไม่ได้ในห้องเรียน' },
+      { t:'รับเต็มที่ ทุ่มให้การแข่งก่อน', fx:{happy:2,friend:1,goal:-2}, r:'การแข่งออกมาดีมาก แต่ตารางอ่านหนังสือรวนไปเยอะ ต้องเร่งตามทีหลัง' },
+      { t:'ปฏิเสธ ขอโฟกัสอ่านหนังสืออย่างเดียว', fx:{goal:1,resp:1,happy:-1}, r:'ได้อ่านเต็มที่ แต่แอบเสียดายโอกาส บางครั้งความเสี่ยงที่คุ้มค่าก็ควรลอง' },
+    ]
+  },
+
+  /* ── ชุดสมุทรปราการ: ตัดสินใจเลือกอนาคต ── */
+  {
+    tag:'อนาคต', emoji:'🏭',
+    title:'งานรอที่นิคมฯ',
+    text:'ญาติทำงานในนิคมอุตสาหกรรมบางปู บอกว่าเดี๋ยวฝากเข้าทำได้เลย เงินเดือนเริ่มต้นก็พอใช้ ไม่ต้องเสียค่าเทอม แต่ลึก ๆ เราแอบอยากลองเรียนต่อดูสักตั้ง',
+    choices:[
+      { t:'สมัครเรียนต่อไว้ก่อน ถ้าไม่ติดค่อยทำงาน', fx:{goal:2,resp:2,happy:1}, r:'เธอไม่รีบปิดประตูบานไหน เตรียมทั้งแผนเรียนและแผนสำรองไว้ การมีทางเลือกทำให้ตัดสินใจได้สบายใจขึ้น' },
+      { t:'รับงานเลย ได้เงินช่วยที่บ้านทันที', fx:{resp:2,happy:-1,goal:-2}, r:'ที่บ้านโล่งใจเรื่องเงิน เธอภูมิใจที่ช่วยได้จริง แต่บางคืนยังคิดว่าถ้าได้ลองเรียนต่อ ชีวิตจะต่างออกไปไหม' },
+      { t:'เรียนต่อให้ได้ ปฏิเสธงานไปเลย', fx:{goal:2,happy:1,resp:-1}, r:'เธอเลือกตามฝัน แต่ต้องรับผิดชอบวางแผนค่าใช้จ่ายเองให้รอบคอบ ความฝันมาพร้อมการบ้านที่ต้องทำ' },
+    ]
+  },
+  {
+    tag:'อนาคต', emoji:'🔧',
+    title:'ปวส. หรือมหาลัย',
+    text:'เพื่อนหลายคนเลือกเรียน ปวส. สายช่าง/บัญชี เพราะจบไวและมีงานรองรับในโรงงานแถวบ้าน เราลังเลระหว่างสายอาชีพที่เห็นเส้นทางชัด กับมหาลัยที่ใช้เวลานานกว่า',
+    choices:[
+      { t:'ไปดูงานจริง ถามรุ่นพี่ที่ทำทั้งสองสายก่อน', fx:{goal:2,resp:2,happy:1}, r:'พอได้คุยกับคนที่ทำงานจริง ภาพอาชีพชัดขึ้นมาก เธอตัดสินใจจากข้อมูล ไม่ใช่แค่ความรู้สึกหรือกระแส' },
+      { t:'เลือกทางที่ตัวเองสนใจจริง แม้ต่างจากเพื่อน', fx:{goal:2,happy:1,friend:-1}, r:'เธอกล้าเดินทางของตัวเอง แม้ต้องแยกจากกลุ่ม เส้นทางที่เลือกเองมักพาเราไปได้ไกลกว่า' },
+      { t:'เลือกตามที่เพื่อนส่วนใหญ่ไป', fx:{friend:2,happy:1,goal:-1}, r:'อุ่นใจที่มีเพื่อนไปด้วยกัน แต่ระวังเลือกเพราะ "ตาม" มากกว่าเพราะ "ใช่" ลองถามใจตัวเองอีกครั้ง' },
+    ]
+  },
+  {
+    tag:'ครอบครัว', emoji:'🏠',
+    title:'ความหวังของบ้าน',
+    text:'ที่บ้านพูดบ่อย ๆ ว่าอยากให้เราเป็นคนแรกของบ้านที่ได้เรียนสูง ๆ แต่พ่อเพิ่งหยุดงานเพราะป่วย เงินเริ่มฝืด และยังมีน้องเล็กที่ต้องดูแล',
+    choices:[
+      { t:'คุยกับที่บ้านตรง ๆ หาทางทั้งเรียนและช่วยบ้านไปด้วย', fx:{resp:2,friend:2,goal:1}, r:'การพูดความจริงกันทำให้ทั้งบ้านหาทางออกร่วมกันได้ เธอไม่ต้องแบกทุกอย่างคนเดียวอีกต่อไป' },
+      { t:'หยุดเรียนไว้ก่อน ออกไปหางานช่วยบ้านเต็มตัว', fx:{resp:2,happy:-2,goal:-2}, r:'ครอบครัวได้พักหายใจ เธอเสียสละด้วยความรัก — แต่ความฝันของเธอยังรออยู่ ไม่ได้หายไปไหน เก็บมันไว้ให้ดี' },
+      { t:'เก็บความกังวลไว้คนเดียว ไม่กล้าบอกใคร', fx:{happy:-2,goal:-1,resp:1}, r:'เธอพยายามแบกทุกอย่างเงียบ ๆ แต่ความหนักที่ไม่ได้พูดออกมา ค่อย ๆ บั่นทอนทั้งใจและสมาธิ' },
+    ]
+  },
+  {
+    tag:'อนาคต', emoji:'🚆',
+    title:'ไกลบ้านแค่ไหนถึงเรียกว่าไกล',
+    text:'ติดคณะที่อยากเรียนในกรุงเทพ แต่ต้องตื่นตีห้านั่งรถไฟฟ้าจากปากน้ำเข้าเมืองทุกวัน หรือไม่ก็ต้องหาหอ ส่วนมหาลัยใกล้บ้านมีสาขาที่พอไหว แต่ไม่ใช่อันดับหนึ่งในใจ',
+    choices:[
+      { t:'คำนวณค่าเดินทาง/ค่าหอจริง แล้วเทียบกับสิ่งที่ได้', fx:{goal:2,resp:2}, r:'พอเห็นตัวเลขและตารางชีวิตจริง เธอเลือกได้อย่างมั่นใจ ไม่ใช่แค่ฝัน และไม่ใช่แค่กลัว' },
+      { t:'ไปคณะในฝันที่กรุงเทพ ยอมเหนื่อยเดินทาง', fx:{goal:2,happy:-1,resp:1}, r:'เส้นทางในฝันมาพร้อมตีห้าที่ต้องตื่น เธอพร้อมแลก ขอแค่ดูแลร่างกายและการพักให้ดีระหว่างทาง' },
+      { t:'เลือกใกล้บ้านไว้ก่อน สบายและประหยัด', fx:{happy:2,resp:1,goal:-1}, r:'ชีวิตสบายขึ้นและประหยัดจริง แค่ระวังอย่าให้ความสะดวกบังตัวเลือกที่เราอยากได้จริง ๆ' },
+    ]
+  },
+  {
+    tag:'การเงิน', emoji:'📋',
+    title:'กลัวคำว่าหนี้',
+    text:'ค่าเทอมมหาลัยสูงกว่าที่คิด ครูแนะแนวบอกว่ากู้ กยศ. ได้ แต่ที่บ้านเคยมีประสบการณ์ไม่ดีกับการเป็นหนี้ เราเลยกลัวคำนี้มาตลอด',
+    choices:[
+      { t:'ศึกษาเงื่อนไข กยศ. ให้เข้าใจก่อนตัดสินใจ', fx:{resp:2,goal:2}, r:'พอเข้าใจว่าดอกเบี้ยต่ำและเริ่มผ่อนหลังเรียนจบ ความกลัวก็ลดลง ความรู้พาเราตัดสินใจได้ดีกว่าความกลัว' },
+      { t:'กู้เพื่อเปิดโอกาสให้ตัวเอง พร้อมวางแผนใช้คืน', fx:{goal:2,resp:1,happy:1}, r:'เธอมองหนี้ก้อนนี้เป็นการลงทุนในตัวเอง และตั้งใจรับผิดชอบมัน นั่นคือวิธีคิดที่โตขึ้น' },
+      { t:'ไม่กู้เด็ดขาด เลือกเส้นทางที่ไม่ต้องใช้เงินก้อนนี้', fx:{resp:1,happy:1,goal:-1}, r:'หลีกเลี่ยงความเสี่ยงได้ แต่บางครั้งโอกาสก็ต้องการการลงทุน ขอให้เลือกเพราะคิดมาดีแล้ว ไม่ใช่เพราะกลัวอย่างเดียว' },
+    ]
+  },
+  {
+    tag:'จัดเวลา', emoji:'🛍️',
+    title:'กะดึกที่ห้าง',
+    text:'ช่วงปิดเทอมมีงานพิเศษที่ห้างใกล้บ้าน ได้เงินเก็บไว้เป็นค่าเทอม แต่กะงานบางวันชนกับเวลาที่ตั้งใจอ่านหนังสือเตรียมยื่นรับตรง',
+    choices:[
+      { t:'รับงานเฉพาะวันที่ไม่ชนแผนอ่านหนังสือ', fx:{resp:2,goal:2,happy:1}, r:'เธอได้ทั้งเงินเก็บและเวลาเตรียมตัว เพราะวางขอบเขตชัดเจนตั้งแต่ต้น การจัดลำดับคือทักษะที่ใช้ได้ทั้งชีวิต' },
+      { t:'รับเต็มที่ทุกกะ เงินสำคัญกว่า', fx:{resp:2,happy:1,goal:-2}, r:'เก็บเงินได้ก้อนโต แต่ตารางอ่านหนังสือหดหายไปเยอะ ต้องเร่งตามทีหลังแบบเหนื่อย ๆ' },
+      { t:'ไม่รับเลย ขออ่านหนังสืออย่างเดียว', fx:{goal:2,resp:1,happy:-1}, r:'ได้โฟกัสเต็มที่ แต่แอบเสียดายโอกาสหาประสบการณ์และเงินเก็บ ทุกการเลือกมีสิ่งที่ต้องวางลง' },
+    ]
+  },
+  {
+    tag:'เพื่อน', emoji:'👥',
+    title:'แยกทางกับเพื่อน',
+    text:'แก๊งเพื่อนสนิทตัดสินใจไม่เรียนต่อ จะไปทำงานด้วยกันหลังจบ ม.6 พวกเขาชวนเราไปด้วย "อยู่ด้วยกันสนุกกว่า เรียนไปก็เหนื่อยเปล่า"',
+    choices:[
+      { t:'เลือกเส้นทางตัวเอง แต่ยังรักษาความเป็นเพื่อนไว้', fx:{goal:2,friend:1,resp:1}, r:'เธอกล้าเดินทางของตัวเอง และบอกเพื่อนด้วยความจริงใจ เพื่อนแท้จะยังอยู่แม้เส้นทางจะต่างกัน' },
+      { t:'ตามเพื่อนไป กลัวเหงาถ้าต้องแยกกลุ่ม', fx:{friend:2,happy:1,goal:-2}, r:'ได้อยู่กับเพื่อนสมใจ แต่ลึก ๆ รู้ว่านี่อาจไม่ใช่ทางที่เราเลือกเอง การตัดสินใจเพราะกลัวเหงามักทิ้งคำถามไว้' },
+      { t:'เถียงว่าเพื่อนคิดผิด พยายามดึงให้มาเรียน', fx:{friend:-2,goal:1}, r:'เราหวังดี แต่การไปตัดสินทางเลือกของคนอื่นทำให้เกิดความบาดหมาง แต่ละคนมีเส้นทางและจังหวะของตัวเอง' },
+    ]
+  },
+  {
+    tag:'อนาคต', emoji:'📂',
+    title:'รอบแรกที่พลาด',
+    text:'ยื่นรอบ Portfolio ไปแล้วไม่ติด เพื่อนบางคนติดแล้วเริ่มฉลอง ในกลุ่มไลน์เต็มไปด้วยข่าวคนติด ใจเริ่มท้อและสงสัยในตัวเอง ทั้งที่ยังเหลืออีกหลายรอบ',
+    choices:[
+      { t:'ตั้งหลักใหม่ ดูจุดที่พลาด แล้วเตรียมรอบถัดไป', fx:{resp:2,goal:2,happy:1}, r:'เธอเปลี่ยนความผิดหวังเป็นข้อมูล รอบเดียวไม่ได้ตัดสินทั้งชีวิต คนที่ลุกได้ไวคือคนที่ไปถึงเส้นชัย' },
+      { t:'พักใจสักครู่ ให้ตัวเองเศร้าได้ แล้วค่อยไปต่อ', fx:{happy:2,resp:1,goal:1}, r:'การยอมรับความรู้สึกตัวเองคือความเข้มแข็ง พอใจได้พัก เธอก็พร้อมสู้รอบต่อไปอย่างมีพลังกว่าเดิม' },
+      { t:'ปิดทุกอย่าง เลิกสนใจ เลิกหวังกับมัน', fx:{happy:-2,goal:-2}, r:'การหนีช่วยให้เจ็บน้อยลงชั่วคราว แต่โอกาสที่ยังเหลืออยู่ก็หายไปด้วย ลองให้โอกาสตัวเองอีกสักครั้งนะ' },
+    ]
+  },
+];
+
+/* ============================================================
+   จุดจบ — บุคลิกนักตัดสินใจ ตามค่าทักษะที่เด่นที่สุด
+   ============================================================ */
+const ENDINGS = {
+  balanced:{ emoji:'🌟', title:'นักตัดสินใจตัวจริง', desc:'เธอชั่งน้ำหนักได้เก่งมาก ดูแลทั้งใจ ความรับผิดชอบ เพื่อน และเป้าหมายไปพร้อมกัน นี่คือหัวใจของทักษะชีวิต — ไม่ใช่การเลือกถูกทุกครั้ง แต่คือการรักษาสมดุลในวันที่ทุกอย่างดึงไปคนละทาง' },
+  happy:  { emoji:'☀️', title:'สายใจดี อารมณ์ดี', desc:'เธอให้ความสำคัญกับความสุขและความรู้สึก ทำให้คนรอบข้างสบายใจเวลาอยู่ด้วย ลองเติมวินัยและเป้าหมายเข้าไปอีกนิด แล้วความสุขของเธอจะพาไปได้ไกลกว่าเดิม' },
+  resp:   { emoji:'🛡️', title:'เสาหลักผู้รับผิดชอบ', desc:'เธอเป็นคนที่ไว้ใจได้ ทำสิ่งที่ควรทำแม้มันยาก คนแบบนี้หายาก อย่าลืมแบ่งพื้นที่ให้ความสุขและการพักผ่อนบ้าง เพราะคนเก่งก็ต้องการเติมพลังเหมือนกัน' },
+  friend: { emoji:'🤝', title:'เพื่อนแท้หัวใจอบอุ่น', desc:'เธออยู่เคียงข้างคนอื่นเสมอ และรู้ว่าความสัมพันธ์ที่ดีมีค่าแค่ไหน ความเห็นอกเห็นใจคือของขวัญ — แค่อย่าลืมว่าการดูแลตัวเองก็สำคัญพอ ๆ กับการดูแลคนอื่น' },
+  goal:   { emoji:'🎯', title:'นักล่าเป้าหมาย', desc:'เธอรู้ว่าตัวเองต้องการอะไรและมุ่งไปอย่างชัดเจน พลังแบบนี้จะพาเธอไปถึงฝัน ระหว่างทางอย่าลืมแวะดูแลใจและคนรอบตัว เพราะเส้นชัยจะมีความหมายมากขึ้นเมื่อมีคนอยู่ข้าง ๆ' },
+};
+
+/* ============================================================
+   สถานะเกม + ตัวช่วย
+   ============================================================ */
+let state = { idx:0, stats:{happy:5,resp:5,friend:5,goal:5}, picked:null };
+const MAXV = 14; // เพดานสำหรับวาดแถบ (เริ่ม 5 + สูงสุดที่เป็นไปได้)
+const app = document.getElementById('app');
+
+function resetGame(){
+  state = { idx:0, stats:{happy:5,resp:5,friend:5,goal:5}, picked:null };
+}
+
+function clampStats(){
+  for(const k in state.stats){
+    state.stats[k] = Math.max(0, Math.min(MAXV, state.stats[k]));
+  }
+}
+
+function dominantEnding(){
+  const s = state.stats;
+  const vals = Object.values(s);
+  const max = Math.max(...vals), min = Math.min(...vals);
+  // ถ้าทุกค่าสูงและต่างกันน้อย = สมดุล
+  const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
+  if(max - min <= 3 && avg >= 7) return ENDINGS.balanced;
+  // หาค่าที่เด่นที่สุด
+  let topKey='happy', topVal=-1;
+  for(const k in s){ if(s[k]>topVal){ topVal=s[k]; topKey=k; } }
+  return ENDINGS[topKey] || ENDINGS.balanced;
+}
+
+/* ============================================================
+   หน้าจอต่าง ๆ
+   ============================================================ */
+function escapeHtml(str){ return str.replace(/[&<>]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+function renderStart(){
+  app.innerHTML = `
+    <div class="flex-1 flex flex-col items-center justify-center text-center card-in">
+      <div class="floaty text-7xl mb-4 pop">🃏</div>
+      <p class="text-sm font-semibold tracking-widest text-violet-500 mb-2">เกมการ์ดเส้นทางชีวิต · ม.6</p>
+      <h1 class="text-5xl font-extrabold mb-3 leading-tight" style="background:linear-gradient(120deg,#fb7185,#a855f7);-webkit-background-clip:text;background-clip:text;color:transparent;">เลือกได้</h1>
+      <p class="text-base text-slate-600 leading-relaxed mb-8 px-2">
+        แปดสถานการณ์จริงของวัย ม.6 รอเธออยู่<br>
+        ทุกการตัดสินใจมีทั้ง<b class="text-rose-500">ได้</b>และ<b class="text-slate-500">เสีย</b><br>
+        ไม่มีคำตอบที่สมบูรณ์แบบ — มีแค่ตัวเธอที่เลือก
+      </p>
+      <div class="grid grid-cols-2 gap-2 w-full mb-9">
+        ${Object.entries(STATS).map(([k,v])=>`
+          <div class="flex items-center gap-2 bg-white/70 rounded-2xl px-3 py-2 shadow-sm">
+            <span class="text-xl">${v.emoji}</span>
+            <span class="text-sm font-medium text-slate-700">${v.label}</span>
+          </div>`).join('')}
+      </div>
+      <button onclick="startGame()" class="glow w-full bg-gradient-to-r from-rose-400 to-violet-500 text-white text-lg font-bold font-display py-4 rounded-2xl shadow-lg active:scale-95 transition">
+        เริ่มเดินทาง →
+      </button>
+      <p class="text-xs text-slate-400 mt-5">เล่นสนุก ไม่เก็บข้อมูล · ใช้เวลาประมาณ 5 นาที</p>
+    </div>
+  `;
+}
+
+function startGame(){ resetGame(); renderCard(); }
+
+function statBars(animate){
+  return `
+    <div class="grid grid-cols-2 gap-x-3 gap-y-2 mb-1">
+    ${Object.entries(STATS).map(([k,v])=>{
+      const pct = Math.round((state.stats[k]/MAXV)*100);
+      return `
+        <div>
+          <div class="flex items-center justify-between text-xs font-semibold text-slate-600 mb-1">
+            <span>${v.emoji} ${v.label}</span>
+            <span id="num-${k}" class="tabular-nums">${state.stats[k]}</span>
+          </div>
+          <div class="h-2.5 rounded-full bg-slate-200/70 overflow-hidden relative">
+            <div id="bar-${k}" class="stat-bar h-full rounded-full" style="width:${animate?0:pct}%;background:${v.bg};"></div>
+          </div>
+        </div>`;
+    }).join('')}
+    </div>`;
+}
+
+function renderCard(){
+  const c = CARDS[state.idx];
+  state.picked = null;
+  const dots = CARDS.map((_,i)=>`
+    <div class="dot h-1.5 rounded-full ${i<state.idx?'bg-violet-400 w-4':i===state.idx?'bg-rose-400 w-6':'bg-slate-300/70 w-1.5'}"></div>`).join('');
+
+  app.innerHTML = `
+    <div class="mb-3">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold text-violet-500">การ์ดที่ ${state.idx+1}/${CARDS.length}</span>
+        <button onclick="confirmRestart()" class="text-xs text-slate-400 active:text-slate-600">เริ่มใหม่</button>
+      </div>
+      <div class="flex gap-1 items-center mb-4">${dots}</div>
+    </div>
+
+    <div id="card" class="card-in bg-white rounded-[28px] p-6 shadow-xl shadow-violet-200/50 mb-4">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="text-4xl pop">${c.emoji}</div>
+        <div>
+          <span class="inline-block text-[11px] font-bold text-violet-600 bg-violet-100 px-2.5 py-0.5 rounded-full mb-1">${c.tag}</span>
+          <h2 class="text-xl font-bold leading-snug">${c.title}</h2>
+        </div>
+      </div>
+      <p class="text-[15px] text-slate-600 leading-relaxed">${c.text}</p>
+    </div>
+
+    <div id="choices" class="space-y-2.5 flex-1">
+      ${c.choices.map((ch,i)=>`
+        <button onclick="pick(${i})" class="choice w-full text-left bg-white rounded-2xl px-4 py-3.5 shadow-md shadow-slate-200/60 active:bg-violet-50 flex items-center gap-3">
+          <span class="shrink-0 w-7 h-7 rounded-full bg-violet-100 text-violet-600 font-bold text-sm grid place-items-center">${String.fromCharCode(65+i)}</span>
+          <span class="text-[15px] font-medium text-slate-700 leading-snug">${ch.t}</span>
+        </button>`).join('')}
+    </div>
+
+    <div class="mt-4 bg-white/50 rounded-2xl p-3.5">
+      ${statBars(false)}
+    </div>
+  `;
+}
+
+function pick(i){
+  if(state.picked!==null) return;
+  state.picked = i;
+  const c = CARDS[state.idx];
+  const ch = c.choices[i];
+
+  // ปิดปุ่มทางเลือก + ไฮไลต์ที่เลือก
+  const choiceBtns = document.querySelectorAll('#choices button');
+  choiceBtns.forEach((b,idx)=>{
+    b.disabled = true;
+    b.classList.add('pointer-events-none');
+    if(idx===i){ b.classList.add('ring-2','ring-violet-400','bg-violet-50'); }
+    else{ b.classList.add('opacity-40'); }
+  });
+
+  // อัปเดตค่า + แอนิเมชันแถบ
+  const prev = {...state.stats};
+  for(const k in ch.fx){ state.stats[k] += ch.fx[k]; }
+  clampStats();
+
+  for(const k in STATS){
+    const bar = document.getElementById('bar-'+k);
+    const num = document.getElementById('num-'+k);
+    if(bar) bar.style.width = Math.round((state.stats[k]/MAXV)*100)+'%';
+    if(num) num.textContent = state.stats[k];
+    // ป้ายลอย +/- ถ้ามีการเปลี่ยน
+    const d = (state.stats[k]-prev[k]);
+    if(d!==0 && num){
+      const tag = document.createElement('span');
+      tag.textContent = (d>0?'+':'') + d;
+      tag.className = 'float-up absolute ml-1 text-xs font-bold';
+      tag.style.color = d>0 ? STATS[k].bg : '#94a3b8';
+      num.parentElement.style.position='relative';
+      num.parentElement.appendChild(tag);
+      setTimeout(()=>tag.remove(),1100);
+    }
+  }
+
+  // แสดงผลที่ตามมา
+  const choicesBox = document.getElementById('choices');
+  const result = document.createElement('div');
+  result.className = 'pop bg-gradient-to-br from-violet-50 to-rose-50 border border-violet-100 rounded-2xl p-4 mt-1';
+  result.innerHTML = `
+    <p class="text-xs font-bold text-violet-500 mb-1.5">✦ สิ่งที่ตามมา</p>
+    <p class="text-[15px] text-slate-700 leading-relaxed mb-4">${ch.r}</p>
+    <button onclick="next()" class="w-full bg-gradient-to-r from-violet-500 to-rose-400 text-white font-bold font-display py-3 rounded-xl active:scale-95 transition">
+      ${state.idx < CARDS.length-1 ? 'ไปต่อ →' : 'ดูผลของเธอ ✨'}
+    </button>`;
+  choicesBox.appendChild(result);
+  result.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function next(){
+  if(state.idx < CARDS.length-1){
+    state.idx++;
+    renderCard();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }else{
+    renderResult();
+  }
+}
+
+function renderResult(){
+  const end = dominantEnding();
+  app.innerHTML = `
+    <div class="flex-1 flex flex-col items-center justify-center text-center card-in py-6">
+      <div class="floaty text-7xl mb-3 pop">${end.emoji}</div>
+      <p class="text-sm font-semibold tracking-widest text-violet-500 mb-1">บุคลิกนักตัดสินใจของเธอคือ</p>
+      <h1 class="text-3xl font-extrabold mb-4" style="background:linear-gradient(120deg,#fb7185,#a855f7);-webkit-background-clip:text;background-clip:text;color:transparent;">${end.title}</h1>
+      <p class="text-[15px] text-slate-600 leading-relaxed mb-7 px-1">${end.desc}</p>
+
+      <div class="w-full bg-white rounded-3xl p-5 shadow-xl shadow-violet-200/50 mb-6">
+        <p class="text-xs font-bold text-slate-400 mb-3 text-left">สรุปค่าทักษะของเธอ</p>
+        ${statBars(true)}
+      </div>
+
+      <div class="w-full bg-violet-50 rounded-2xl p-4 mb-7">
+        <p class="text-sm text-violet-800 leading-relaxed">
+          💡 <b>ข้อคิดส่งท้าย</b><br>
+          ในชีวิตจริงไม่มีตัวเลือกที่ "ถูกทั้งหมด" ทุกการตัดสินใจคือการแลกเปลี่ยน
+          คนที่ตัดสินใจเก่ง ไม่ใช่คนที่ไม่เคยพลาด แต่คือคนที่<b>คิดถึงผลที่ตามมา</b>
+          และ<b>รับผิดชอบสิ่งที่เลือก</b>ได้
+        </p>
+      </div>
+
+      <button onclick="renderStart()" class="w-full bg-gradient-to-r from-rose-400 to-violet-500 text-white text-lg font-bold font-display py-4 rounded-2xl shadow-lg active:scale-95 transition mb-2">
+        เล่นอีกครั้ง ↻
+      </button>
+      <button onclick="shareGame()" class="text-sm text-violet-500 font-medium py-2">แชร์ให้เพื่อนลองเล่น</button>
+    </div>
+  `;
+  // วาดแถบหลังเฟรมถัดไปเพื่อให้ animation เด้ง
+  requestAnimationFrame(()=>{
+    Object.keys(STATS).forEach(k=>{
+      const bar=document.getElementById('bar-'+k);
+      if(bar) bar.style.width = Math.round((state.stats[k]/MAXV)*100)+'%';
+    });
+  });
+  confetti();
+}
+
+function confetti(){
+  const colors=['#fb7185','#f59e0b','#38bdf8','#34d399','#a855f7'];
+  for(let i=0;i<26;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.left=Math.random()*100+'%';
+    c.style.background=colors[i%colors.length];
+    c.style.animation=`fall ${2.2+Math.random()*1.6}s ${Math.random()*0.6}s ease-in forwards`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4500);
+  }
+}
+
+function confirmRestart(){
+  if(confirm('เริ่มเล่นใหม่ตั้งแต่ต้น? ค่าทักษะปัจจุบันจะหายไปนะ')){
+    renderStart();
+  }
+}
+
+function shareGame(){
+  const txt='ลองเล่นเกม "เลือกได้" — เกมการ์ดเส้นทางชีวิต ม.6 ดูสิ ว่าเธอเป็นนักตัดสินใจแบบไหน!';
+  if(navigator.share){
+    navigator.share({title:'เลือกได้', text:txt, url:location.href}).catch(()=>{});
+  }else{
+    navigator.clipboard?.writeText(location.href).then(
+      ()=>alert('คัดลอกลิงก์แล้ว! ส่งให้เพื่อนได้เลย'),
+      ()=>alert('แชร์ลิงก์หน้านี้ให้เพื่อนได้เลย')
+    );
+  }
+}
+
+/* เริ่มต้น */
+renderStart();
+</script>
+</body>
+</html>

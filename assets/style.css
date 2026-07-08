@@ -1,0 +1,178 @@
+/* แนะให้แนว — Shared Design System
+   Concept: the site *is* a trail. Grades are waypoints, categories are
+   signposts along the way. Every visual device should read as "path". */
+
+@import url('https://fonts.googleapis.com/css2?family=Chonburi&family=Sarabun:wght@400;500;600;700&family=Kanit:wght@500;600&display=swap');
+
+:root{
+  --ink:      #1E2A3A;   /* primary text / trail line */
+  --paper:    #EFF0E9;   /* page background — cool, muted, not cream */
+  --paper-2:  #E4E6DA;   /* card / recessed surface */
+  --gold:     #D9A02B;   /* signpost accent, CTA */
+  --gold-ink: #8A6417;   /* text-on-gold / hover */
+  --forest:   #2F4B3C;   /* secondary deep green */
+  --line:     #C9CCBC;   /* hairline dividers */
+
+  /* category colors */
+  --cat-self:   #3E6E63;  /* ค้นหาตัวตน — mint teal */
+  --cat-career: #2C4A6E;  /* สายอาชีพ — navy */
+  --cat-path:   #B9791E;  /* เส้นทาง/ตัดสินใจ — gold-brown */
+  --cat-story:  #7A4432;  /* แรงบันดาลใจ — rust */
+  --cat-5:      #5B6B7A;  /* หมวดเพิ่มเติม 5 — slate */
+  --cat-6:      #6E4F73;  /* หมวดเพิ่มเติม 6 — plum */
+
+  --radius: 14px;
+  --shadow: 0 2px 0 rgba(30,42,58,0.06), 0 12px 24px -16px rgba(30,42,58,0.25);
+}
+
+*{ box-sizing: border-box; }
+html{ scroll-behavior: smooth; }
+body{
+  margin:0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Sarabun', sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.eyebrow{
+  font-family:'Kanit', sans-serif;
+  font-weight:600;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-ink);
+}
+
+h1, h2, h3, .display{
+  font-family:'Chonburi', sans-serif;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.25;
+  margin: 0;
+}
+
+a{ color: inherit; text-decoration:none; }
+
+.wrap{
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- Site header (used on every page) ---------- */
+.site-header{
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+.site-header .wrap{ display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.brand{ display:flex; align-items:center; gap:10px; font-family:'Chonburi',sans-serif; font-size:1.3rem; }
+.brand .mark{
+  width:34px; height:34px; border-radius:50%;
+  background: var(--forest);
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-family:'Kanit',sans-serif; font-weight:600; font-size:0.85rem;
+  flex-shrink:0;
+}
+.crumb{ font-family:'Kanit',sans-serif; font-size:0.85rem; color:#5b6459; }
+.crumb a:hover{ color:var(--gold-ink); }
+
+/* ---------- Hero ---------- */
+.hero{ padding: 56px 0 8px; text-align:center; }
+.hero h1{ font-size: clamp(2rem, 5vw, 3.2rem); }
+.hero p.lede{ max-width:560px; margin:14px auto 0; color:#4b5449; font-size:1.05rem; }
+
+/* ---------- Trail (home page) ---------- */
+.trail{
+  position:relative;
+  padding: 64px 0 40px;
+}
+.trail-line{
+  display:block;
+  width:100%;
+  height:auto;
+}
+.waypoints{
+  display:grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin-top: -30px;
+}
+.waypoint{
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  text-align:center;
+}
+.pin{
+  width:56px; height:56px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Chonburi',sans-serif; font-size:1.15rem;
+  background:var(--gold); color:#fff;
+  box-shadow: var(--shadow);
+  transition: transform .18s ease;
+}
+.waypoint.soon .pin{
+  background: transparent;
+  color: #9aa192;
+  border: 2px dashed #b7bcaa;
+}
+.waypoint-label{ font-family:'Kanit',sans-serif; font-weight:600; font-size:0.95rem; }
+.waypoint-status{ font-size:0.78rem; color:#7a8272; }
+.waypoint-status.active{ color: var(--forest); font-weight:600; }
+a.waypoint:hover .pin{ transform: translateY(-4px); }
+a.waypoint{ cursor:pointer; }
+
+@media (max-width: 760px){
+  .waypoints{ grid-template-columns: repeat(3, 1fr); row-gap:28px; }
+  .trail-line{ display:none; }
+}
+
+/* ---------- Category sections (grade hub pages) ---------- */
+.category{ margin: 44px 0; }
+.category-head{ display:flex; align-items:baseline; gap:12px; margin-bottom: 18px; }
+.category-head .dot{ width:10px; height:10px; border-radius:50%; }
+.category-head h2{ font-size:1.4rem; }
+.category-count{ font-family:'Kanit',sans-serif; font-size:0.8rem; color:#7a8272; }
+
+.card-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+}
+.card{
+  background:#fff;
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  display:flex; flex-direction:column; gap: 8px;
+  border-top: 4px solid var(--card-accent, var(--gold));
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+.card:hover{ transform: translateY(-3px); box-shadow: 0 6px 0 rgba(30,42,58,0.06), 0 20px 32px -18px rgba(30,42,58,0.32); }
+.card h3{ font-size:1.05rem; font-family:'Sarabun',sans-serif; font-weight:700; }
+.card p{ font-size:0.9rem; color:#5b6459; margin:0; flex-grow:1; }
+.card .go{ font-family:'Kanit',sans-serif; font-weight:600; font-size:0.85rem; color: var(--card-accent, var(--gold-ink)); }
+
+/* ---------- Placeholder (grades with no content yet) ---------- */
+.placeholder{
+  text-align:center;
+  padding: 80px 24px 100px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.placeholder .pin{ margin: 0 auto 20px; }
+.placeholder h2{ font-size:1.6rem; margin-bottom:10px; }
+.placeholder p{ color:#5b6459; }
+.back-link{ display:inline-block; margin-top:22px; font-family:'Kanit',sans-serif; font-weight:600; color: var(--forest); }
+.back-link:hover{ color: var(--gold-ink); }
+
+/* ---------- Footer ---------- */
+.site-footer{
+  border-top:1px solid var(--line);
+  padding: 26px 0 40px;
+  margin-top: 40px;
+  text-align:center;
+  font-family:'Kanit',sans-serif;
+  font-size:0.82rem;
+  color:#7a8272;
+}

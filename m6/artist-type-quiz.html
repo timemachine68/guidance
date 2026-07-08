@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบประเมินความถนัด: คุณคือศิลปินสายไหน?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Sarabun', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 24px;
+                margin: 20px auto;
+            }
+
+            header h1 {
+                font-size: 20px !important;
+            }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .question-block {
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .question-block.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .question-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .options-list {
+            list-style: none;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 14px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-item:hover {
+            border-color: var(--primary-color);
+            background-color: #f5f3ff;
+        }
+
+        .option-item input[type="radio"] {
+            margin-right: 12px;
+            margin-top: 2px;
+            transform: scale(1.2);
+            accent-color: var(--primary-color);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .option-item.selected {
+            border-color: var(--primary-color);
+            background-color: #eff6ff;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-next {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: auto;
+        }
+
+        .btn-next:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-prev {
+            background-color: #e2e8f0;
+            color: var(--text-main);
+        }
+
+        .btn-prev:hover {
+            background-color: #cbd5e1;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 20%;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        #result-card {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .result-title {
+            font-size: 26px;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .result-desc {
+            font-size: 16px;
+            color: var(--text-main);
+            margin-bottom: 30px;
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: left;
+            line-height: 1.8;
+        }
+
+        .result-desc strong {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .btn-restart {
+            background-color: var(--text-main);
+            color: white;
+        }
+
+        .btn-restart:hover {
+            background-color: #0f172a;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(10px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @media (max-width: 600px) {
+            .result-title {
+                font-size: 22px;
+            }
+
+            .option-item {
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🎨 คุณคือ "ศิลปิน" สายไหน?</h1>
+        <p>ค้นหาคณะและเส้นทางสายศิลปะที่ใช่สำหรับอนาคตของคุณ</p>
+    </header>
+
+    <div class="progress-bar-container" id="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <form id="quiz-form">
+        <div class="question-block active" data-step="1">
+            <div class="question-title">1. เวลาได้รับโจทย์ให้ "สร้างสรรค์ผลงาน 1 ชิ้น" กระบวนการทำงานของคุณมักจะเป็นแบบไหน?</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="q1" value="A" required> เปิดคอม/ไอแพด เข้าโปรแกรมวาดรูปหรือ 3D ทันที ชอบงานดิจิทัล</label>
+                <label class="option-item"><input type="radio" name="q1" value="B"> คิดก่อนว่างานนี้ทำขึ้นมาเพื่อใคร ใช้งานยังไง แล้วออกแบบให้ตอบโจทย์นั้น</label>
+                <label class="option-item"><input type="radio" name="q1" value="C"> ปล่อยไปตามความรู้สึก จับพู่กัน ดินสอ หรือสี แล้วถ่ายทอดอารมณ์ตอนนั้นออกมา</label>
+                <label class="option-item"><input type="radio" name="q1" value="D"> ร่างโครงสร้าง ตีเส้นสเกล วางแผนสัดส่วนและพื้นที่อย่างเป็นระบบก่อนลงมือ</label>
+                <label class="option-item"><input type="radio" name="q1" value="E"> ชอบชวนเพื่อนมาทำด้วยกัน หรือชอบสอนเทคนิคให้เพื่อนที่ทำไม่เป็น</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-step="2">
+            <div class="question-title">2. ถ้าได้ไปเดินงานนิทรรศการหรืออีเวนต์ศิลปะ โซนไหนที่คุณจะพุ่งตัวเข้าไปดูก่อน?</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="q2" value="A" required> โซนโชว์แอนิเมชัน เกม งานกราฟิกล้ำๆ หรือสื่อ Interactive</label>
+                <label class="option-item"><input type="radio" name="q2" value="B"> โซนงานออกแบบสินค้า แพ็กเกจจิ้ง โลโก้แบรนด์ หรือแฟชั่นเสื้อผ้า</label>
+                <label class="option-item"><input type="radio" name="q2" value="C"> โซนแกลเลอรีภาพวาด งานปั้น งานคราฟต์ ที่มีเอกลักษณ์เฉพาะตัวสูง</label>
+                <label class="option-item"><input type="radio" name="q2" value="D"> โซนโมเดลจำลองอาคาร ผังเมือง หรือการตกแต่งภายในที่จัดแสงสวยๆ</label>
+                <label class="option-item"><input type="radio" name="q2" value="E"> โซนเวิร์กชอปที่มีวิทยากรมาสอนทำศิลปะ หรือกิจกรรมที่เปิดให้คนมาร่วมสนุก</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-step="3">
+            <div class="question-title">3. "บรรยากาศการทำงานในฝัน" ของคุณหน้าตาเป็นอย่างไร?</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="q3" value="A" required> โต๊ะทำงานที่มีคอมพิวเตอร์สเปกแรงๆ หน้าจอใหญ่ๆ ใส่หูฟังทำงานได้ทั้งวัน</label>
+                <label class="option-item"><input type="radio" name="q3" value="B"> สตูดิโอออกแบบที่ได้ระดมสมองกับทีม และได้คุยกับลูกค้าเพื่อแก้ปัญหา</label>
+                <label class="option-item"><input type="radio" name="q3" value="C"> สตูดิโอส่วนตัว เปิดเพลงคลอเบาๆ มีกลิ่นสีและอุปกรณ์ศิลปะล้อมรอบ</label>
+                <label class="option-item"><input type="radio" name="q3" value="D"> ออฟฟิศที่มีแปลนงานและโมเดลเต็มโต๊ะ หรือได้ออกไปคุมงานที่สถานที่จริง</label>
+                <label class="option-item"><input type="radio" name="q3" value="E"> ห้องเรียน หรือลานกิจกรรมที่เต็มไปด้วยผู้คนและการแลกเปลี่ยนความรู้</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-step="4">
+            <div class="question-title">4. สมมติว่ามีโปรเจกต์หัวข้อ "เมืองในอนาคต" คุณอยากนำเสนอผลงานรูปแบบไหน?</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="q4" value="A" required> ทำภาพเคลื่อนไหว หรือปั้นโมเดล 3D เมืองไซไฟแบบทะลุจอ</label>
+                <label class="option-item"><input type="radio" name="q4" value="B"> ออกแบบป้ายโฆษณา แอปพลิเคชัน หรือของใช้สำหรับคนในเมืองนั้น</label>
+                <label class="option-item"><input type="radio" name="q4" value="C"> วาดภาพสะท้อนวิถีชีวิต หรือเสียดสีสังคมเมืองในยุคหน้าผ่านผืนผ้าใบ</label>
+                <label class="option-item"><input type="radio" name="q4" value="D"> ร่างแบบสถาปัตยกรรมตึกที่ประหยัดพลังงาน หรือวางผังเมืองที่อยู่สบาย</label>
+                <label class="option-item"><input type="radio" name="q4" value="E"> จัดค่ายศิลปะเล็กๆ ให้เด็กรุ่นใหม่มาช่วยกันวาดภาพเมืองในฝันของพวกเขา</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-step="5">
+            <div class="question-title">5. เป้าหมายสูงสุด (Ultimate Goal) ในการทำงานศิลปะของคุณคือข้อไหน?</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="q5" value="A" required> ได้สร้างโลกในจินตนาการให้เคลื่อนไหวได้ หรือมีชื่ออยู่ในเครดิตหนัง/เกมดัง</label>
+                <label class="option-item"><input type="radio" name="q5" value="B"> ผลงานของเราถูกผลิตออกไปขายจริง มีคนใช้งานจริง และสร้างมูลค่าได้</label>
+                <label class="option-item"><input type="radio" name="q5" value="C"> ได้จัดนิทรรศการเดี่ยวของตัวเอง และมีคนสัมผัสถึงความรู้สึกที่เราสื่อออกไป</label>
+                <label class="option-item"><input type="radio" name="q5" value="D"> ได้เห็นอาคาร หรือพื้นที่ที่เราออกแบบ ถูกสร้างขึ้นมาให้คนได้เข้าไปอยู่จริง</label>
+                <label class="option-item"><input type="radio" name="q5" value="E"> ได้เห็นคนอื่นมีความสุข ได้แรงบันดาลใจ และพัฒนาตัวเองผ่านศิลปะที่เราสอน</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-step="6">
+            <div class="question-title">6. ทักษะที่คุณคิดว่าตัวเองเก่งที่สุด คือข้อไหน?</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="q6" value="A" required> เรียนเครื่องมือเทคโนโลยีใหม่ได้เร็ว ติดตามเทรนด์เทคนิค</label>
+                <label class="option-item"><input type="radio" name="q6" value="B"> คิดจากมุมมองผู้ใช้ คิดว่าใครจะใช้สิ่งนี้ และมันแก้ปัญหาอะไรได้บ้าง</label>
+                <label class="option-item"><input type="radio" name="q6" value="C"> จับภาพความรู้สึก อารมณ์ และถ่ายทอดออกมาผ่านศิลปะ</label>
+                <label class="option-item"><input type="radio" name="q6" value="D"> วัดแบบ คำนวณสัดส่วน ร่างรูปแบบที่ถูกต้องแม่นยำ</label>
+                <label class="option-item"><input type="radio" name="q6" value="E"> ฟังคนพูด เข้าใจความต้องการ และคำแนะนำจนได้ผล</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-step="7">
+            <div class="question-title">7. เมื่อเห็นศิลปะหรือการออกแบบที่ดี คุณมักสังเกตอะไรก่อน?</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="q7" value="A" required> เทคนิคการสร้าง หรือว่าใช้เครื่องมืออะไร มันคุณภาพแค่ไหน</label>
+                <label class="option-item"><input type="radio" name="q7" value="B"> มันใช้งานได้ดีไหม ผู้ใช้จะรู้สึกอย่างไร ปัญหาไหนที่มันแก้</label>
+                <label class="option-item"><input type="radio" name="q7" value="C"> ความรู้สึกที่มันปล่อยออกมา ความหมายลึกซึ้ง เนื้อหาและเรื่องราว</label>
+                <label class="option-item"><input type="radio" name="q7" value="D"> สัดส่วน สมดุล ความสวยงามทางจิตรกรรมของโครงสร้าง</label>
+                <label class="option-item"><input type="radio" name="q7" value="E"> ทำขึ้นมาเพื่อใคร เข้าถึงใจผู้ชมได้ไหม มีผลต่อสังคมไหม</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-step="8">
+            <div class="question-title">8. เมื่อจำเป็นต้องแก้ปัญหาในโครงการศิลปะ คุณมักจะ...</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="q8" value="A" required> ลองใช้ฟีเจอร์ใหม่หรือเครื่องมือต่างเพื่อให้ผลลัพธ์ดีขึ้น</label>
+                <label class="option-item"><input type="radio" name="q8" value="B"> ถามตัวเองว่า "ลูกค้า/ผู้ใช้ต้องการอะไรจริง?" แล้วออกแบบใหม่</label>
+                <label class="option-item"><input type="radio" name="q8" value="C"> ปล่อยให้ความรู้สึกนำทาง ทดลองสีเส้นวัสดุใหม่ๆ</label>
+                <label class="option-item"><input type="radio" name="q8" value="D"> วาดแผนใหม่ ปรับสัดส่วน หรือเปลี่ยนโครงสร้าง</label>
+                <label class="option-item"><input type="radio" name="q8" value="E"> ขอคำแนะนำจากทีม หรือศึกษาวิธีคนอื่นแก้ปัญหาคล้ายกัน</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-step="9">
+            <div class="question-title">9. สภาพแวดล้อมหรืออุปกรณ์ที่จำเป็นต้องมีเมื่อทำงาน คือ...</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="q9" value="A" required> คอมพิวเตอร์ที่แรง หน้าจอสี ทรีเบิลมอนิเตอร์ ลื่นไหล ไม่ค้าง</label>
+                <label class="option-item"><input type="radio" name="q9" value="B"> บ้านที่เงียบ แต่ได้คุยกับเพื่อนร่วมงานทีมเครื่องหมายถ้วย</label>
+                <label class="option-item"><input type="radio" name="q9" value="C"> พื้นที่ที่มีแสงธรรมชาติ มีวัสดุและสีสันเต็มไป ลมหายใจได้สดชื่น</label>
+                <label class="option-item"><input type="radio" name="q9" value="D"> โต๊ะแบบอาร์คิเทค แปลนเต็มโต๊ะ ไม้บรรทัด ที่วัด มีปลั๊ก</label>
+                <label class="option-item"><input type="radio" name="q9" value="E"> ห้องเรียน หรือสตูดิโอเปิดที่คนเข้ามาไป-ออกไป พูดคุยกันได้</label>
+            </div>
+        </div>
+
+        <div class="question-block" data-step="10">
+            <div class="question-title">10. เมื่อสอนหรือแบ่งปันความรู้ให้คนอื่น คุณชอบวิธีไหน?</div>
+            <div class="options-list">
+                <label class="option-item"><input type="radio" name="q10" value="A" required> สดวิดีโอ Tutorial ทีละขั้นตอน เทคนิคและปลีกย่อย</label>
+                <label class="option-item"><input type="radio" name="q10" value="B"> คุยเรื่องแนวคิด แก้ปัญหา ดีไซน์ thinking ร่วมกัน</label>
+                <label class="option-item"><input type="radio" name="q10" value="C"> แสดงผลงานตนเองและอธิบายความรู้สึก มูลค่า ความหมายเบื้องหลัง</label>
+                <label class="option-item"><input type="radio" name="q10" value="D"> อธิบายกระบวนการวิทยาศาสตร์ อื่นๆ หลักการ และทฤษฎี</label>
+                <label class="option-item"><input type="radio" name="q10" value="E"> บอกเรื่องราวแรงบันดาลใจ ซื้อสินค้า ศิลปะที่เปลี่ยนแปลงชีวิต</label>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <button type="button" class="btn-prev" id="btn-prev" style="display: none;">ย้อนกลับ</button>
+            <button type="button" class="btn-next" id="btn-next">ถัดไป</button>
+        </div>
+    </form>
+
+    <div id="result-card">
+        <h2>ผลลัพธ์ของคุณคือ...</h2>
+        <div class="result-title" id="result-title"></div>
+        <div class="result-desc" id="result-desc"></div>
+        <button type="button" class="btn-restart" onclick="window.location.reload()">ทำแบบทดสอบอีกครั้ง</button>
+    </div>
+</div>
+
+<script>
+    const totalSteps = 10;
+    let currentStep = 1;
+
+    const btnNext = document.getElementById('btn-next');
+    const btnPrev = document.getElementById('btn-prev');
+    const progressBar = document.getElementById('progress-bar');
+    const quizForm = document.getElementById('quiz-form');
+    const resultCard = document.getElementById('result-card');
+    const progressContainer = document.getElementById('progress-container');
+
+    // ข้อมูลผลลัพธ์
+    const resultDetails = {
+        'A': {
+            title: '⚡ สายศิลปะดิจิทัลและแอนิเมชัน (Digital Art)',
+            desc: '<strong>จุดเด่น:</strong> คุณเป็นคนตามทันเทคโนโลยี ชอบสร้างโลกในจินตนาการให้โลดแล่นผ่านหน้าจอ<br><br><strong>คณะที่แนะนำ:</strong> คณะดิจิทัลอาร์ต, คณะดิจิทัลมีเดีย, คณะเทคโนโลยีสารสนเทศ (สาขาแอนิเมชันและเกม), คณะนิเทศศาสตร์ (สื่อดิจิทัล)<br><br><strong>อาชีพอนาคต:</strong> Animator, 3D Artist, Game Designer, Concept Artist, UX/UI Designer'
+        },
+        'B': {
+            title: '💼 สายศิลปะประยุกต์และการออกแบบ (Applied Arts)',
+            desc: '<strong>จุดเด่น:</strong> คุณมีหัวการค้าและการตลาด เก่งเรื่องการแก้ปัญหา (Problem Solving) ผ่านความสวยงามและฟังก์ชันใช้สอย<br><br><strong>คณะที่แนะนำ:</strong> คณะมัณฑนศิลป์, คณะศิลปกรรมศาสตร์ (สาขาออกแบบนิเทศศิลป์, ออกแบบแฟชั่น, ออกแบบผลิตภัณฑ์)<br><br><strong>อาชีพอนาคต:</strong> Graphic Designer, Fashion Designer, Packaging Designer, Art Director'
+        },
+        'C': {
+            title: '🎨 สายศิลปะบริสุทธิ์ (Fine Arts)',
+            desc: '<strong>จุดเด่น:</strong> คุณมีความเป็นศิลปินในตัวสูง มีอินเนอร์แรงกล้า และต้องการถ่ายทอดอารมณ์ ความรู้สึก ความคิดสร้างสรรค์ส่วนตัวออกมาอย่างอิสระ<br><br><strong>คณะที่แนะนำ:</strong> คณะจิตรกรรม ประติมากรรมและภาพพิมพ์, คณะวิจิตรศิลป์, คณะศิลปกรรมศาสตร์ (สาขาทัศนศิลป์)<br><br><strong>อาชีพอนาคต:</strong> ศิลปินอิสระ (Fine Artist), นักวาดภาพประกอบ (Illustrator), ภัณฑารักษ์ (Curator)'
+        },
+        'D': {
+            title: '📐 สายสถาปัตยกรรม (Architecture)',
+            desc: '<strong>จุดเด่น:</strong> คุณชอบการผสมผสานระหว่างศิลปะและความคิดเชิงตรรกะ มีความเข้าใจเรื่องโครงสร้าง พื้นที่ สเกล และการจัดวางอย่างเป็นระบบ<br><br><strong>คณะที่แนะนำ:</strong> คณะสถาปัตยกรรมศาสตร์ (สถาปัตยกรรมหลัก, สถาปัตยกรรมภายใน, ภูมิสถาปัตยกรรม, ออกแบบอุตสาหกรรม)<br><br><strong>อาชีพอนาคต:</strong> สถาปนิก, นักออกแบบภายใน (Interior Designer), นักภูมิสถาปัตย์'
+        },
+        'E': {
+            title: '🍎 สายการสอนและกระบวนการ (Art Education)',
+            desc: '<strong>จุดเด่น:</strong> คุณมีมนุษยสัมพันธ์ดี รักการถ่ายทอด มีความสุขที่ได้เห็นผู้อื่นเติบโต และเข้าใจความงามของศิลปะในแง่ของจิตวิทยาและการเรียนรู้<br><br><strong>คณะที่แนะนำ:</strong> คณะครุศาสตร์ หรือ คณะศึกษาศาสตร์ (สาขาศิลปศึกษา)<br><br><strong>อาชีพอนาคต:</strong> ครู/อาจารย์สอนศิลปะ, นักจัดกระบวนการเรียนรู้ (Art Facilitator), นักบำบัดด้วยศิลปะเบื้องต้น'
+        }
+    };
+
+    // ไฮไลต์ตัวเลือกที่คลิก
+    document.querySelectorAll('.option-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            // ลบคลาส selected จากกลุ่มเดียวกัน
+            this.closest('.options-list').querySelectorAll('.option-item').forEach(el => {
+                el.classList.remove('selected');
+            });
+            // เพิ่มให้ตัวที่เลือก
+            this.classList.add('selected');
+        });
+    });
+
+    // ปุ่มควบคุม
+    btnNext.addEventListener('click', () => {
+        // เช็กว่าเลือกคำตอบหรือยังในสเตปปัจจุบัน
+        const currentQuestion = document.querySelector(`.question-block[data-step="${currentStep}"]`);
+        const checkedOption = currentQuestion.querySelector('input[type="radio"]:checked');
+
+        if (!checkedOption) {
+            alert('กรุณาเลือกคำตอบก่อนไปข้อถัดไปครับ 😊');
+            return;
+        }
+
+        if (currentStep < totalSteps) {
+            currentStep++;
+            updateStep();
+        } else {
+            calculateResult();
+        }
+    });
+
+    btnPrev.addEventListener('click', () => {
+        if (currentStep > 1) {
+            currentStep--;
+            updateStep();
+        }
+    });
+
+    function updateStep() {
+        document.querySelectorAll('.question-block').forEach(block => {
+            block.classList.remove('active');
+        });
+        document.querySelector(`.question-block[data-step="${currentStep}"]`).classList.add('active');
+
+        // อัปเดต Progress Bar
+        const progressPercent = (currentStep / totalSteps) * 100;
+        progressBar.style.width = `${progressPercent}%`;
+
+        // ปรับการแสดงผลปุ่ม
+        if (currentStep === 1) {
+            btnPrev.style.display = 'none';
+        } else {
+            btnPrev.style.display = 'block';
+        }
+
+        if (currentStep === totalSteps) {
+            btnNext.innerText = 'ดูผลลัพธ์';
+        } else {
+            btnNext.innerText = 'ถัดไป';
+        }
+    }
+
+    // คำนวณผลลัพธ์หาตัวเลือกที่ซ้ำกันมากที่สุด
+    function calculateResult() {
+        const formData = new FormData(quizForm);
+        const counts = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+
+        for (let pair of formData.entries()) {
+            counts[pair[1]]++;
+        }
+
+        // หา Key ที่มีค่ามากที่สุด
+        let maxKey = 'A';
+        let maxVal = counts['A'];
+
+        for (let key in counts) {
+            if (counts[key] > maxVal) {
+                maxVal = counts[key];
+                maxKey = key;
+            }
+        }
+
+        // แสดงการแสดงผลลัพธ์
+        quizForm.style.display = 'none';
+        progressContainer.style.display = 'none';
+        
+        document.getElementById('result-title').innerHTML = resultDetails[maxKey].title;
+        document.getElementById('result-desc').innerHTML = resultDetails[maxKey].desc;
+        resultCard.style.display = 'block';
+    }
+
+    // เริ่มต้นขัอแรก
+    updateStep();
+</script>
+
+</body>
+</html>

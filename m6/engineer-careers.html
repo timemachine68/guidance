@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ถอดรหัสวิศวกรอนาคต - Engineering Career Explorer</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+        .heading-font {
+            font-family: 'Chakra Petch', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-900 overflow-x-hidden">
+<a href="index.html" style="position:fixed;top:12px;left:12px;z-index:99999;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#1E1B4B;font-family:'Prompt',system-ui,sans-serif;font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;box-shadow:0 6px 18px -6px rgba(30,27,75,.35);text-decoration:none;">← หน้าหลัก</a>
+
+    <!-- Web Audio API Sound Generator -->
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'success') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.08);
+                osc.frequency.setValueAtTime(900, audioCtx.currentTime + 0.16);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.35);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.25);
+            } else if (type === 'level-up') {
+                // Chord
+                const now = audioCtx.currentTime;
+                [440, 554.37, 659.25, 880].forEach((freq, idx) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.frequency.setValueAtTime(freq, now + idx * 0.05);
+                    g.gain.setValueAtTime(0.1, now + idx * 0.05);
+                    g.gain.linearRampToValueAtTime(0.01, now + 0.5);
+                    o.start(now + idx * 0.05);
+                    o.stop(now + 0.5);
+                });
+            }
+        }
+    </script>
+
+    <!-- Header navigation -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-gradient-to-tr from-cyan-500 to-indigo-600 rounded-lg shadow-lg shadow-cyan-500/20">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="heading-font text-lg md:text-xl font-bold bg-gradient-to-r from-cyan-400 to-indigo-300 bg-clip-text text-transparent">
+                        ถอดรหัสวิศวกรอนาคต
+                    </h1>
+                    <p class="text-xs text-slate-400">ค้นหาคำตอบ & วางเส้นทางอาชีพวิศวะที่ใช่ด้วยตัวเอง</p>
+                </div>
+            </div>
+            
+            <nav class="flex bg-slate-950 p-1 rounded-full border border-slate-800">
+                <button onclick="switchTab('explore')" id="btn-explore" class="tab-btn px-4 py-1.5 text-xs md:text-sm rounded-full font-medium transition-all text-white bg-slate-800 shadow-sm">
+                    1. สำรวจสาขา
+                </button>
+                <button onclick="switchTab('missions')" id="btn-missions" class="tab-btn px-4 py-1.5 text-xs md:text-sm rounded-full font-medium transition-all text-slate-400 hover:text-white">
+                    2. พิชิตภารกิจ
+                </button>
+                <button onclick="switchTab('matcher')" id="btn-matcher" class="tab-btn px-4 py-1.5 text-xs md:text-sm rounded-full font-medium transition-all text-slate-400 hover:text-white">
+                    3. ประเมินตัวเอง
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 md:py-10">
+        
+        <!-- ==================== TAB 1: EXPLORE LAB ==================== -->
+        <section id="tab-content-explore" class="tab-section block space-y-8 animate-fade-in">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="px-3 py-1 bg-cyan-500/10 text-cyan-400 rounded-full text-xs font-semibold uppercase tracking-wider border border-cyan-500/20">Phase 1: Explore Lab</span>
+                <h2 class="heading-font text-2xl md:text-3xl font-bold text-white">ห้องปฏิบัติการจำลองสาขาวิศวกรรม</h2>
+                <p class="text-slate-400 text-sm md:text-base">กดเลือกสาขาวิศวกรรมด้านล่างเพื่อศึกษาวิชาที่เรียน นวัตกรรมที่สร้าง และเจาะลึกอาชีพที่คุณสามารถทำได้จริงเมื่อเรียนจบ</p>
+            </div>
+
+            <!-- Engineering Branches Grid Layout -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Branches Cards dynamic rendering target -->
+                <div id="branch-cards-container" class="col-span-full grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            </div>
+
+            <!-- Detail Modal/Panel -->
+            <div id="detail-panel" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden transition-all duration-300">
+                <!-- Decorative background elements -->
+                <div class="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    <div class="lg:w-1/3 w-full space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span id="detail-emoji" class="text-4xl p-2 bg-slate-800 rounded-xl">💻</span>
+                            <div>
+                                <span id="detail-tag" class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded">COM</span>
+                                <h3 id="detail-title" class="heading-font text-xl md:text-2xl font-bold text-white">วิศวกรรมคอมพิวเตอร์</h3>
+                            </div>
+                        </div>
+                        <p id="detail-desc" class="text-slate-300 text-sm leading-relaxed">คำอธิบายสาขา...</p>
+                        
+                        <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
+                            <h4 class="text-xs font-bold text-indigo-400 uppercase mb-2">⚡ จุดเน้นการเรียนรู้</h4>
+                            <ul id="detail-study" class="space-y-1.5 text-xs text-slate-400">
+                                <li>- การพัฒนา Software และแอปพลิเคชัน</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Jobs details -->
+                    <div class="lg:w-2/3 w-full space-y-4">
+                        <h4 class="heading-font text-lg font-bold text-white flex items-center gap-2">
+                            <span>💼</span> อาชีพเด่นหลังเรียนจบ (คลิกเพื่อดูรายละเอียดเชิงลึก)
+                        </h4>
+                        
+                        <div id="jobs-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Job cards injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 2: MISSIONS GAME ==================== -->
+        <section id="tab-content-missions" class="tab-section hidden space-y-8 animate-fade-in">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-xs font-semibold uppercase tracking-wider border border-emerald-500/20">Phase 2: Mission Central</span>
+                <h2 class="heading-font text-2xl md:text-3xl font-bold text-white">ภารกิจกู้ชีพนครวิศวะ</h2>
+                <p class="text-slate-400 text-sm md:text-base">สวมบทบาทเป็น "หัวหน้าศูนย์บรรเทาภัย" ช่วยเมืองวิศวะแก้วิกฤตการณ์ต่างๆ โดยเลือกส่งวิศวกรที่ถูกต้องไปทำภารกิจ!</p>
+            </div>
+
+            <!-- Score and Tracker Dashboard -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 max-w-3xl mx-auto flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="text-sm">
+                        <span class="text-slate-400">ระดับความสำเร็จ:</span>
+                        <div class="text-lg font-bold text-emerald-400" id="mission-progress-text">0 / 6 ภารกิจเสร็จสิ้น</div>
+                    </div>
+                </div>
+                <!-- Progress Bar -->
+                <div class="flex-grow max-w-xs bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-800">
+                    <div id="mission-progress-bar" class="bg-gradient-to-r from-emerald-500 to-cyan-400 h-full w-0 transition-all duration-500"></div>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs text-slate-400 block">คะแนนเกียรติยศ</span>
+                    <span class="text-xl font-black text-amber-400" id="mission-score">0 XP</span>
+                </div>
+            </div>
+
+            <!-- Current Mission Card -->
+            <div id="mission-card" class="max-w-3xl mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-xs font-bold uppercase px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full" id="mission-level">ภารกิจระดับ 1</span>
+                    <span class="text-xs text-slate-400" id="mission-id">รหัสสถานการณ์: #CIV-01</span>
+                </div>
+
+                <div class="space-y-4 mb-8">
+                    <h3 class="heading-font text-xl md:text-2xl font-bold text-white" id="mission-title">สะพานคนข้ามข้ามแม่น้ำหลักของเมืองร้าว!</h3>
+                    <p class="text-slate-300 text-sm md:text-base leading-relaxed" id="mission-desc">
+                        เกิดรอยร้าวขนาดใหญ่บริเวณคานรับน้ำหนักของสะพานข้ามแม่น้ำหลัก คาดว่าเกิดจากการทรุดตัวของชั้นดินใต้แม่น้ำ เสี่ยงต่อการพังทลายอย่างมาก!
+                    </p>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest">เลือกวิศวกรผู้เชี่ยวชาญเข้าแก้ไขปัญหา:</label>
+                    <div id="mission-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- Options inject here -->
+                    </div>
+                </div>
+
+                <!-- Feedback Area -->
+                <div id="mission-feedback" class="mt-6 p-4 rounded-xl hidden transition-all">
+                    <!-- Text injected here -->
+                </div>
+            </div>
+
+            <!-- Congratulations Screen (Initially hidden) -->
+            <div id="missions-completed-panel" class="hidden max-w-md mx-auto text-center space-y-6 bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
+                <div class="text-6xl animate-bounce">🏆</div>
+                <h3 class="heading-font text-2xl font-bold text-amber-400">สุดยอดหัวหน้าศูนย์บรรเทาภัย!</h3>
+                <p class="text-slate-300 text-sm">คุณสามารถส่งทีมวิศวกรไปคลี่คลายปัญหาหลักของนครวิศวะได้จนสงบสุขครบทุกภารกิจ ประชาชนมีความสุขและปลอดภัย!</p>
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800">
+                    <span class="text-xs text-slate-400 block uppercase">คะแนนเกียรติยศสูงสุด</span>
+                    <span class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-200">1,200 XP</span>
+                </div>
+                <button onclick="restartMissions()" class="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-slate-950 font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/10">
+                    เล่นใหม่อีกครั้ง
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: CAREER MATCHER ==================== -->
+        <section id="tab-content-matcher" class="tab-section hidden space-y-8 animate-fade-in">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 rounded-full text-xs font-semibold uppercase tracking-wider border border-indigo-500/20">Phase 3: Career Matcher</span>
+                <h2 class="heading-font text-2xl md:text-3xl font-bold text-white">แบบประเมินค้นหา "วิศวะ" ที่เหมาะกับคุณ</h2>
+                <p class="text-slate-400 text-sm md:text-base">ตอบคำถาม 5 ข้อเกี่ยวกับไลฟ์สไตล์และความคิดสร้างสรรค์ของคุณ เพื่อค้นหาว่าสาขาวิศวกรรมใดตอบโจทย์ชีวิตและเป้าหมายคุณมากที่สุด</p>
+            </div>
+
+            <!-- Quiz Play Panel -->
+            <div id="quiz-card" class="max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl relative">
+                <!-- Progress indicator -->
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-xs text-slate-400" id="quiz-progress-text">คำถามที่ 1 จาก 5</span>
+                    <div class="w-32 bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+                        <div id="quiz-progress-bar" class="bg-indigo-500 h-full w-1/5 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <!-- Question -->
+                <div class="mb-8">
+                    <span class="text-3xl block mb-2" id="quiz-icon">🛠️</span>
+                    <h3 class="heading-font text-xl font-bold text-white leading-snug" id="quiz-question">ในวันว่างๆ คุณชอบใช้เวลาไปกับกิจกรรมประเภทไหนมากที่สุด?</h3>
+                </div>
+
+                <!-- Choices Container -->
+                <div id="quiz-choices" class="space-y-3">
+                    <!-- Choices injected here -->
+                </div>
+            </div>
+
+            <!-- Result Panel -->
+            <div id="quiz-result" class="hidden max-w-2xl mx-auto bg-gradient-to-b from-indigo-950/40 to-slate-950 border border-indigo-500/30 rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
+                <!-- Light glow -->
+                <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="text-center space-y-6 relative">
+                    <div class="inline-block p-4 bg-indigo-500/10 border border-indigo-500/30 rounded-full animate-pulse">
+                        <span class="text-5xl" id="res-emoji">🚀</span>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <span class="text-xs uppercase tracking-widest text-indigo-400 font-bold block">วิศวะสาขาที่แมตช์ที่สุดคือ</span>
+                        <h3 class="heading-font text-2xl md:text-3xl font-extrabold text-white" id="res-branch">วิศวกรรมคอมพิวเตอร์</h3>
+                        <p class="text-slate-300 text-sm max-w-md mx-auto" id="res-desc">
+                            คุณชอบแก้ไขปัญหาเชิงตรรกะ มีใจรักในการสร้างสรรค์สิ่งเสมือนจริง และตื่นเต้นกับเทคโนโลยีอนาคต
+                        </p>
+                    </div>
+
+                    <!-- Recommended Job List -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 text-left max-w-md mx-auto space-y-3">
+                        <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wider">🌟 เส้นทางอาชีพหลักที่พร้อมต้อนรับคุณ:</h4>
+                        <ul class="space-y-2 text-xs text-slate-300" id="res-jobs-list">
+                            <!-- Injected -->
+                        </ul>
+                    </div>
+
+                    <!-- Certificate blueprint style footer -->
+                    <div class="pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+                        <span>#พิมพ์เขียววิศวกรอนาคต</span>
+                        <button onclick="restartQuiz()" class="text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 4H15"></path></svg>
+                            ทำแบบทดสอบใหม่
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-900 bg-slate-950/80 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>© 2026 เวิร์กชอปแนะแนววิศวกรรมศาสตร์เชิงปฏิสัมพันธ์. ปรับแต่งเพื่อส่งเสริมระบบ Active Learning ค้นหาเป้าหมายอนาคตด้วยตัวคุณเอง</p>
+        </div>
+    </footer>
+
+    <!-- Interactive Data & Script Core Logic -->
+    <script>
+        // 1. DATA: Engineering Branches & Occupations
+        const branches = [
+            {
+                id: "comp",
+                title: "วิศวกรรมคอมพิวเตอร์ & ซอฟต์แวร์",
+                emoji: "💻",
+                tag: "COMP",
+                desc: "สร้าง พัฒนา และดูแลระบบคอมพิวเตอร์ทั้ง Software (โปรแกรม), Hardware (ชิ้นส่วนและวงจร) และ Network (เครือข่ายความปลอดภัย)",
+                study: [
+                    "การเขียนโปรแกรมและการออกแบบสถาปัตยกรรมซอฟต์แวร์",
+                    "ระบบความปลอดภัยไซเบอร์ (Cybersecurity)",
+                    "ปัญญาประดิษฐ์และการเรียนรู้ของเครื่อง (AI & Machine Learning)"
+                ],
+                jobs: [
+                    {
+                        title: "Software Engineer (วิศวกรซอฟต์แวร์)",
+                        desc: "พัฒนา ออกแบบ และดูแลแอปพลิเคชันหรือโปรแกรมระบบให้ตอบสนองผู้ใช้งาน",
+                        skills: "ทักษะ Coding, การออกแบบสถาปัตยกรรมโค้ด, Logic เชิงลึก",
+                        salary: "30,000 - 150,000+ บาท"
+                    },
+                    {
+                        title: "Data Engineer (วิศวกรข้อมูล)",
+                        desc: "สร้างระบบรวบรวม จัดการ และทำความสะอาดข้อมูลขนาดใหญ่ส่งให้ทีมนักวิเคราะห์นำไปใช้งานต่อ",
+                        skills: "SQL, Cloud Computing, Python, Data Warehouse",
+                        salary: "35,000 - 120,000+ บาท"
+                    }
+                ]
+            },
+            {
+                id: "ind",
+                title: "วิศวกรรมอุตสาหการ (IE)",
+                emoji: "⚙️",
+                tag: "IE",
+                desc: "นักวิเคราะห์และจัดระบบของโรงงานและองค์กร เน้นเรื่องการเพิ่มผลผลิต ลดเวลา ลดขั้นตอน และบริหารงบประมาณให้คุ้มค่าที่สุด",
+                study: [
+                    "การวิเคราะห์ต้นทุนและเศรษฐศาสตร์วิศวกรรม",
+                    "การควบคุมและประกันคุณภาพ (QA/QC)",
+                    "ห่วงโซ่อุปทานและโลจิสติกส์อุตสาหกรรม"
+                ],
+                jobs: [
+                    {
+                        title: "Process Engineer (วิศวกรกระบวนการผลิต)",
+                        desc: "จัดระเบียบสายการผลิตรถยนต์หรือสินค้าต่างๆ ลดการทำงานซ้ำซ้อนและประหยัดงบโรงงาน",
+                        skills: "การจับเวลาทำงาน (Time Study), ลีน (Lean), ซิกส์ ซิกมา (Six Sigma)",
+                        salary: "25,000 - 75,000+ บาท"
+                    },
+                    {
+                        title: "Supply Chain / Logistics Analyst",
+                        desc: "บริหารจัดการคลังสินค้า วางแผนจัดหาสินค้าจากต้นน้ำถึงปลายน้ำให้ประหยัดที่สุด",
+                        skills: "การจัดการสินค้าคงคลัง, คาดการณ์อุปสงค์, วางระบบการขนส่ง",
+                        salary: "28,000 - 90,000+ บาท"
+                    }
+                ]
+            },
+            {
+                id: "mech",
+                title: "วิศวกรรมเครื่องกล",
+                emoji: "🏎️",
+                tag: "ME",
+                desc: "ออกแบบและซ่อมบำรุงระบบกลไกและการใช้ความร้อน/แรงดันไฟฟ้าในโรงงาน เครื่องจักร ยานยนต์ ระบบสั่นสะเทือน พลังงานลม น้ำ ไอน้ำ",
+                study: [
+                    "กลศาสตร์และการออกแบบเครื่องยนต์กลไก",
+                    "ระบบเทอร์โมไดนามิกส์และพลังงานความร้อน",
+                    "การเขียนแบบ 3D และโครงสร้างวัสดุศาตร์"
+                ],
+                jobs: [
+                    {
+                        title: "Mechanical / Automotive Engineer",
+                        desc: "ผู้ออกแบบกลไก ชิ้นส่วนภายในรถยนต์ ระบบขับเคลื่อนไฟฟ้า (EV) และระบบไฮดรอลิกต่างๆ",
+                        skills: "การคำนวณความเค้น, เขียนแบบ CAD (SolidWorks), วิศวกรรมวัสดุ",
+                        salary: "25,000 - 85,000+ บาท"
+                    },
+                    {
+                        title: "HVAC Engineer (วิศวกรระบบปรับอากาศ)",
+                        desc: "ผู้ควบคุมระบบทำความเย็น ระบบปรับอากาศ และการหมุนเวียนอากาศในอาคารสำนักงานและโรงพยาบาล",
+                        skills: "ความร้อนและการถ่ายเทความร้อน, สุขาภิบาลและการดับเพลิง",
+                        salary: "24,000 - 70,000+ บาท"
+                    }
+                ]
+            },
+            {
+                id: "elec",
+                title: "วิศวกรรมไฟฟ้า",
+                emoji: "⚡",
+                tag: "EE",
+                desc: "ดูแลระบบพลังงานไฟฟ้าระดับสูง ทั้งโรงไฟฟ้า ระบบสายส่ง อาคาร รวมถึงระบบอัตโนมัติ หุ่นยนต์อัจฉริยะในอุตสาหกรรม",
+                study: [
+                    "ไฟฟ้ากระแสสลับและไฟฟ้ากระแสตรงกำลังสูง",
+                    "ระบบการควบคุมอัตโนมัติ (Control Systems)",
+                    "เครื่องวัดและการสื่อสารด้วยคลื่นวิทยุ"
+                ],
+                jobs: [
+                    {
+                        title: "Power System Engineer (วิศวกรไฟฟ้ากำลัง)",
+                        desc: "ดูแลการออกแบบการจ่ายไฟจากโรงงานหลักไปยังชุมชน ตรวจเช็กระบบหม้อแปลงไฟฟ้าแรงสูง",
+                        skills: "วิศวกรรมระบบจ่ายไฟ, มาตรฐานความปลอดภัยงานไฟฟ้า, การออกแบบวงจร",
+                        salary: "26,000 - 90,000+ บาท"
+                    },
+                    {
+                        title: "Automation & Robotics Engineer",
+                        desc: "ออกแบบ ติดตั้งระบบหุ่นยนต์ที่ใช้วงจรอิเล็กทรอนิกส์ขั้นสูง คุมแขนกลหยิบจับสิ่งของ",
+                        skills: "การโปรแกรม PLC, เซนเซอร์อุตสาหกรรม, ระบบควบคุมอัตโนมัติ",
+                        salary: "30,000 - 100,000+ บาท"
+                    }
+                ]
+            },
+            {
+                id: "civil",
+                title: "วิศวกรรมโยธา",
+                emoji: "🏗️",
+                tag: "CE",
+                desc: "สร้างสถาปัตยกรรมหลักของโลก ตั้งแต่ตึกระฟ้า สะพาน เขื่อน ทางด่วน คอยคำนวณและควบคุมความปลอดภัยก่อนเริ่มก่อสร้าง",
+                study: [
+                    "วิเคราะห์โครงสร้างและการรับน้ำหนักของสิ่งก่อสร้าง",
+                    "ปฐพีกลศาสตร์และการสำรวจพื้นดิน",
+                    "การบริหารจัดการความปลอดภัยโครงการก่อสร้าง"
+                ],
+                jobs: [
+                    {
+                        title: "Structural Engineer (วิศวกรโครงสร้าง)",
+                        desc: "คำนวณการใส่คอนกรีตและเหล็กในตึกสูง เพื่อให้ทนทานต่อพายุแผ่นดินไหว ลม และสภาพภูมิอากาศแปรปรวน",
+                        skills: "วิเคราะห์แรงกด, ซอฟต์แวร์ ETABS/SAP2000, ฟิสิกส์วิศวกรรม",
+                        salary: "24,000 - 80,000+ บาท"
+                    },
+                    {
+                        title: "Site / Project Engineer (วิศวกรควบคุมงาน)",
+                        desc: "ผู้นำทีมคนงาน ดูแลรักษาคุณภาพการเทคอนกรีต ท่อส่งน้ำ โครงสร้างที่ไซท์งานจริงให้ปลอดภัยและเสร็จตามกำหนด",
+                        skills: "ความปลอดภัยหน้างาน, การวางกำหนดการ, ตรวจสอบมาตรฐานวัสดุ",
+                        salary: "23,000 - 75,000+ บาท"
+                    }
+                ]
+            },
+            {
+                id: "chem",
+                title: "วิศวกรรมเคมี",
+                emoji: "🧪",
+                tag: "ChE",
+                desc: "เปลี่ยนวัตถุดิบทางเคมี สารตั้งต้น ให้เป็นของใช้ พลาสติก พลังงานน้ำมัน ยารักษาโรค ผ่านกระบวนการอุตสาหกรรมขนาดใหญ่",
+                study: [
+                    "ปฏิกิริยาเคมีและการออกแบบถังปฏิกรณ์",
+                    "การขนถ่ายมวลสารและการให้ความร้อนระดับอุตสาหกรรม",
+                    "ความปลอดภัยในระบบกระบวนการผลิตสารเคมี"
+                ],
+                jobs: [
+                    {
+                        title: "Process Engineer in Petrochemicals",
+                        desc: "วิศวกรกระบวนการคุมความดันและระดับความร้อนในหอกลั่นน้ำมันดิบ ปิโตรเลียม หรือโรงงานทำเม็ดพลาสติก",
+                        skills: "การจำลองกระบวนการ (HYSYS), เคมีอินทรีย์, ระบบไหลเวียนสารเคมี",
+                        salary: "30,000 - 120,000+ บาท"
+                    },
+                    {
+                        title: "R&D / Product Development Engineer",
+                        desc: "คิดค้นสูตรทางเคมีเพื่อใช้ในอุตสาหกรรมอุปโภคบริโภค เช่น แชมพู อาหารสำเร็จรูป หรือยาแก้แพ้ชนิดใหม่",
+                        skills: "การทดสอบแล็บ, นาโนเทคโนโลยี, กระบวนการตกผลึกของเหลว",
+                        salary: "28,000 - 85,000+ บาท"
+                    }
+                ]
+            },
+            {
+                id: "env",
+                title: "วิศวกรรมสิ่งแวดล้อม",
+                emoji: "🌳",
+                tag: "ENV",
+                desc: "แก้วิกฤตโลกร้อน มลพิษทางอากาศ ขยะพลาสติก และการบำบัดน้ำเสียจากอุตสาหกรรม เพื่อสร้างสังคมที่มีการพัฒนาอย่างยั่งยืน",
+                study: [
+                    "การบำบัดน้ำเสียและการผลิตน้ำสะอาดบริโภค",
+                    "การตรวจวัดและควบคุมมลพิษทางอากาศ (PM 2.5)",
+                    "การประเมินคาร์บอนฟุตพริ้นท์และการประเมินผลกระทบสิ่งแวดล้อม (EIA)"
+                ],
+                jobs: [
+                    {
+                        title: "Environmental Consultant (ที่ปรึกษาด้านสิ่งแวดล้อม)",
+                        desc: "ตรวจวัดวิเคราะห์ค่ามลพิษ เขียนรายงานผลกระทบสิ่งแวดล้อม (EIA) เสนอภาครัฐก่อนอนุมัติโครงการก่อสร้าง",
+                        skills: "กฎหมายสิ่งแวดล้อม, ตรวจวิเคราะห์สารปนเปื้อน, การสื่อสารสาธารณะ",
+                        salary: "25,000 - 70,000+ บาท"
+                    },
+                    {
+                        title: "Water Treatment Design Engineer",
+                        desc: "ผู้ออกแบบระบบหมุนเวียนบำบัดน้ำเสียจากโรงงานนิคมให้กลายเป็นน้ำสะอาดกลับมาใช้ใหม่ได้อย่างยั่งยืน",
+                        skills: "ชีวเคมี, ระบบท่อส่งและการตกตะกอน, การกรองเมมเบรน",
+                        salary: "24,000 - 75,000+ บาท"
+                    }
+                ]
+            },
+            {
+                id: "biomed",
+                title: "วิศวกรรมชีวการแพทย์",
+                emoji: "🧬",
+                tag: "BME",
+                desc: "สาขาที่ผสานระหว่างฟิสิกส์การแพทย์ กายวิภาค และทักษะวิศวะเข้าด้วยกันเพื่อสร้างหรือบำรุงรักษาอุปกรณ์แพทย์และอวัยวะเทียม",
+                study: [
+                    "ชีววิทยาการแพทย์และระบบอวัยวะมนุษย์",
+                    "เครื่องมือแพทย์ อุปกรณ์เลเซอร์ และระบบเก็บภาพ (MRI, CT Scan)",
+                    "การออกแบบวัสดุฝังเข้าสู่ร่างกายมนุษย์ (Biomaterials)"
+                ],
+                jobs: [
+                    {
+                        title: "Clinical / Medical Device Engineer",
+                        desc: "ดูแล ปรับจูนเครื่องสแกนสมอง (MRI) หรือเครื่องพยุงชีพในห้อง ICU ของโรงพยาบาลใหญ่ๆ ให้ทำงานแม่นยำ 100%",
+                        skills: "วิศวกรรมอิเล็กทรอนิกส์การแพทย์, ตรวจสอบมาตรฐานความปลอดภัย ISO 13485",
+                        salary: "26,000 - 80,000+ บาท"
+                    },
+                    {
+                        title: "Prosthetics Specialist (ผู้ออกแบบอวัยวะเทียม)",
+                        desc: "ออกแบบขาเทียม แขนเทียม หรือระบบกระดูกสะโพกเทียมที่ทนทานและเข้ากับสรีระกล้ามเนื้อของผู้พิการหรือคนชรา",
+                        skills: "การจำลองแรงเค้นทางชีวกลศาสตร์ (Biomechanics), เครื่องพิมพ์ 3D",
+                        salary: "28,000 - 90,000+ บาท"
+                    }
+                ]
+            }
+        ];
+
+        // 2. DATA: Missions (Game Phase)
+        const missions = [
+            {
+                id: "MS-01",
+                level: "ภารกิจระดับ: สบายมาก",
+                title: "แอปพลิเคชันแบงก์กิ้งถูกคุกคามโดยกลุ่มแฮกเกอร์ฝีมือดี!",
+                desc: "ธนาคารหลักของเมืองวิศวะเกือบทำข้อมูลการทำธุรกรรมของประชาชนรั่วไหลหลังถูกโจมตีระบบรักษาความปลอดภัย ต้องส่งคนไปตรวจสอบ ดักจับ และเขียนโปรแกรมคุ้มครองโครงข่ายความปลอดภัยแบบด่วนที่สุด!",
+                correctBranch: "comp",
+                expl: "ถูกต้อง! เพราะวิศวกรคอมพิวเตอร์และซอฟต์แวร์มีความชำนาญเรื่องการตั้งโครงสร้างเครือข่ายปลอดภัย (Cybersecurity) และเขียนโค้ดซอฟต์แวร์ที่มีความหนาแน่นแข็งแรงป้องกันแฮกเกอร์ได้สมบูรณ์แบบ!",
+                options: [
+                    { id: "comp", label: "💻 ส่งวิศวกรคอมพิวเตอร์" },
+                    { id: "elec", label: "⚡ ส่งวิศวกรไฟฟ้ากำลัง" },
+                    { id: "civil", label: "🏗️ ส่งวิศวกรโยธา" },
+                    { id: "env", label: "🌳 ส่งวิศวกรสิ่งแวดล้อม" }
+                ]
+            },
+            {
+                id: "MS-02",
+                level: "ภารกิจระดับ: ปานกลาง",
+                title: "โรงงานผลิตไอศกรีมมีอัตราการทิ้งขยะเกลื่อนและกระบวนการล่าช้า!",
+                desc: "โรงงานอุตสาหกรรมในเมืองพึ่งย้ายเครื่องจักรรูปแบบเดิมมาและพบว่าคนงานกับสายพานทำงานทับซ้อนกัน ข้าวของถูกพังจากการกองรวมกันและส่งสินค้าไม่ทันเวลา ต้นทุนพุ่งสูงขึ้น 40%!",
+                correctBranch: "ind",
+                expl: "สุดยอดการคิดวิเคราะห์! วิศวกรอุตสาหการ (IE) คือวิศวกรด้านประสิทธิภาพสูงสุดที่คอยจัดระเบียบคนและเครื่องจักร วางกระบวนการ (Process Optimization) และกำจัดความสูญเสียในสายงาน!",
+                options: [
+                    { id: "chem", label: "🧪 ส่งวิศวกรเคมี" },
+                    { id: "ind", label: "⚙️ ส่งวิศวกรอุตสาหการ (IE)" },
+                    { id: "mech", label: "🏎️ ส่งวิศวกรเครื่องกล" },
+                    { id: "biomed", label: "🧬 ส่งวิศวกรชีวการแพทย์" }
+                ]
+            },
+            {
+                id: "MS-03",
+                level: "ภารกิจระดับ: อันตราย!",
+                title: "หม้อต้มไอน้ำขนาดยักษ์ในโรงไฟฟ้าอุณหภูมิพุ่งทะลุจุดเดือดควบคุมยาก!",
+                desc: "เกิดปัญหาร้ายแรงระดับระบบกลไกในโรงไฟฟ้านครวิศวะ วาล์วปรับระดับแรงดันแก๊สความดันสูงค้างและหม้อต้มเกิดการสั่นสะเทือนทางฟิสิกส์ผิดปกติ อาจเกิดการระเบิดครั้งใหญ่ออกมาในรูปแรงกระแทก!",
+                correctBranch: "mech",
+                expl: "ปลอดภัยเรียบร้อย! วิศวกรเครื่องกลมีความรู้ด้าน Thermodynamic ความดัน กลศาสตร์แรงเหวี่ยงหนีศูนย์ และท่อส่งพลังงานความร้อนเข้าจัดการควบคุมหม้อต้มได้อย่างปลอดภัยทันท่วงที!",
+                options: [
+                    { id: "civil", label: "🏗️ ส่งวิศวกรโยธา" },
+                    { id: "comp", label: "💻 ส่งวิศวกรคอมพิวเตอร์" },
+                    { id: "mech", label: "🏎️ ส่งวิศวกรเครื่องกล" },
+                    { id: "env", label: "🌳 ส่งวิศวกรสิ่งแวดล้อม" }
+                ]
+            },
+            {
+                id: "MS-04",
+                level: "ภารกิจระดับ: ปานกลาง",
+                title: "คนในเมืองสูดฝุ่นควันและน้ำประปามีตะกอนส่งกลิ่นเน่าเหม็น!",
+                desc: "ชุมชนริมฝั่งแม่น้ำกำลังรับกรรมจากทิศทางฝุ่นละออง PM 2.5 ปนเปื้อนเคมีลอยข้ามฝั่งมา และท่อบำบัดน้ำใต้แม่น้ำรั่ว สารปนเปื้อนอินทรีย์ขยะไหลทะลักสู่น้ำดื่มส่วนกลาง!",
+                correctBranch: "env",
+                expl: "ยอดเยี่ยม! วิศวกรสิ่งแวดล้อมสามารถวางระบบฟอกบำบัดน้ำเสีย ติดตั้งเครื่องดักแยกตะกอน ปรับคุณภาพน้ำ ตลอดจนวิเคราะห์จำลองกระแสลมหาแหล่งปะทุของฝุ่นพิษได้อย่างเฉียบคม!",
+                options: [
+                    { id: "env", label: "🌳 ส่งวิศวกรสิ่งแวดล้อม" },
+                    { id: "biomed", label: "🧬 ส่งวิศวกรชีวการแพทย์" },
+                    { id: "ind", label: "⚙️ ส่งวิศวกรอุตสาหการ (IE)" },
+                    { id: "elec", label: "⚡ ส่งวิศวกรไฟฟ้า" }
+                ]
+            },
+            {
+                id: "MS-05",
+                level: "ภารกิจระดับ: วิกฤตการณ์สูงสุด",
+                title: "วิกฤตตึกระฟ้าใจกลางเมืองเริ่มเอนเอียงเพราะแรงลมมรสุมพัดโหมกระหน่ำ!",
+                desc: "ตึกความสูง 60 ชั้นเกิดปัญหามีการโยกตัวโคลงเคลงเกินขีดจำกัดปลอดภัย และฐานรองตึกที่เป็นชั้นทรายหนาแน่นต่ำเกิดอุ้มน้ำจนเริ่มเกิดความทรุดตัวอย่างมีนัยสำคัญ!",
+                correctBranch: "civil",
+                expl: "ปลอดภัยแล้ว! วิศวกรโยธาเชี่ยวชาญด้านกลศาสตร์ปฐพี (Soil Mechanics) และโครงสร้างตึกสูง เข้าประเมินระดับแรงบิด ลมพายุ และสอดแทรกคอนกรีตฐานเพื่อความมั่นคงของชีวิตประชากรนับแสน!",
+                options: [
+                    { id: "comp", label: "💻 ส่งวิศวกรคอมพิวเตอร์" },
+                    { id: "civil", label: "🏗️ ส่งวิศวกรโยธา" },
+                    { id: "chem", label: "🧪 ส่งวิศวกรเคมี" },
+                    { id: "ind", label: "⚙️ ส่งวิศวกรอุตสาหการ" }
+                ]
+            },
+            {
+                id: "MS-06",
+                level: "ภารกิจระดับ: ซับซ้อนสูง",
+                title: "เครื่องสแกนสมอง MRI และเตียงผ่าตัดห้องปลอดเชื้ออัจฉริยะไม่พร้อมทำงาน!",
+                desc: "โรงพยาบาลจังหวัดมีเคสฉุกเฉินผู้ป่วยโรคหลอดเลือดสมองด่วน แต่ระบบเชื่อมต่อหน้าสัมผัสไฟฟ้าและเลเซอร์คาร์บอนขัดข้อง ทำงานล่าช้าไป 15 นาที ระบบชีพจรผู้ป่วยเกิดวิกฤต!",
+                correctBranch: "biomed",
+                expl: "เยี่ยมมาก! วิศวกรชีวการแพทย์ (Biomedical) มีความสามารถบำรุงรักษาเชิงรุก และแก้ไขอุปกรณ์ทางวิทยาศาสตร์ชีวะระดับสูงสุดได้อย่างถูกต้องโดยไม่เกิดความผิดพลาดใดๆ!",
+                options: [
+                    { id: "biomed", label: "🧬 ส่งวิศวกรชีวการแพทย์" },
+                    { id: "mech", label: "🏎️ ส่งวิศวกรเครื่องกล" },
+                    { id: "elec", label: "⚡ ส่งวิศวกรไฟฟ้ากำลัง" },
+                    { id: "chem", label: "🧪 ส่งวิศวกรเคมี" }
+                ]
+            }
+        ];
+
+        // 3. DATA: Quiz (Career Matcher)
+        const quizQuestions = [
+            {
+                id: 1,
+                emoji: "🎨",
+                question: "หากพูดถึงกิจกรรมที่คุณถนัดหรือทำแล้วสนุกที่สุดในห้องเรียนคือข้อใด?",
+                choices: [
+                    { text: "คำนวณสูตรฟิสิกส์ คิดวิเคราะห์โครงสร้างสะพานหรือโมเดลตึกจำลอง", value: "civil" },
+                    { text: "เขียนโค้ดสั้นๆ ออกแบบ Logic ของการเดินตามเงื่อนไขของคอมพิวเตอร์", value: "comp" },
+                    { text: "ทำแล็บวิทยาศาตร์ สังเกตการละลายเคมี การกรองแยกของเหลวเปลี่ยนสี", value: "chem" },
+                    { text: "จัดระบบวางกระบวนการกลุ่ม วางแผนเวลาให้คนอื่นทำงานได้ง่ายและเร็วสุด", value: "ind" }
+                ]
+            },
+            {
+                id: 2,
+                emoji: "🔍",
+                question: "ในชีวิตประวันเมื่อคุณเดินผ่านตึกสิ่งปลูกสร้างขนาดใหญ่ คุณมักสังเกตเห็นอะไรก่อน?",
+                choices: [
+                    { text: "ตัวอาคาร ทรงเสา คานรองรับน้ำหนักหนาๆ และความอลังการของโครงสร้าง", value: "civil" },
+                    { text: "เทคโนโลยีแอปพลิเคชัน คิวอาร์โค้ดสแกน และหน้าจอดิจิทัลทั่วห้าง", value: "comp" },
+                    { text: "ระบบแอร์ ความสั่นสะเทือนของคอมเพรสเซอร์ บันไดเลื่อนและลิฟต์โดยสาร", value: "mech" },
+                    { text: "ระบบบำบัดน้ำเสียรอบข้างและถังแยกสารกำจัดมลพิษ", value: "env" }
+                ]
+            },
+            {
+                id: 3,
+                emoji: "💡",
+                question: "ปัญหาระดับโลกเรื่องใดที่คุณอยากร่วมแก้ให้มากที่สุด?",
+                choices: [
+                    { text: "มลพิษฝุ่นควัน PM 2.5 และการลดก๊าซคาร์บอนฟุตพริ้นท์เพื่อโลกสะอาด", value: "env" },
+                    { text: "การวิจัยและประดิษฐ์อวัยวะหรือแขนเทียมอัจฉริยะช่วยเหลือผู้พิการ", value: "biomed" },
+                    { text: "ระบบส่งถ่ายพลังงานสะอาด โซลาร์เซลล์ประสิทธิภาพสูง รถยนต์ไฟฟ้า EV", value: "elec" },
+                    { text: "การสร้างปัญญาประดิษฐ์ (AI) เพื่อทำหน้าที่ตรวจจับภัยพิบัติแทนมนุษย์", value: "comp" }
+                ]
+            },
+            {
+                id: 4,
+                emoji: "🚀",
+                question: "ลักษณะการแก้ปัญหาเวลาของใช้ในบ้านเสียหายคือ?",
+                choices: [
+                    { text: "พยายามแกะตัวเครื่องออกดูสายไฟ ขั้ววงจร สลับถ่าน แบตเตอรี่ระบบอิเล็กทรอนิกส์", value: "elec" },
+                    { text: "สังเกตฟันเฟือง ข้อต่อ และส่วนประกอบกลไกภายนอกที่อาจจะขัดสนิม", value: "mech" },
+                    { text: "ดูส่วนประกอบเคมีของกาว วัสดุสังเคราะห์พลาสติกที่ใช้เชื่อมประสานรอยแยก", value: "chem" },
+                    { text: "ประเมินว่าควรซื้อเครื่องใหม่หรือซ่อม เพราะการซ่อมอาจไม่คุ้มเวลาและกำลังที่ใช้", value: "ind" }
+                ]
+            },
+            {
+                id: 5,
+                emoji: "🤖",
+                question: "คุณรู้สึกมีความสุขเมื่อเพื่อนๆ ชื่นชมคุณในเรื่องใด?",
+                choices: [
+                    { text: "เป็นคนที่ทำงานเป็นระบบ แก้ปัญหาภาพรวมได้ดีที่สุด ช่วยวางแผนงานกลุ่มจนผ่านฉลุย", value: "ind" },
+                    { text: "เป็นยอดนัก Coding หรือสร้างสรรค์สิ่งของแบบ Digital ได้เก่งกว่าใคร", value: "comp" },
+                    { text: "เป็นคนที่เข้าใจเรื่องสุขภาพ เทคโนโลยีการแพทย์ เครื่องตรวจระดับชีพจรแบบทันโลก", value: "biomed" },
+                    { text: "เป็นนักคำนวณแบบแม่นยำทางทฤษฎีแรงฟิสิกส์และความปลอดภัย", value: "civil" }
+                ]
+            }
+        ];
+
+        // 4. MAIN STATE & RENDER
+        let currentTab = 'explore';
+        let currentMissionIndex = 0;
+        let score = 0;
+        let completedMissions = 0;
+
+        // Quiz State
+        let quizIndex = 0;
+        let quizAnswers = [];
+
+        // ONLOAD INITIALIZATION
+        window.onload = function() {
+            renderBranches();
+            renderMission();
+            renderQuizQuestion();
+            // Start default detailed view with first branch
+            showBranchDetails('comp');
+        };
+
+        // Tab Navigation
+        function switchTab(tabId) {
+            playSound('click');
+            currentTab = tabId;
+            
+            // Toggle Content
+            document.querySelectorAll('.tab-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-content-${tabId}`).classList.remove('hidden');
+
+            // Toggle Button Styling
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'text-white', 'shadow-sm');
+                btn.classList.add('text-slate-400');
+            });
+            document.getElementById(`btn-${tabId}`).classList.add('bg-slate-800', 'text-white', 'shadow-sm');
+            document.getElementById(`btn-${tabId}`).classList.remove('text-slate-400');
+        }
+
+        // --- TAB 1: BRANCH EXPLORATION ---
+        function renderBranches() {
+            const container = document.getElementById('branch-cards-container');
+            container.innerHTML = '';
+
+            branches.forEach(branch => {
+                const card = document.createElement('button');
+                card.id = `branch-card-${branch.id}`;
+                card.onclick = () => { playSound('click'); showBranchDetails(branch.id); };
+                card.className = "p-4 md:p-6 bg-slate-900 border border-slate-800 hover:border-cyan-500/50 rounded-xl md:rounded-2xl text-left transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-500/5 flex flex-col justify-between group";
+                
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <span class="text-3xl p-2 bg-slate-950 rounded-lg inline-block group-hover:scale-110 transition-transform">${branch.emoji}</span>
+                        <div>
+                            <span class="text-[10px] font-bold tracking-widest text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded">${branch.tag}</span>
+                            <h3 class="heading-font text-sm md:text-base font-bold text-white mt-1.5 group-hover:text-cyan-400 transition-colors">${branch.title}</h3>
+                        </div>
+                    </div>
+                    <span class="text-xs text-cyan-400 font-semibold mt-4 inline-flex items-center gap-1">
+                        คลิกเข้าสู่ห้องเรียน
+                        <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </span>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function showBranchDetails(id) {
+            const branch = branches.find(b => b.id === id);
+            if (!branch) return;
+
+            // Highlight chosen card
+            branches.forEach(b => {
+                const card = document.getElementById(`branch-card-${b.id}`);
+                if (card) {
+                    card.classList.remove('border-cyan-500', 'bg-cyan-950/20');
+                    card.classList.add('border-slate-800', 'bg-slate-900');
+                }
+            });
+            const activeCard = document.getElementById(`branch-card-${id}`);
+            if (activeCard) {
+                activeCard.classList.remove('border-slate-800', 'bg-slate-900');
+                activeCard.classList.add('border-cyan-500', 'bg-cyan-950/20');
+            }
+
+            // Populate details panel
+            document.getElementById('detail-panel').classList.remove('hidden');
+            document.getElementById('detail-emoji').innerText = branch.emoji;
+            document.getElementById('detail-title').innerText = branch.title;
+            document.getElementById('detail-tag').innerText = branch.tag;
+            document.getElementById('detail-desc').innerText = branch.desc;
+
+            // Study points
+            const studyList = document.getElementById('detail-study');
+            studyList.innerHTML = '';
+            branch.study.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = `• ${item}`;
+                studyList.appendChild(li);
+            });
+
+            // Jobs
+            const jobsContainer = document.getElementById('jobs-container');
+            jobsContainer.innerHTML = '';
+            branch.jobs.forEach(job => {
+                const jobCard = document.createElement('div');
+                jobCard.className = "bg-slate-950 border border-slate-800 rounded-xl p-4 hover:border-slate-700 transition-all space-y-2";
+                jobCard.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <h5 class="heading-font text-sm font-bold text-white">${job.title}</h5>
+                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 font-semibold px-2 py-0.5 rounded border border-emerald-500/20">${job.salary}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed">${job.desc}</p>
+                    <div class="text-[11px] pt-1 text-indigo-300">
+                        <strong class="text-slate-400 font-medium">สกิลสำคัญ:</strong> ${job.skills}
+                    </div>
+                `;
+                jobsContainer.appendChild(jobCard);
+            });
+        }
+
+
+        // --- TAB 2: MISSIONS GAME ---
+        function renderMission() {
+            if (currentMissionIndex >= missions.length) {
+                // All missions complete
+                document.getElementById('mission-card').classList.add('hidden');
+                document.getElementById('missions-completed-panel').classList.remove('hidden');
+                playSound('level-up');
+                return;
+            }
+
+            const mission = missions[currentMissionIndex];
+            document.getElementById('mission-level').innerText = mission.level;
+            document.getElementById('mission-id').innerText = `รหัสสถานการณ์: #${mission.id}`;
+            document.getElementById('mission-title').innerText = mission.title;
+            document.getElementById('mission-desc').innerText = mission.desc;
+
+            const optionsContainer = document.getElementById('mission-options');
+            optionsContainer.innerHTML = '';
+
+            mission.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.onclick = () => submitMissionAnswer(opt.id);
+                btn.className = "p-4 text-left border border-slate-800 bg-slate-950 hover:bg-slate-800 hover:border-indigo-500 rounded-xl text-sm font-semibold text-slate-200 transition-all hover:-translate-y-0.5 flex items-center justify-between group";
+                btn.innerHTML = `
+                    <span>${opt.label}</span>
+                    <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 text-indigo-400 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            // Hide feedback
+            const feedback = document.getElementById('mission-feedback');
+            feedback.classList.add('hidden');
+        }
+
+        function submitMissionAnswer(selectedId) {
+            const mission = missions[currentMissionIndex];
+            const feedback = document.getElementById('mission-feedback');
+            feedback.classList.remove('hidden');
+
+            if (selectedId === mission.correctBranch) {
+                playSound('success');
+                score += 200;
+                completedMissions += 1;
+
+                feedback.className = "mt-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 space-y-2";
+                feedback.innerHTML = `
+                    <div class="flex items-center gap-2 font-bold text-sm">
+                        <span>✅ ภารกิจสำเร็จลุล่วง!</span>
+                        <span class="text-xs bg-emerald-400 text-slate-950 px-1.5 py-0.5 rounded">+200 XP</span>
+                    </div>
+                    <p class="text-xs leading-relaxed text-slate-300">${mission.expl}</p>
+                    <button onclick="nextMission()" class="mt-2 text-xs font-bold text-slate-950 bg-emerald-400 hover:bg-emerald-300 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                        ถัดไป
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                `;
+
+                // Update UI state
+                document.getElementById('mission-score').innerText = `${score} XP`;
+                document.getElementById('mission-progress-text').innerText = `${completedMissions} / ${missions.length} ภารกิจเสร็จสิ้น`;
+                const progressPercent = (completedMissions / missions.length) * 100;
+                document.getElementById('mission-progress-bar').style.width = `${progressPercent}%`;
+
+            } else {
+                playSound('error');
+                feedback.className = "mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 space-y-2";
+                feedback.innerHTML = `
+                    <div class="font-bold text-sm flex items-center gap-2">
+                        <span>❌ วิกฤตยังไม่คลี่คลาย!</span>
+                        <span class="text-xs text-red-400">โปรดวิเคราะห์ความสามารถของสาขาอื่นส่งไปอีกครั้ง</span>
+                    </div>
+                    <p class="text-xs text-slate-300">วิศวกรที่คุณส่งไปอาจเชี่ยวชาญทักษะเฉพาะด้านอื่น ลองทบทวนข้อมูลสาขาวิชาในแท็บ 'สำรวจสาขา' แล้วสู้ใหม่อีกครั้ง!</p>
+                `;
+            }
+        }
+
+        function nextMission() {
+            playSound('click');
+            currentMissionIndex++;
+            renderMission();
+        }
+
+        function restartMissions() {
+            playSound('click');
+            currentMissionIndex = 0;
+            score = 0;
+            completedMissions = 0;
+            document.getElementById('mission-score').innerText = `0 XP`;
+            document.getElementById('mission-progress-text').innerText = `0 / 6 ภารกิจเสร็จสิ้น`;
+            document.getElementById('mission-progress-bar').style.width = `0%`;
+            
+            document.getElementById('mission-card').classList.remove('hidden');
+            document.getElementById('missions-completed-panel').classList.add('hidden');
+            renderMission();
+        }
+
+
+        // --- TAB 3: CAREER MATCHER QUIZ ---
+        function renderQuizQuestion() {
+            if (quizIndex >= quizQuestions.length) {
+                calculateQuizResult();
+                return;
+            }
+
+            const q = quizQuestions[quizIndex];
+            document.getElementById('quiz-progress-text').innerText = `คำถามที่ ${quizIndex + 1} จาก ${quizQuestions.length}`;
+            const progressPercent = ((quizIndex + 1) / quizQuestions.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progressPercent}%`;
+
+            document.getElementById('quiz-icon').innerText = q.emoji;
+            document.getElementById('quiz-question').innerText = q.question;
+
+            const choicesContainer = document.getElementById('quiz-choices');
+            choicesContainer.innerHTML = '';
+
+            q.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.onclick = () => submitQuizAnswer(choice.value);
+                btn.className = "w-full text-left p-4 bg-slate-950 border border-slate-800 hover:border-indigo-500 hover:bg-slate-900 rounded-xl text-xs md:text-sm text-slate-300 hover:text-white transition-all hover:translate-x-1";
+                btn.innerText = choice.text;
+                choicesContainer.appendChild(btn);
+            });
+        }
+
+        function submitQuizAnswer(val) {
+            playSound('click');
+            quizAnswers.push(val);
+            quizIndex++;
+            renderQuizQuestion();
+        }
+
+        function calculateQuizResult() {
+            // Find most frequent answer category
+            const freq = {};
+            quizAnswers.forEach(ans => {
+                freq[ans] = (freq[ans] || 0) + 1;
+            });
+
+            let bestMatch = 'comp'; // fallback default
+            let maxCount = 0;
+            for (const key in freq) {
+                if (freq[key] > maxCount) {
+                    maxCount = freq[key];
+                    bestMatch = key;
+                }
+            }
+
+            // Extract branch info for results screen
+            const branch = branches.find(b => b.id === bestMatch) || branches[0];
+
+            playSound('level-up');
+            document.getElementById('quiz-card').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+
+            document.getElementById('res-emoji').innerText = branch.emoji;
+            document.getElementById('res-branch').innerText = branch.title;
+            document.getElementById('res-desc').innerText = `คุณมีบุคลิกและความสนใจตรงกับสาขานี้มากที่สุด เนื่องจากมีความมุ่งมั่นสร้างสรรค์ สนใจปรับปรุงสิ่งรอบข้างให้มีระดับประสิทธิภาพและถูกต้องแม่นยำ!`;
+
+            const jobsUl = document.getElementById('res-jobs-list');
+            jobsUl.innerHTML = '';
+            branch.jobs.forEach(job => {
+                const li = document.createElement('li');
+                li.className = "flex items-start gap-2 border-b border-slate-800/50 pb-2 last:border-b-0";
+                li.innerHTML = `
+                    <span class="text-indigo-400 mt-0.5">🔹</span>
+                    <div>
+                        <span class="font-bold text-white block">${job.title}</span>
+                        <span class="text-slate-400 block mt-0.5 text-[11px]">${job.desc}</span>
+                        <span class="text-[10px] text-emerald-400 font-semibold block mt-1">รายได้เฉลี่ยเริ่มต้น: ${job.salary}</span>
+                    </div>
+                `;
+                jobsUl.appendChild(li);
+            });
+        }
+
+        function restartQuiz() {
+            playSound('click');
+            quizIndex = 0;
+            quizAnswers = [];
+            document.getElementById('quiz-card').classList.remove('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            renderQuizQuestion();
+        }
+    </script>
+</body>
+</html>

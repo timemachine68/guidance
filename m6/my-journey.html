@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MY M.6 JOURNEY</title>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&family=Sarabun:wght@400;500;600&family=Itim&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f5ff;
+  --a:#9b5de5; --a-l:#f4eeff; --a-b:#d9bef8;
+  --b:#f15bb5; --b-l:#fff0f8; --b-b:#f9c0df;
+  --c:#00bbf9; --c-l:#e8f8ff; --c-b:#aedffa;
+  --d:#00f5d4; --dl:#e0fff9; --d-b:#7eedd9; --d-dk:#00c4aa;
+  --e:#fee440; --e-l:#fffce8; --e-b:#fde97a; --e-dk:#e6c700;
+  --dot:#e0d0ff; --ink:#3d3355;
+  --shadow:0 4px 18px rgba(120,80,200,.13);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);
+  background-image:radial-gradient(var(--dot) 1.5px,transparent 1.5px);
+  background-size:26px 26px;
+  font-family:'Sarabun',sans-serif;color:var(--ink);min-height:100vh;padding:0 0 52px;
+}
+
+/* HEADER */
+.header{
+  background:linear-gradient(120deg,#f4eeff 0%,#fff0f8 40%,#e8f8ff 80%,#e0fff9 100%);
+  border-bottom:3px dashed var(--a-b);padding:24px 20px 20px;text-align:center;overflow:hidden;
+  position:relative;
+}
+.header:before{content:"✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦ ✧ ✦";display:block;color:var(--a-b);font-size:13px;letter-spacing:3px;margin-bottom:10px}
+.header-title{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.t-my{font-family:'Mali';font-weight:700;font-size:clamp(36px,9vw,64px);color:var(--a);text-shadow:3px 3px 0 var(--a-b)}
+.t-m6{font-family:'Mali';font-weight:700;font-size:clamp(36px,9vw,64px);background:linear-gradient(135deg,var(--b),var(--a));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.t-j{font-family:'Mali';font-weight:700;font-size:clamp(36px,9vw,64px);color:var(--c);text-shadow:3px 3px 0 var(--c-b)}
+.tagline{display:inline-block;background:var(--a-l);border:2px solid var(--a-b);border-radius:30px;padding:7px 22px;font-family:'Mali';font-size:16px;color:var(--a);margin:10px 0 6px}
+.decos{font-size:22px;letter-spacing:5px;margin-top:4px}
+.sub-banner{background:linear-gradient(90deg,var(--a),var(--b),var(--c));color:#fff;font-family:'Mali';font-weight:700;font-size:14px;padding:8px 20px;text-align:center;letter-spacing:1px}
+
+/* INFO */
+.info-row{background:#fff;border-bottom:2px dashed var(--b-b);padding:12px 20px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.info-field{display:flex;align-items:center;gap:8px;flex:1;min-width:130px}
+.info-label{font-family:'Mali';font-size:15px;color:#999;white-space:nowrap}
+.info-input{flex:1;border:none;border-bottom:2px solid var(--a-b);background:transparent;font-family:'Sarabun';font-size:15px;color:var(--ink);outline:none;padding:3px 6px;min-width:50px}
+.info-input:focus{border-bottom-color:var(--a)}
+
+/* MAIN */
+.main{max-width:900px;margin:0 auto;padding:20px 14px 0}
+.sec-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:600px){.sec-grid{grid-template-columns:1fr}}
+
+/* CARD */
+.card{background:#fff;border-radius:20px;box-shadow:var(--shadow);padding:18px;position:relative}
+.card.ca{border:2.5px solid var(--a-b)}.card.cb{border:2.5px solid var(--b-b)}
+.card.cc{border:2.5px solid var(--c-b)}.card.cd{border:2.5px solid var(--d-b)}
+.card.full{margin-bottom:16px}
+.sec-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.num-badge{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Mali';font-weight:700;font-size:16px;color:#fff;flex-shrink:0}
+.ba{background:var(--a)}.bb{background:var(--b)}.bc{background:var(--c)}.bd{background:var(--d-dk)}
+.sec-title{font-family:'Mali';font-weight:700;font-size:17px}
+.sec-sub{font-family:'Itim';font-size:13px;color:#aaa;margin-top:1px}
+.ta{color:var(--a)}.tb{color:var(--b)}.tc{color:var(--c)}.td{color:var(--d-dk)}
+.items{display:flex;flex-direction:column;gap:10px}
+.item{display:flex;align-items:flex-start;gap:8px}
+.dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Mali';font-weight:700;font-size:12px;flex-shrink:0;margin-top:2px}
+.da{background:var(--a-l);color:var(--a);border:1.5px solid var(--a-b)}
+.db{background:var(--b-l);color:var(--b);border:1.5px solid var(--b-b)}
+.dc{background:var(--c-l);color:var(--c);border:1.5px solid var(--c-b)}
+.dd{background:var(--dl);color:var(--d-dk);border:1.5px solid var(--d-b)}
+.ta-wrap{flex:1}
+.ta-wrap textarea{width:100%;border:none;border-bottom:1.5px dashed #ddd;background:transparent;resize:none;font-family:'Sarabun';font-size:14px;color:var(--ink);outline:none;padding:3px 4px;line-height:1.5;min-height:36px;transition:border-color .2s}
+.card.ca .ta-wrap textarea:focus{border-bottom-color:var(--a-b)}
+.card.cb .ta-wrap textarea:focus{border-bottom-color:var(--b-b)}
+.card.cc .ta-wrap textarea:focus{border-bottom-color:var(--c-b)}
+.card.cd .ta-wrap textarea:focus{border-bottom-color:var(--d-b)}
+.add-btn{border-radius:20px;padding:5px 14px;font-family:'Mali';font-size:13px;cursor:pointer;border-width:1.5px;border-style:dashed}
+.add-btn.a{background:var(--a-l);border-color:var(--a);color:var(--a)}
+.add-btn.b{background:var(--b-l);border-color:var(--b);color:var(--b)}
+.add-btn.c{background:var(--c-l);border-color:var(--c);color:var(--c)}
+.add-btn.d{background:var(--dl);border-color:var(--d-dk);color:var(--d-dk)}
+
+/* TCAS PLANNER */
+.tcas-wrap{background:linear-gradient(135deg,var(--a-l),var(--b-l));border:2px solid var(--a-b);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.tcas-title{font-family:'Mali';font-weight:700;font-size:18px;color:var(--a);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.tcas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:560px){.tcas-grid{grid-template-columns:1fr 1fr}}
+.tcas-card{border-radius:16px;padding:14px 12px}
+.tcas-card.r1{background:#fff9e6;border:2px solid #fde97a}
+.tcas-card.r2{background:#ffeef6;border:2px solid var(--b-b)}
+.tcas-card.r3{background:#eef8ff;border:2px solid var(--c-b)}
+.tcas-card.r4{background:#e8fff9;border:2px solid var(--d-b)}
+.tcas-rnum{font-family:'Mali';font-weight:700;font-size:22px;margin-bottom:2px}
+.r1 .tcas-rnum{color:#c9a000}.r2 .tcas-rnum{color:var(--b)}.r3 .tcas-rnum{color:var(--c)}.r4 .tcas-rnum{color:var(--d-dk)}
+.tcas-rname{font-family:'Mali';font-size:13px;color:#888;margin-bottom:8px}
+.tcas-check{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.tcas-check label{font-family:'Sarabun';font-size:13px;color:var(--ink);cursor:pointer}
+.tcas-check input{width:15px;height:15px;cursor:pointer;accent-color:var(--a)}
+.tcas-note{width:100%;border:none;border-bottom:1.5px dashed #ddd;background:transparent;resize:none;font-family:'Sarabun';font-size:12.5px;color:var(--ink);outline:none;padding:3px 2px;min-height:36px;margin-top:4px}
+
+/* EXAM PREP */
+.exam-wrap{background:linear-gradient(135deg,var(--c-l),var(--dl));border:2px solid var(--c-b);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.exam-title{font-family:'Mali';font-weight:700;font-size:18px;color:var(--c);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.exam-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:500px){.exam-grid{grid-template-columns:1fr 1fr}}
+.exam-card{background:#fff;border-radius:14px;padding:13px;border:2px solid var(--c-b);box-shadow:0 3px 8px rgba(0,187,249,.08)}
+.exam-name{font-family:'Mali';font-weight:700;font-size:14px;color:var(--c);margin-bottom:4px}
+.exam-status{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.status-btn{font-family:'Mali';font-size:11px;border-radius:14px;padding:3px 10px;cursor:pointer;border:1.5px solid #ddd;background:#fff;color:#aaa;transition:.15s}
+.status-btn.active-plan{background:#c-l;border-color:var(--c);color:var(--c);background:var(--c-l)}
+.status-btn.active-ready{background:#e0fff9;border-color:var(--d-dk);color:var(--d-dk)}
+.status-btn.active-done{background:var(--a-l);border-color:var(--a);color:var(--a)}
+.exam-note{width:100%;border:none;border-bottom:1.5px dashed var(--c-b);background:transparent;resize:none;font-family:'Sarabun';font-size:12.5px;color:var(--ink);outline:none;padding:2px 2px;min-height:28px}
+
+/* CHAT */
+.chat-wrap{background:linear-gradient(135deg,var(--b-l),var(--a-l));border:2px solid var(--b-b);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.chat-label{display:inline-flex;align-items:center;gap:7px;background:var(--b);color:#fff;font-family:'Mali';font-weight:700;font-size:16px;border-radius:20px;padding:6px 16px;margin-bottom:14px}
+.chat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:540px){.chat-grid{grid-template-columns:1fr}}
+.chat-bubble{background:#fff;border-radius:16px;padding:13px 14px;border:2px solid var(--b-b);box-shadow:0 3px 10px rgba(241,91,181,.1)}
+.bubble-q{display:flex;align-items:center;gap:6px;font-family:'Mali';font-size:14px;color:var(--b);margin-bottom:8px}
+.chat-bubble textarea{width:100%;border:none;border-bottom:1.5px dashed var(--b-b);background:transparent;resize:none;font-family:'Sarabun';font-size:13.5px;color:var(--ink);outline:none;padding:3px 2px;line-height:1.8;min-height:54px}
+.chat-note{text-align:center;background:var(--e-l);border-radius:14px;padding:10px 16px;font-family:'Mali';font-size:15px;color:#a08000;border:1.5px dashed var(--e-b);display:flex;align-items:center;justify-content:center;gap:6px}
+
+/* LETTER */
+.letter-wrap{background:linear-gradient(135deg,var(--e-l),var(--a-l));border:2px solid var(--e-b);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.letter-title{font-family:'Mali';font-weight:700;font-size:18px;color:#a08000;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.letter-sub{font-family:'Itim';font-size:14px;color:#c0a030;margin-bottom:12px}
+.letter-ta{width:100%;border:2px dashed var(--e-b);background:var(--e-l);border-radius:14px;resize:none;font-family:'Sarabun';font-size:14px;color:var(--ink);outline:none;padding:14px;line-height:2;min-height:130px}
+.letter-ta:focus{border-color:var(--e-dk)}
+
+/* REFLECTION */
+.ref-wrap{background:linear-gradient(135deg,var(--a-l),var(--b-l));border:2px solid var(--a-b);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
+.ref-label{font-family:'Mali';font-weight:700;font-size:18px;color:var(--a);border-bottom:2px solid var(--a-b);padding-bottom:8px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media(max-width:560px){.ref-grid{grid-template-columns:1fr}}
+.ref-prompt{background:var(--a-l);border:2px solid var(--a-b);border-radius:14px;padding:11px 14px;font-family:'Mali';font-size:15px;color:var(--a);text-align:center;margin-bottom:12px}
+.ref-main-ta{width:100%;border:none;background:transparent;resize:none;font-family:'Sarabun';font-size:14px;color:var(--ink);outline:none;padding:4px 0;line-height:2;min-height:110px;background-image:repeating-linear-gradient(transparent,transparent 27px,var(--a-b) 27px,var(--a-b) 28px)}
+.ref-side{background:var(--b-l);border:2px solid var(--b-b);border-radius:16px;padding:14px}
+.ref-side-title{font-family:'Mali';font-weight:700;font-size:14px;color:var(--b);margin-bottom:10px}
+.ref-q{display:flex;align-items:flex-start;gap:7px;margin-bottom:9px}
+.ref-q textarea{flex:1;border:none;border-bottom:1.5px dashed var(--b-b);background:transparent;resize:none;font-family:'Sarabun';font-size:13px;color:var(--ink);outline:none;padding:2px 2px;line-height:1.6;min-height:32px}
+
+/* FOOTER */
+.footer-banner{max-width:900px;margin:0 auto;padding:0 14px}
+.footer-inner{background:linear-gradient(135deg,var(--a-l),var(--b-l),var(--c-l));border:2px solid var(--a-b);border-radius:20px;padding:16px 24px;text-align:center;font-family:'Mali';font-weight:700;font-size:18px;color:#5a4a6a;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+
+/* SAVE BAR */
+.save-bar{position:fixed;bottom:18px;right:18px;z-index:100;display:flex;gap:10px;flex-direction:column;align-items:flex-end}
+.btn-save{background:var(--a);color:#fff;border:none;border-radius:30px;padding:12px 22px;font-family:'Mali';font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 4px 0 #7030c0,0 6px 18px rgba(155,93,229,.4);display:flex;align-items:center;gap:7px;transition:.15s}
+.btn-save:hover{filter:brightness(1.07);transform:translateY(-2px)}
+.btn-clear{background:#fff;color:#bbb;border:2px solid #eee;border-radius:30px;padding:8px 16px;font-family:'Mali';font-size:13px;cursor:pointer;transition:.15s}
+.btn-clear:hover{border-color:var(--a);color:var(--a)}
+.toast{position:fixed;bottom:80px;right:18px;background:#4caf50;color:#fff;border-radius:20px;padding:10px 20px;font-family:'Mali';font-size:14px;display:none;z-index:200;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.toast.show{display:block;animation:fu .3s}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:12px;left:12px;z-index:99999;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#1E1B4B;font-family:'Prompt',system-ui,sans-serif;font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;box-shadow:0 6px 18px -6px rgba(30,27,75,.35);text-decoration:none;">← หน้าหลัก</a>
+
+<div class="header">
+  <div class="header-title">
+    <span class="t-my">MY</span>
+    <span class="t-m6">M.6</span>
+    <span class="t-j">JOURNEY</span>
+  </div>
+  <div class="tagline">🎓 บทสุดท้าย... ที่สวยงามที่สุด 🎓</div>
+  <div class="decos">🌸 👑 🎯 🚀 ✨ 🏆</div>
+</div>
+<div class="sub-banner">⭐ ปีสุดท้ายของ ม.ปลาย — ก้าวต่อไปของเธอคืออะไร? ⭐</div>
+
+<div class="info-row">
+  <div class="info-field" style="flex:3;min-width:200px">
+    <span class="info-label">ชื่อ-สกุล</span>
+    <input class="info-input" id="name" type="text" placeholder="...........................">
+  </div>
+  <div class="info-field" style="flex:1.5">
+    <span class="info-label">ชั้น</span>
+    <input class="info-input" id="class" type="text" placeholder="ม.6/...">
+  </div>
+  <div class="info-field" style="flex:1">
+    <span class="info-label">เลขที่</span>
+    <input class="info-input" id="num" type="text" placeholder="...">
+  </div>
+  <div class="info-field" style="flex:2">
+    <span class="info-label">วันที่</span>
+    <input class="info-input" id="date" type="date">
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- S1 & S2 -->
+  <div class="sec-grid">
+    <div class="card ca">
+      <div class="sec-head">
+        <div class="num-badge ba">1</div>
+        <div>
+          <div class="sec-title ta">ย้อนมองตลอด 5 ปี</div>
+          <div class="sec-sub">สิ่งที่ฉันภูมิใจที่สุดในช่วง ม.ต้น–ม.ปลาย</div>
+        </div>
+      </div>
+      <div class="items" id="proud-items">
+        <div class="item"><div class="dot da">1</div><div class="ta-wrap"><textarea placeholder="เขียนได้เลยนะ..." rows="2"></textarea></div></div>
+        <div class="item"><div class="dot da">2</div><div class="ta-wrap"><textarea placeholder="..." rows="2"></textarea></div></div>
+        <div class="item"><div class="dot da">3</div><div class="ta-wrap"><textarea placeholder="..." rows="2"></textarea></div></div>
+      </div>
+      <div style="text-align:right;margin-top:10px"><button class="add-btn a" onclick="addItem('proud-items','da')">+ เพิ่มข้อ</button></div>
+    </div>
+
+    <div class="card cb">
+      <div class="sec-head">
+        <div class="num-badge bb">2</div>
+        <div>
+          <div class="sec-title tb">ความกังวลก่อนจบ ม.6</div>
+          <div class="sec-sub">ตอนนี้ฉันกังวลเรื่องอะไรบ้าง?</div>
+        </div>
+      </div>
+      <div class="items" id="worry-items">
+        <div class="item"><div class="dot db">1</div><div class="ta-wrap"><textarea placeholder="เขียนได้เลยนะ..." rows="2"></textarea></div></div>
+        <div class="item"><div class="dot db">2</div><div class="ta-wrap"><textarea placeholder="..." rows="2"></textarea></div></div>
+        <div class="item"><div class="dot db">3</div><div class="ta-wrap"><textarea placeholder="..." rows="2"></textarea></div></div>
+      </div>
+      <div style="text-align:right;margin-top:10px"><button class="add-btn b" onclick="addItem('worry-items','db')">+ เพิ่มข้อ</button></div>
+    </div>
+  </div>
+
+  <!-- TCAS PLANNER -->
+  <div class="tcas-wrap">
+    <div class="tcas-title">🎯 TCAS Planner — วางแผนสมัครรอบไหนบ้าง?</div>
+    <div class="tcas-grid">
+      <div class="tcas-card r1">
+        <div class="tcas-rnum">รอบ 1</div>
+        <div class="tcas-rname">Portfolio</div>
+        <div class="tcas-check"><input type="checkbox" id="r1c1"><label for="r1c1">จะสมัคร</label></div>
+        <div class="tcas-check"><input type="checkbox" id="r1c2"><label for="r1c2">ทำพอร์ตแล้ว</label></div>
+        <textarea class="tcas-note" placeholder="คณะ/มหาลัยที่จะยื่น..." rows="2"></textarea>
+      </div>
+      <div class="tcas-card r2">
+        <div class="tcas-rnum">รอบ 2</div>
+        <div class="tcas-rname">Quota</div>
+        <div class="tcas-check"><input type="checkbox" id="r2c1"><label for="r2c1">จะสมัคร</label></div>
+        <div class="tcas-check"><input type="checkbox" id="r2c2"><label for="r2c2">เช็กโควตาแล้ว</label></div>
+        <textarea class="tcas-note" placeholder="โควตาที่มีสิทธิ์..." rows="2"></textarea>
+      </div>
+      <div class="tcas-card r3">
+        <div class="tcas-rnum">รอบ 3</div>
+        <div class="tcas-rname">Admission</div>
+        <div class="tcas-check"><input type="checkbox" id="r3c1"><label for="r3c1">จะสมัคร</label></div>
+        <div class="tcas-check"><input type="checkbox" id="r3c2"><label for="r3c2">วางอันดับแล้ว</label></div>
+        <textarea class="tcas-note" placeholder="10 อันดับที่วางไว้..." rows="2"></textarea>
+      </div>
+      <div class="tcas-card r4">
+        <div class="tcas-rnum">รอบ 4</div>
+        <div class="tcas-rname">Direct</div>
+        <div class="tcas-check"><input type="checkbox" id="r4c1"><label for="r4c1">สำรองไว้</label></div>
+        <div class="tcas-check"><input type="checkbox" id="r4c2"><label for="r4c2">เช็กมหาลัยแล้ว</label></div>
+        <textarea class="tcas-note" placeholder="แผนสำรอง..." rows="2"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXAM PREP -->
+  <div class="exam-wrap">
+    <div class="exam-title">📝 เตรียมสอบ — ฉันอยู่ขั้นไหนแล้ว?</div>
+    <div class="exam-grid">
+      <div class="exam-card">
+        <div class="exam-name">🧠 TGAT</div>
+        <div class="exam-status">
+          <button class="status-btn" onclick="toggleStatus(this,'active-plan')">วางแผน</button>
+          <button class="status-btn" onclick="toggleStatus(this,'active-ready')">กำลังเตรียม</button>
+          <button class="status-btn" onclick="toggleStatus(this,'active-done')">พร้อมแล้ว</button>
+        </div>
+        <textarea class="exam-note" placeholder="โน้ตส่วนตัว..." rows="2"></textarea>
+      </div>
+      <div class="exam-card">
+        <div class="exam-name">🔧 TPAT</div>
+        <div class="exam-status">
+          <button class="status-btn" onclick="toggleStatus(this,'active-plan')">วางแผน</button>
+          <button class="status-btn" onclick="toggleStatus(this,'active-ready')">กำลังเตรียม</button>
+          <button class="status-btn" onclick="toggleStatus(this,'active-done')">พร้อมแล้ว</button>
+        </div>
+        <textarea class="exam-note" placeholder="TPAT ที่จะสอบ..." rows="2"></textarea>
+      </div>
+      <div class="exam-card">
+        <div class="exam-name">🎓 A-Level</div>
+        <div class="exam-status">
+          <button class="status-btn" onclick="toggleStatus(this,'active-plan')">วางแผน</button>
+          <button class="status-btn" onclick="toggleStatus(this,'active-ready')">กำลังเตรียม</button>
+          <button class="status-btn" onclick="toggleStatus(this,'active-done')">พร้อมแล้ว</button>
+        </div>
+        <textarea class="exam-note" placeholder="วิชาที่จะสอบ..." rows="2"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- S3 & S4 -->
+  <div class="sec-grid">
+    <div class="card cc">
+      <div class="sec-head">
+        <div class="num-badge bc">3</div>
+        <div>
+          <div class="sec-title tc">ฝันหลังจบ ม.6</div>
+          <div class="sec-sub">ฉันอยากเรียนอะไร / ทำอะไรในอนาคต</div>
+        </div>
+      </div>
+      <div class="items" id="dream-items">
+        <div class="item"><div class="dot dc">1</div><div class="ta-wrap"><textarea placeholder="คณะ/สาขาในฝัน..." rows="2"></textarea></div></div>
+        <div class="item"><div class="dot dc">2</div><div class="ta-wrap"><textarea placeholder="อาชีพที่อยากเป็น..." rows="2"></textarea></div></div>
+        <div class="item"><div class="dot dc">3</div><div class="ta-wrap"><textarea placeholder="ชีวิตที่อยากมี..." rows="2"></textarea></div></div>
+      </div>
+      <div style="text-align:right;margin-top:10px"><button class="add-btn c" onclick="addItem('dream-items','dc')">+ เพิ่มข้อ</button></div>
+    </div>
+
+    <div class="card cd">
+      <div class="sec-head">
+        <div class="num-badge bd">4</div>
+        <div>
+          <div class="sec-title td">สิ่งที่อยากทำก่อนจบ ม.6</div>
+          <div class="sec-sub">Bucket List ก่อนบินจาก รร.</div>
+        </div>
+      </div>
+      <div class="items" id="bucket-items">
+        <div class="item"><div class="dot dd">1</div><div class="ta-wrap"><textarea placeholder="เขียนได้เลยนะ..." rows="2"></textarea></div></div>
+        <div class="item"><div class="dot dd">2</div><div class="ta-wrap"><textarea placeholder="..." rows="2"></textarea></div></div>
+        <div class="item"><div class="dot dd">3</div><div class="ta-wrap"><textarea placeholder="..." rows="2"></textarea></div></div>
+      </div>
+      <div style="text-align:right;margin-top:10px"><button class="add-btn d" onclick="addItem('bucket-items','dd')">+ เพิ่มข้อ</button></div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-wrap">
+    <div class="chat-label">💬 ช่วงพูดคุย</div>
+    <div class="chat-grid">
+      <div class="chat-bubble">
+        <div class="bubble-q">🌸 ตอนนี้รู้สึกยังไงกับการจะจบ ม.6?</div>
+        <textarea placeholder="เขียนได้เลยนะ..." rows="3"></textarea>
+      </div>
+      <div class="chat-bubble">
+        <div class="bubble-q">🌸 มีอะไรที่อยากบอกรุ่นน้อง ม.4 ไหม?</div>
+        <textarea placeholder="เขียนได้เลยนะ..." rows="3"></textarea>
+      </div>
+    </div>
+    <div class="chat-note">⭐ ทุกก้าวเล็กๆ ที่เดินมา คือการสร้างคนที่ยืนอยู่ตรงนี้ในวันนี้ — เธอมาไกลมากแล้ว! 🎓</div>
+  </div>
+
+  <!-- LETTER TO FUTURE SELF -->
+  <div class="letter-wrap">
+    <div class="letter-title">💌 จดหมายถึงตัวเองในอนาคต</div>
+    <div class="letter-sub">เขียนถึงตัวเองในอีก 1 ปีข้างหน้า... ตอนนั้นอยากเห็นอะไร?</div>
+    <textarea class="letter-ta" id="letter" placeholder="ถึงตัวฉันในอนาคต...&#10;&#10;&#10;&#10;ด้วยรัก,&#10;ฉันในวันนี้ 💜"></textarea>
+  </div>
+
+  <!-- REFLECTION -->
+  <div class="ref-wrap">
+    <div class="ref-label">✏️ Reflection</div>
+    <div class="ref-grid">
+      <div>
+        <div class="ref-prompt">💜 "บทเรียนสำคัญที่สุดที่ ม.ปลายสอนฉัน" 💜</div>
+        <textarea class="ref-main-ta" placeholder="เขียนได้เลยนะ...&#10;&#10;&#10;"></textarea>
+      </div>
+      <div class="ref-side">
+        <div class="ref-side-title">💡 คำถามชวนคิด</div>
+        <div class="ref-q"><span style="color:var(--b);flex-shrink:0">🌸</span><textarea placeholder="ฉันเปลี่ยนไปอย่างไรจากวันแรกที่เข้า ม.4..." rows="2"></textarea></div>
+        <div class="ref-q"><span style="color:var(--b);flex-shrink:0">🌸</span><textarea placeholder="อะไรที่ฉันอยากทำแตกต่างออกไป..." rows="2"></textarea></div>
+        <div class="ref-q"><span style="color:var(--b);flex-shrink:0">🌸</span><textarea placeholder="ใครที่ฉันอยากขอบคุณมากที่สุด..." rows="2"></textarea></div>
+        <div class="ref-q"><span style="color:var(--b);flex-shrink:0">🌸</span><textarea placeholder="ฉันพร้อมสำหรับก้าวถัดไปแล้วหรือยัง..." rows="2"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-banner">
+  <div class="footer-inner">
+    <span style="color:var(--a)">จบไม่ใช่การสิ้นสุด</span>
+    <span style="color:#aaa">•</span>
+    <span>มันคือจุดเริ่มต้นที่ยิ่งใหญ่ที่สุด</span>
+    <span style="font-size:20px">🎓</span>
+    <span style="color:var(--b)">ยินดีกับ Dek70 ทุกคน!</span>
+  </div>
+</div>
+
+<div class="save-bar">
+  <button class="btn-save" onclick="saveAll()">💾 บันทึกคำตอบ</button>
+  <button class="btn-clear" onclick="clearAll()">🗑 ล้างทั้งหมด</button>
+</div>
+<div class="toast" id="toast">✅ บันทึกแล้ว!</div>
+
+<script>
+const KEY='m6journey';
+function addItem(cid,dc){
+  const c=document.getElementById(cid);
+  const n=c.querySelectorAll('.item').length+1;
+  const d=document.createElement('div');d.className='item';
+  d.innerHTML=`<div class="dot ${dc}">${n}</div><div class="ta-wrap"><textarea placeholder="..." rows="2"></textarea></div>`;
+  c.appendChild(d);d.querySelector('textarea').focus();debounceSave();
+}
+function toggleStatus(btn,cls){
+  const group=btn.closest('.exam-status');
+  [...group.querySelectorAll('.status-btn')].forEach(b=>{
+    b.classList.remove('active-plan','active-ready','active-done');
+  });
+  if(!btn.dataset.active){btn.classList.add(cls);btn.dataset.active='1'}
+  else{btn.dataset.active='';} 
+  debounceSave();
+}
+document.addEventListener('input',e=>{
+  if(e.target.tagName==='TEXTAREA'){e.target.style.height='auto';e.target.style.height=e.target.scrollHeight+'px'}
+  debounceSave();
+});
+document.addEventListener('change',e=>{if(e.target.tagName==='INPUT')debounceSave()});
+let st;function debounceSave(){clearTimeout(st);st=setTimeout(()=>saveAll(true),800)}
+
+function saveAll(s=false){
+  try{
+    const d={};
+    ['name','class','num','date'].forEach(id=>{d[id]=document.getElementById(id).value});
+    d.ta={};document.querySelectorAll('textarea').forEach((t,i)=>{d.ta['t'+i]=t.value});
+    d.cb={};document.querySelectorAll('input[type=checkbox]').forEach((c,i)=>{d.cb['c'+i]=c.checked});
+    d.sb={};document.querySelectorAll('.status-btn').forEach((b,i)=>{d.sb['s'+i]=b.className;d.sb['sa'+i]=b.dataset.active||''});
+    d.pc=document.getElementById('proud-items').querySelectorAll('.item').length;
+    d.wc=document.getElementById('worry-items').querySelectorAll('.item').length;
+    d.dc2=document.getElementById('dream-items').querySelectorAll('.item').length;
+    d.bc=document.getElementById('bucket-items').querySelectorAll('.item').length;
+    localStorage.setItem(KEY,JSON.stringify(d));
+    if(!s)showToast('✅ บันทึกแล้ว!');
+  }catch(e){if(!s)showToast('❌ บันทึกไม่สำเร็จ')}
+}
+
+function loadSaved(){
+  try{
+    const raw=localStorage.getItem(KEY);if(!raw)return;
+    const d=JSON.parse(raw);
+    ['name','class','num','date'].forEach(id=>{const el=document.getElementById(id);if(el&&d[id])el.value=d[id]});
+    [['proud-items','da',d.pc||3],['worry-items','db',d.wc||3],['dream-items','dc',d.dc2||3],['bucket-items','dd',d.bc||3]].forEach(([cid,dc,cnt])=>{
+      const c=document.getElementById(cid);while(c.querySelectorAll('.item').length<cnt)addItem(cid,dc);
+    });
+    if(d.ta){const ts=[...document.querySelectorAll('textarea')];ts.forEach((t,i)=>{const v=d.ta['t'+i];if(v!==undefined){t.value=v;t.style.height='auto';t.style.height=t.scrollHeight+'px'}})}
+    if(d.cb){document.querySelectorAll('input[type=checkbox]').forEach((c,i)=>{if(d.cb['c'+i])c.checked=true})}
+    if(d.sb){document.querySelectorAll('.status-btn').forEach((b,i)=>{if(d.sb['s'+i])b.className=d.sb['s'+i];if(d.sb['sa'+i])b.dataset.active=d.sb['sa'+i]})}
+  }catch(e){}
+}
+
+function clearAll(){
+  if(!confirm('ล้างคำตอบทั้งหมดหรือเปล่า?'))return;
+  localStorage.removeItem(KEY);
+  document.querySelectorAll('textarea').forEach(t=>{t.value='';t.style.height='auto'});
+  ['name','class','num','date'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});
+  document.querySelectorAll('input[type=checkbox]').forEach(c=>{c.checked=false});
+  document.querySelectorAll('.status-btn').forEach(b=>{b.className='status-btn';b.dataset.active=''});
+  showToast('🗑 ล้างแล้ว!');
+}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+document.getElementById('date').value=new Date().toISOString().split('T')[0];
+loadSaved();
+</script>
+</body>
+</html>

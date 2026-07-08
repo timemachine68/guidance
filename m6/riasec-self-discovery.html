@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ค้นหาตัวตน RIASEC — บทเรียนแนะแนว ม.6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Thai+2:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --cream:#FFFDF8; --ink:#43474F; --ink-soft:#7B8089; --line:#EFE7DC;
+    --R:#F2766B;--Rb:#FDE9E6;--Rd:#C2453A;
+    --I:#5B9BD5;--Ib:#E5F0FA;--Id:#2F6CA8;
+    --A:#F5A93C;--Ab:#FDEFD9;--Ad:#BE7C18;
+    --S:#7CC36A;--Sb:#E8F6E3;--Sd:#4E9A3C;
+    --E:#A77BC9;--Eb:#F0E7F8;--Ed:#7B4FA0;
+    --C:#4FBFC4;--Cb:#E0F5F5;--Cd:#2A8A8F;
+    --shadow:0 12px 34px rgba(120,110,150,.14);
+    --radius:22px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;font-family:'Sarabun',sans-serif;color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(680px 460px at 88% -6%, #FFE4E0 0%, transparent 62%),
+      radial-gradient(620px 460px at -8% 4%, #E2F0FB 0%, transparent 60%),
+      radial-gradient(720px 520px at 50% 102%, #EEE6FB 0%, transparent 60%),
+      radial-gradient(560px 420px at 10% 60%, #E6F6E6 0%, transparent 58%),
+      var(--cream);
+    background-attachment:fixed;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px;}
+  h1,h2,h3,.display{font-family:'Baloo Thai 2',sans-serif;font-weight:700;line-height:1.25;}
+  .eyebrow{font-family:'Baloo Thai 2',sans-serif;font-weight:600;font-size:.86rem;letter-spacing:1px;color:var(--Ed);}
+
+  header.hero{padding:60px 0 26px;text-align:center;}
+  .hero .eyebrow{display:inline-block;background:#fff;border-radius:999px;padding:6px 18px;box-shadow:var(--shadow);}
+  .riasec{font-family:'Baloo Thai 2',sans-serif;font-weight:800;font-size:clamp(3rem,11vw,6rem);letter-spacing:4px;margin:14px 0 4px;}
+  .riasec span{display:inline-block;}
+  .riasec .l0{color:var(--R);} .riasec .l1{color:var(--I);} .riasec .l2{color:var(--A);}
+  .riasec .l3{color:var(--S);} .riasec .l4{color:var(--E);} .riasec .l5{color:var(--C);}
+  .hero h1{font-size:1.7rem;margin:0 0 12px;color:var(--ink);}
+  .hero p.lead{font-size:1.1rem;color:var(--ink-soft);max-width:50ch;margin:0 auto 24px;}
+  .cta{font-family:'Baloo Thai 2',sans-serif;font-weight:600;border:0;border-radius:999px;padding:14px 30px;font-size:1.05rem;cursor:pointer;
+    color:#fff;background:linear-gradient(120deg,var(--E),var(--R));box-shadow:0 10px 24px rgba(167,123,201,.4);transition:.18s;}
+  .cta:hover{transform:translateY(-2px);}
+
+  section{padding:46px 0;}
+  .sec-head{text-align:center;max-width:64ch;margin:0 auto 30px;}
+  .sec-head h2{font-size:1.9rem;margin:8px 0 8px;}
+  .sec-head p{color:var(--ink-soft);margin:0;}
+  .sec-num{font-family:'Baloo Thai 2',sans-serif;font-weight:600;font-size:.82rem;color:#fff;background:var(--E);border-radius:999px;padding:4px 16px;display:inline-block;}
+
+  /* hexagon */
+  .hexwrap{display:flex;justify-content:center;margin:0 0 34px;}
+  .hex{position:relative;width:min(340px,86vw);height:min(340px,86vw);}
+  .node{position:absolute;width:24%;aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:#fff;cursor:pointer;box-shadow:var(--shadow);transition:.18s;transform:translate(-50%,-50%);text-align:center;}
+  .node:hover{transform:translate(-50%,-50%) scale(1.08);}
+  .node .ltr{font-family:'Baloo Thai 2';font-weight:800;font-size:1.5rem;line-height:1;}
+  .node .nk{font-family:'Baloo Thai 2';font-weight:600;font-size:.62rem;margin-top:2px;}
+  .hexline{position:absolute;inset:0;z-index:-1;}
+
+  /* type cards */
+  .types{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  @media(max-width:740px){.types{grid-template-columns:1fr;}}
+  .tcard{border-radius:var(--radius);padding:20px 22px;border:2px solid transparent;cursor:pointer;transition:.18s;background:#fff;box-shadow:0 8px 22px rgba(120,110,150,.08);}
+  .tcard:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+  .tcard .top{display:flex;align-items:center;gap:14px;}
+  .badge{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Baloo Thai 2';font-weight:800;font-size:1.7rem;flex:0 0 52px;}
+  .tcard h3{margin:0;font-size:1.2rem;}
+  .tcard .en{font-size:.8rem;color:var(--ink-soft);font-family:'Baloo Thai 2';font-weight:500;}
+  .tcard .tag{margin:12px 0 0;color:var(--ink-soft);font-size:.92rem;}
+  .tcard .detail{display:none;margin-top:14px;border-top:1px dashed var(--line);padding-top:14px;}
+  .tcard.open .detail{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(-4px);}to{opacity:1;}}
+  .detail h5{font-family:'Baloo Thai 2';font-weight:600;font-size:.9rem;margin:12px 0 6px;display:flex;align-items:center;gap:7px;}
+  .detail h5::before{content:"";width:10px;height:10px;border-radius:50%;background:currentColor;display:inline-block;}
+  .detail ul{margin:0;padding-left:18px;font-size:.9rem;color:var(--ink-soft);}
+  .detail ul li{margin:3px 0;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+  .chip{font-size:.8rem;padding:4px 11px;border-radius:999px;}
+  .more{font-family:'Baloo Thai 2';font-weight:500;font-size:.84rem;margin-top:12px;}
+  .more::after{content:" ▾";} .tcard.open .more::after{content:" ▴";}
+
+  /* QUIZ */
+  .quizbox{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:8px 6px 8px;overflow:hidden;}
+  .qhead{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;gap:14px;flex-wrap:wrap;}
+  .qhead .prog{flex:1;min-width:160px;}
+  .ptrack{height:12px;background:#F0ECF6;border-radius:8px;overflow:hidden;}
+  .pfill{height:100%;width:0;background:linear-gradient(90deg,var(--I),var(--E));border-radius:8px;transition:width .3s;}
+  .pnum{font-family:'Baloo Thai 2';font-weight:600;font-size:.9rem;color:var(--ink-soft);white-space:nowrap;}
+  .qlist{padding:4px 16px 16px;}
+  .qrow{padding:14px 4px;border-bottom:1px solid #F4EFE7;}
+  .qrow:last-child{border-bottom:0;}
+  .qrow .qtext{font-size:1rem;margin-bottom:10px;font-weight:500;}
+  .qrow .qtext .nq{color:var(--ink-soft);font-family:'Baloo Thai 2';margin-right:6px;}
+  .scale{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .sbtn{font-family:'Sarabun';border:1.5px solid var(--line);background:#FCFAF6;border-radius:12px;padding:9px 6px;cursor:pointer;font-size:.92rem;color:var(--ink);transition:.14s;text-align:center;}
+  .sbtn:hover{border-color:var(--E);}
+  .sbtn.on{color:#fff;border-color:transparent;}
+  .sbtn.on.v0{background:#C7B6D6;} .sbtn.on.v1{background:#8FA9D6;} .sbtn.on.v2{background:#7CC36A;}
+  .qfoot{padding:18px 20px 22px;text-align:center;}
+  .seeres{font-family:'Baloo Thai 2';font-weight:600;border:0;border-radius:999px;padding:14px 34px;font-size:1.05rem;cursor:pointer;color:#fff;background:linear-gradient(120deg,var(--I),var(--E));box-shadow:0 10px 24px rgba(91,155,213,.36);transition:.18s;}
+  .seeres:disabled{background:#D7D2DD;box-shadow:none;cursor:not-allowed;}
+  .seeres:not(:disabled):hover{transform:translateY(-2px);}
+  .qnote{font-size:.85rem;color:var(--ink-soft);margin-top:10px;}
+
+  /* RESULT */
+  .result{display:none;}
+  .result.show{display:block;animation:fade .35s ease;}
+  .codecard{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:30px 26px;text-align:center;}
+  .codecard .lab{font-family:'Baloo Thai 2';font-weight:500;color:var(--ink-soft);font-size:.95rem;}
+  .bigcode{font-family:'Baloo Thai 2';font-weight:800;font-size:clamp(3rem,12vw,5.5rem);letter-spacing:10px;margin:6px 0 2px;}
+  .codenames{font-size:1rem;color:var(--ink-soft);margin-bottom:6px;}
+  .bars{max-width:560px;margin:24px auto 0;text-align:left;}
+  .brow{display:grid;grid-template-columns:120px 1fr 34px;align-items:center;gap:12px;margin:9px 0;font-size:.92rem;}
+  .brow .bl{display:flex;align-items:center;gap:8px;font-weight:500;}
+  .brow .bl .bd{width:22px;height:22px;border-radius:7px;color:#fff;font-family:'Baloo Thai 2';font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center;}
+  .btrack{background:#F1ECF6;border-radius:7px;height:14px;overflow:hidden;}
+  .bfill{height:100%;border-radius:7px;width:0;transition:width .6s ease;}
+  .bpct{font-family:'Baloo Thai 2';font-weight:600;text-align:right;color:var(--ink-soft);}
+
+  .topcard{border-radius:var(--radius);padding:24px 26px;margin-top:18px;box-shadow:var(--shadow);}
+  .topcard h3{font-size:1.4rem;margin:0 0 2px;display:flex;align-items:center;gap:12px;}
+  .topcard .en{font-size:.85rem;color:var(--ink-soft);font-family:'Baloo Thai 2';}
+  .topcard .career-h{font-family:'Baloo Thai 2';font-weight:600;margin:16px 0 8px;font-size:.98rem;}
+  .reset{display:block;margin:22px auto 0;font-family:'Baloo Thai 2';font-weight:600;background:#fff;border:2px solid var(--E);color:var(--Ed);border-radius:999px;padding:11px 26px;cursor:pointer;font-size:.95rem;}
+  .interp{margin-top:18px;background:#fff;border-radius:16px;padding:16px 20px;font-size:.94rem;box-shadow:0 6px 18px rgba(120,110,150,.08);}
+  .interp b{color:var(--Ed);}
+
+  /* tips */
+  .tips{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+  @media(max-width:820px){.tips{grid-template-columns:repeat(2,1fr);}}
+  .tip{background:#fff;border-radius:18px;padding:18px 16px;text-align:center;box-shadow:0 6px 18px rgba(120,110,150,.08);}
+  .tip .ic{font-size:1.6rem;}
+  .tip p{margin:8px 0 0;font-size:.9rem;font-weight:500;}
+  .quote{text-align:center;font-family:'Baloo Thai 2';font-weight:600;font-size:1.4rem;margin:30px auto 0;max-width:30ch;color:var(--Ed);line-height:1.4;}
+  .quote span{background:linear-gradient(transparent 60%,#FDE3B5 60%);}
+
+  footer{text-align:center;padding:34px 0;color:var(--ink-soft);font-size:.88rem;}
+  footer b{font-family:'Baloo Thai 2';color:var(--ink);}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto;}}
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:12px;left:12px;z-index:99999;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#1E1B4B;font-family:'Prompt',system-ui,sans-serif;font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;box-shadow:0 6px 18px -6px rgba(30,27,75,.35);text-decoration:none;">← หน้าหลัก</a>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">บทเรียนแนะแนว · ม.6 · ค้นหาตัวตน</span>
+    <div class="riasec"><span class="l0">R</span><span class="l1">I</span><span class="l2">A</span><span class="l3">S</span><span class="l4">E</span><span class="l5">C</span></div>
+    <h1>ค้นหาตัวตน ค้นพบอาชีพที่ใช่ สไตล์คุณ</h1>
+    <p class="lead">คนเรามีความสนใจ ความถนัด และบุคลิกภาพต่างกัน ทฤษฎีของ จอห์น ฮอลแลนด์ แบ่งเราเป็น 6 แบบ ลองทำแบบสำรวจสั้น ๆ เพื่อค้นพบ "รหัสตัวตน" และอาชีพที่เข้ากับเราที่สุด</p>
+    <button class="cta" onclick="document.getElementById('quiz').scrollIntoView({behavior:'smooth'})">เริ่มสำรวจตัวเอง →</button>
+  </div>
+</header>
+
+<!-- SECTION 1 -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">ส่วนที่ 1</span>
+      <h2>6 บุคลิกภาพ RIASEC</h2>
+      <p>แต่ละคนมักมีหลายด้านผสมกัน แตะวงกลมหรือการ์ดเพื่อทำความรู้จักแต่ละแบบ</p>
+    </div>
+
+    <div class="hexwrap">
+      <div class="hex" id="hex">
+        <svg class="hexline" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="50,8 86,29 86,71 50,92 14,71 14,29" fill="none" stroke="#E7DEEF" stroke-width="1.4"/></svg>
+      </div>
+    </div>
+
+    <div class="types" id="types"></div>
+  </div>
+</section>
+
+<!-- SECTION 2: QUIZ -->
+<section id="quiz">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">ส่วนที่ 2</span>
+      <h2>แบบสำรวจตัวตน 30 ข้อ</h2>
+      <p>อ่านแต่ละข้อแล้วเลือกว่าตรงกับเราแค่ไหน ตอบตามความจริง ไม่มีคำตอบถูกผิด</p>
+    </div>
+
+    <div class="quizbox">
+      <div class="qhead">
+        <div class="prog"><div class="ptrack"><div class="pfill" id="pfill"></div></div></div>
+        <div class="pnum" id="pnum">ตอบแล้ว 0 / 30</div>
+      </div>
+      <div class="qlist" id="qlist"></div>
+      <div class="qfoot">
+        <button class="seeres" id="seeres" disabled>ดูผลลัพธ์ของฉัน</button>
+        <div class="qnote" id="qnote">ตอบให้ครบทั้ง 30 ข้อก่อนนะ</div>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="result" id="result">
+      <div class="codecard">
+        <div class="lab">รหัสบุคลิกภาพของคุณ (Holland Code)</div>
+        <div class="bigcode" id="bigcode"></div>
+        <div class="codenames" id="codenames"></div>
+        <div class="bars" id="bars"></div>
+      </div>
+      <div class="topcard" id="topcard"></div>
+      <div class="interp">
+        💡 <b>อ่านผลยังไง:</b> รหัส 3 ตัวแรกคือด้านที่เด่นที่สุดของคุณ เรียงจากคะแนนมากไปน้อย อาชีพที่ "เข้ากับทั้ง 3 ด้าน" มักเหมาะที่สุด ผลนี้เป็นจุดเริ่มต้นสำรวจตัวเอง ไม่ใช่คำตัดสินตายตัว — ปรึกษาครูแนะแนวเพื่อต่อยอดได้เสมอ
+      </div>
+      <button class="reset" id="reset">↻ ทำแบบสำรวจใหม่</button>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: TIPS -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">ส่วนที่ 3</span>
+      <h2>เคล็ดลับการวางแผนตัวเอง</h2>
+      <p>รู้จักตัวตนแล้ว ลองนำไปต่อยอดสู่การเลือกเส้นทางที่ใช่</p>
+    </div>
+    <div class="tips">
+      <div class="tip"><div class="ic">🔍</div><p>รู้จักตัวเอง สำรวจความสนใจและความถนัด</p></div>
+      <div class="tip"><div class="ic">🗺️</div><p>วางแผนการเรียนและอาชีพล่วงหน้า</p></div>
+      <div class="tip"><div class="ic">🌱</div><p>พัฒนาตนเองอย่างต่อเนื่อง</p></div>
+      <div class="tip"><div class="ic">💬</div><p>ปรึกษาครูแนะแนวและคนที่ไว้ใจ</p></div>
+      <div class="tip"><div class="ic">✨</div><p>เปิดใจเรียนรู้โอกาสใหม่เสมอ</p></div>
+    </div>
+    <div class="quote">"ไม่มีอาชีพไหนที่ดีที่สุด<br/>มีแต่อาชีพที่ <span>เหมาะกับเรามากที่สุด</span>"</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <b>บทเรียนแนะแนว · ค้นหาตัวตนด้วย RIASEC</b><br/>
+    อ้างอิงทฤษฎีบุคลิกภาพกับอาชีพของ จอห์น ฮอลแลนด์ (John Holland)
+  </div>
+</footer>
+
+<script>
+const D = {"types":{"R":{"name":"Realistic","nick":"นักปฏิบัติ","color":"#F2766B","bg":"#FDE9E6","deep":"#C2453A","tag":"ชอบลงมือทำ ใช้เครื่องมือ ทำงานกับสิ่งของและงานภาคสนาม","traits":["ชอบความเป็นรูปธรรม จับต้องได้","ชอบใช้มือทำงาน เครื่องมือ เครื่องจักร","ชอบกิจกรรมกลางแจ้ง อดทน แข็งแรง","ซื่อสัตย์ ตรงไปตรงมา ทำงานเงียบ ๆ"],"works":["งานที่ใช้เครื่องมือ อุปกรณ์ เครื่องจักร","งานช่าง งานเทคนิค งานภาคสนาม","งานที่มีขั้นตอนและผลลัพธ์ชัดเจน","งานที่ไม่ต้องพบปะผู้คนมาก"],"careers":["วิศวกรเครื่องกล","ช่างเทคนิค","ช่างยนต์","ช่างเชื่อม","ช่างไม้","วิศวกรโยธา","นักบิน","ช่างไฟฟ้า","ช่างก่อสร้าง","เกษตรกร","นักผจญเพลิง","ช่างซ่อมบำรุง","คนสวน/ภูมิทัศน์","ผู้ควบคุมเครื่องจักร"]},"I":{"name":"Investigative","nick":"นักคิด","color":"#5B9BD5","bg":"#E5F0FA","deep":"#2F6CA8","tag":"ชอบค้นคว้า วิเคราะห์ หาคำตอบ และแก้ปัญหาด้วยเหตุผล","traits":["ชอบคิด ตั้งคำถาม ค้นหาความจริง","ชอบวิเคราะห์ข้อมูลอย่างมีเหตุผล","ละเอียด รอบคอบ เป็นระบบ","สนใจวิทยาศาสตร์ คณิตศาสตร์ เทคโนโลยี"],"works":["งานวิจัย ทดลอง ค้นคว้า","งานวิเคราะห์ข้อมูล วางแผน แก้ปัญหา","งานที่ใช้ความรู้เฉพาะทาง","งานที่ต้องคิดเชิงตรรกะ"],"careers":["นักวิทยาศาสตร์","แพทย์","นักวิจัย","นักเคมี","นักชีววิทยา","โปรแกรมเมอร์","นักวิเคราะห์ข้อมูล","วิศวกรซอฟต์แวร์","นักเศรษฐศาสตร์","นักสถิติ","นักจิตวิทยา","นักวิชาการสิ่งแวดล้อม","นักธรณีวิทยา","นักฟิสิกส์"]},"A":{"name":"Artistic","nick":"นักสร้างสรรค์","color":"#F5A93C","bg":"#FDEFD9","deep":"#BE7C18","tag":"ชอบจินตนาการ ความคิดสร้างสรรค์ ศิลปะและความงาม","traits":["มีจินตนาการสูง คิดนอกกรอบ","ชอบศิลปะ การออกแบบ ความงาม","ชอบแสดงออกทางความคิดและอารมณ์","รักอิสระ ไม่ชอบกฎเกณฑ์เข้มงวด"],"works":["งานศิลปะ งานออกแบบ","งานเขียน สื่อสาร สร้างสรรค์","งานบันเทิง การแสดง","งานที่มีอิสระในการแสดงออก"],"careers":["นักออกแบบกราฟิก","นักเขียน","ศิลปิน/จิตรกร","นักออกแบบแฟชั่น","นักออกแบบภายใน","นักโฆษณา","นักตัดต่อวิดีโอ","นักดนตรี","โปรดิวเซอร์","ช่างภาพ","นักแสดง","ผู้กำกับภาพยนตร์","นักวาดภาพประกอบ","นักแต่งเพลง"]},"S":{"name":"Social","nick":"นักช่วยเหลือ","color":"#7CC36A","bg":"#E8F6E3","deep":"#4E9A3C","tag":"ชอบช่วยเหลือผู้อื่น ทำงานกับคน ให้คำปรึกษาและแนะนำ","traits":["เป็นมิตร อบอุ่น เข้าใจผู้อื่น","ชอบช่วยเหลือ ดูแลคนรอบข้าง","ชอบสอน แนะนำ ให้คำปรึกษา","อดทน ใจเย็น มีความรับผิดชอบ"],"works":["งานที่เกี่ยวกับการช่วยเหลือผู้คน","งานสอน อบรม ให้คำปรึกษา","งานบริการสังคม","งานพัฒนาคนและชุมชน"],"careers":["ครู/อาจารย์","พยาบาล","นักสังคมสงเคราะห์","นักกายภาพบำบัด","นักจิตวิทยาคลินิก","นักพัฒนาการเด็ก","นักพัฒนาชุมชน","นักสาธารณสุข","ผู้ประสานงานโครงการ","นักแนะแนว","เจ้าหน้าที่บริการสังคม","พยาบาลชุมชน"]},"E":{"name":"Enterprising","nick":"นักริเริ่ม","color":"#A77BC9","bg":"#F0E7F8","deep":"#7B4FA0","tag":"ชอบเป็นผู้นำ ความท้าทาย โน้มน้าวและจูงใจผู้อื่น","traits":["มั่นใจในตนเอง ชอบเป็นผู้นำ","กล้าตัดสินใจ กล้าเสี่ยง","ชอบเจรจา โน้มน้าว จูงใจ","กระตือรือร้น มองหาโอกาสใหม่"],"works":["งานบริหาร จัดการ","งานขาย การตลาด ธุรกิจ","งานเจรจา ประชาสัมพันธ์","งานที่มีเป้าหมายและผลตอบแทน"],"careers":["ผู้ประกอบการ","ผู้จัดการ","นักธุรกิจ","ผู้บริหารองค์กร","นักการตลาด","นักพัฒนาธุรกิจ","นักวางแผนการเงิน","เจ้าของธุรกิจส่วนตัว","นายหน้าประกันภัย","นักบริหารงานขาย","พิธีกร/ผู้ประกาศข่าว","ที่ปรึกษาธุรกิจ","ผู้จัดการโครงการ","นักวิเคราะห์การลงทุน"]},"C":{"name":"Conventional","nick":"นักจัดระบบ","color":"#4FBFC4","bg":"#E0F5F5","deep":"#2A8A8F","tag":"ชอบความเป็นระเบียบ ตัวเลข ข้อมูล กฎเกณฑ์ และรายละเอียด","traits":["รักความเป็นระเบียบ ทำงานเป็นขั้นตอน","ละเอียด รอบคอบกับตัวเลขและข้อมูล","ชอบกฎเกณฑ์ที่ชัดเจน","อดทน ซื่อสัตย์ มีความรับผิดชอบ"],"works":["งานธุรการ งานเอกสาร","งานบัญชี การเงิน","งานจัดเก็บและตรวจสอบข้อมูล","งานที่เกี่ยวกับกฎหมาย/นโยบาย"],"careers":["นักบัญชี","เจ้าหน้าที่ธุรการ","พนักงานการเงิน","เจ้าหน้าที่พัสดุ","เจ้าหน้าที่ประกันภัย","ผู้ช่วยตรวจสอบบัญชี","เจ้าหน้าที่จัดซื้อ","เลขานุการ","นักวิเคราะห์นโยบาย","บรรณารักษ์","เจ้าหน้าที่ตรวจสอบภายใน","เจ้าหน้าที่ทรัพยากรบุคคล","เจ้าหน้าที่ฝ่ายทะเบียน"]}},"items":[{"t":"R","x":"ฉันชอบลงมือทำมากกว่านั่งอ่านหรือฟังนาน ๆ"},{"t":"I","x":"ฉันชอบตั้งคำถามและหาคำตอบของสิ่งต่าง ๆ"},{"t":"A","x":"ฉันมีจินตนาการสูงและชอบคิดนอกกรอบ"},{"t":"S","x":"ฉันชอบช่วยเหลือและดูแลผู้อื่น"},{"t":"E","x":"ฉันชอบเป็นผู้นำและกล้าตัดสินใจ"},{"t":"C","x":"ฉันชอบความเป็นระเบียบและทำงานเป็นขั้นตอน"},{"t":"R","x":"ฉันชอบใช้เครื่องมือ เครื่องจักร หรือซ่อมของ"},{"t":"I","x":"ฉันชอบวิเคราะห์ข้อมูลและคิดอย่างมีเหตุผล"},{"t":"A","x":"ฉันชอบงานศิลปะ การออกแบบ หรือการสร้างสรรค์"},{"t":"S","x":"ฉันเข้าใจความรู้สึกของคนรอบข้างได้ดี"},{"t":"E","x":"ฉันชอบความท้าทายและกล้าเสี่ยง"},{"t":"C","x":"ฉันละเอียดรอบคอบกับตัวเลขและข้อมูล"},{"t":"R","x":"ฉันชอบกิจกรรมกลางแจ้งและงานที่ได้ใช้ร่างกาย"},{"t":"I","x":"ฉันสนุกกับการค้นคว้า ทดลอง หรือทำวิจัย"},{"t":"A","x":"ฉันชอบแสดงออกทางความคิดและอารมณ์"},{"t":"S","x":"ฉันชอบสอน แนะนำ หรือให้คำปรึกษา"},{"t":"E","x":"ฉันถนัดโน้มน้าวและจูงใจผู้อื่น"},{"t":"C","x":"ฉันชอบทำงานตามกฎเกณฑ์ที่ชัดเจน"},{"t":"R","x":"ฉันชอบงานที่เห็นผลลัพธ์เป็นรูปธรรมจับต้องได้"},{"t":"I","x":"ฉันเป็นคนละเอียด รอบคอบ และเป็นระบบ"},{"t":"A","x":"ฉันไม่ชอบงานซ้ำซากจำเจหรือกฎเกณฑ์เข้มงวด"},{"t":"S","x":"ฉันชอบทำงานร่วมกับผู้คนมากกว่าทำคนเดียว"},{"t":"E","x":"ฉันสนใจเรื่องธุรกิจ การขาย หรือการลงทุน"},{"t":"C","x":"ฉันถนัดงานเอกสาร จัดเก็บ หรือตรวจสอบข้อมูล"},{"t":"R","x":"ฉันถนัดแก้ปัญหาเฉพาะหน้ามากกว่าวางแผนยาว ๆ"},{"t":"I","x":"ฉันชอบเรียนวิทยาศาสตร์ คณิตศาสตร์ หรือเทคโนโลยี"},{"t":"A","x":"ฉันชอบงานที่มีอิสระในการแสดงออก"},{"t":"S","x":"ฉันรู้สึกดีเมื่อได้ทำสิ่งที่เป็นประโยชน์ต่อสังคม"},{"t":"E","x":"ฉันมองหาโอกาสใหม่ ๆ และชอบงานที่เห็นความสำเร็จ"},{"t":"C","x":"ฉันสบายใจเมื่อทุกอย่างมีแบบแผนแน่นอน"}],"order":["R","I","A","S","E","C"]};
+const T = D.types, ITEMS = D.items, ORDER = D.order;
+
+/* ---- hexagon nodes ---- */
+const hexPos = {R:[50,8], I:[86,29], A:[86,71], S:[50,92], E:[14,71], C:[14,29]};
+const hex = document.getElementById('hex');
+ORDER.forEach(k=>{
+  const t=T[k], [x,y]=hexPos[k];
+  const n=document.createElement('div');
+  n.className='node'; n.style.left=x+'%'; n.style.top=y+'%'; n.style.background=t.color;
+  n.innerHTML=`<span class="ltr">${k}</span><span class="nk">${t.nick}</span>`;
+  n.onclick=()=>{ const c=document.getElementById('tc-'+k); c.classList.add('open'); c.scrollIntoView({behavior:'smooth',block:'center'}); };
+  hex.appendChild(n);
+});
+
+/* ---- type cards ---- */
+const typesEl=document.getElementById('types');
+ORDER.forEach(k=>{
+  const t=T[k];
+  const card=document.createElement('div');
+  card.className='tcard'; card.id='tc-'+k;
+  card.style.background=t.bg; card.style.color=t.deep;
+  const traits=t.traits.map(x=>`<li>${x}</li>`).join('');
+  const works=t.works.map(x=>`<li>${x}</li>`).join('');
+  const careers=t.careers.map(c=>`<span class="chip" style="background:#fff;color:${t.deep}">${c}</span>`).join('');
+  card.innerHTML=`
+    <div class="top">
+      <div class="badge" style="background:${t.color}">${k}</div>
+      <div><h3 style="color:${t.deep}">${t.nick}</h3><div class="en">${t.name}</div></div>
+    </div>
+    <p class="tag" style="color:${t.deep}">${t.tag}</p>
+    <div class="more">ดูลักษณะนิสัย & อาชีพ</div>
+    <div class="detail" style="color:${t.deep}">
+      <h5>ลักษณะนิสัย</h5><ul>${traits}</ul>
+      <h5>งานที่เหมาะสม</h5><ul>${works}</ul>
+      <h5>อาชีพที่เชื่อมโยง</h5><div class="chips">${careers}</div>
+    </div>`;
+  card.querySelector('.more').onclick=(e)=>{e.stopPropagation();card.classList.toggle('open');};
+  card.onclick=()=>card.classList.toggle('open');
+  typesEl.appendChild(card);
+});
+
+/* ---- quiz ---- */
+const qlist=document.getElementById('qlist');
+const answers=new Array(ITEMS.length).fill(null);
+const labels=['ไม่ใช่เรา','บางครั้ง','ใช่เลย'];
+ITEMS.forEach((it,i)=>{
+  const row=document.createElement('div'); row.className='qrow';
+  row.innerHTML=`<div class="qtext"><span class="nq">${i+1}.</span>${it.x}</div>
+    <div class="scale">${labels.map((l,v)=>`<button class="sbtn v${v}" data-i="${i}" data-v="${v}">${l}</button>`).join('')}</div>`;
+  qlist.appendChild(row);
+});
+qlist.querySelectorAll('.sbtn').forEach(b=>b.onclick=()=>{
+  const i=+b.dataset.i, v=+b.dataset.v;
+  answers[i]=v;
+  b.parentElement.querySelectorAll('.sbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  updateProg();
+});
+function updateProg(){
+  const done=answers.filter(a=>a!==null).length;
+  document.getElementById('pnum').textContent='ตอบแล้ว '+done+' / '+ITEMS.length;
+  document.getElementById('pfill').style.width=(done/ITEMS.length*100)+'%';
+  const btn=document.getElementById('seeres');
+  btn.disabled=done<ITEMS.length;
+  document.getElementById('qnote').textContent = done<ITEMS.length ? ('เหลืออีก '+(ITEMS.length-done)+' ข้อ') : 'ครบแล้ว! กดดูผลได้เลย';
+}
+
+/* ---- result ---- */
+document.getElementById('seeres').onclick=()=>{
+  const score={R:0,I:0,A:0,S:0,E:0,C:0};
+  ITEMS.forEach((it,i)=>{ score[it.t]+=(answers[i]||0); });
+  const ranked=ORDER.slice().sort((a,b)=> score[b]-score[a] || ORDER.indexOf(a)-ORDER.indexOf(b));
+  const code=ranked.slice(0,3);
+  // big code
+  document.getElementById('bigcode').innerHTML=code.map(k=>`<span style="color:${T[k].color}">${k}</span>`).join('');
+  document.getElementById('codenames').textContent=code.map(k=>T[k].nick).join(' + ');
+  // bars
+  const maxScore=10;
+  document.getElementById('bars').innerHTML=ORDER.map(k=>{
+    const pct=Math.round(score[k]/maxScore*100), top=code.includes(k);
+    return `<div class="brow" style="${top?'':'opacity:.55'}">
+      <span class="bl"><span class="bd" style="background:${T[k].color}">${k}</span>${T[k].nick}</span>
+      <span class="btrack"><span class="bfill" style="background:${T[k].color}"></span></span>
+      <span class="bpct">${score[k]}</span></div>`;
+  }).join('');
+  // animate fills
+  requestAnimationFrame(()=>{ document.querySelectorAll('#bars .bfill').forEach((f,idx)=>{
+    f.style.width=Math.round(score[ORDER[idx]]/maxScore*100)+'%'; }); });
+  // top type card
+  const t1=T[code[0]];
+  document.getElementById('topcard').style.background=t1.bg;
+  document.getElementById('topcard').style.color=t1.deep;
+  document.getElementById('topcard').innerHTML=`
+    <h3 style="color:${t1.deep}"><span class="badge" style="background:${t1.color};width:42px;height:42px;font-size:1.4rem;border-radius:12px;">${code[0]}</span> คุณคือ ${t1.nick}</h3>
+    <div class="en">${t1.name}</div>
+    <p style="margin:12px 0 0;color:${t1.deep}">${t1.tag}</p>
+    <div class="career-h" style="color:${t1.deep}">อาชีพที่เชื่อมโยงกับ ${t1.nick}</div>
+    <div class="chips">${t1.careers.map(c=>`<span class="chip" style="background:#fff;color:${t1.deep}">${c}</span>`).join('')}</div>`;
+  document.getElementById('result').classList.add('show');
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+};
+
+document.getElementById('reset').onclick=()=>{
+  answers.fill(null);
+  qlist.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('result').classList.remove('show');
+  updateProg();
+  document.getElementById('quiz').scrollIntoView({behavior:'smooth'});
+};
+updateProg();
+</script>
+</body>
+</html>

@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCI-ENIGMA: แฟ้มลับอาชีพสายวิทย์</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts for Terminal/Mystery vibe -->
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --term-green: #10b981; /* Emerald 500 */
+            --term-glow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #050505;
+            color: var(--term-green);
+        }
+        .font-mono-term {
+            font-family: 'IBM Plex Mono', monospace;
+        }
+        .font-header {
+            font-family: 'Chakra Petch', sans-serif;
+        }
+        /* CRT Scanline Effect */
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.4;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #065f46; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--term-green); }
+
+        /* Glitch / Blinking cursor */
+        .cursor-blink::after {
+            content: '_';
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        .btn-terminal {
+            background: transparent;
+            border: 1px solid var(--term-green);
+            color: var(--term-green);
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .btn-terminal:hover, .btn-terminal.active {
+            background: var(--term-green);
+            color: #000;
+            box-shadow: var(--term-glow);
+        }
+
+        /* Typewriter effect container */
+        .typewriter-text { overflow: hidden; white-space: pre-wrap; margin: 0 auto; }
+        
+        .secret-folder:hover {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-emerald-500 selection:text-black overflow-x-hidden relative">
+<a href="index.html" style="position:fixed;top:12px;left:12px;z-index:99999;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#1E1B4B;font-family:'Prompt',system-ui,sans-serif;font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;box-shadow:0 6px 18px -6px rgba(30,27,75,.35);text-decoration:none;">← หน้าหลัก</a>
+
+    <div class="scanlines"></div>
+
+    <!-- Web Audio API (Terminal Sounds) -->
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'beep') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'access_granted') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            } else if (type === 'access_denied') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(100, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'typing') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(400 + Math.random()*200, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+            }
+        }
+    </script>
+
+    <!-- Header System -->
+    <header class="border-b border-emerald-900 bg-black z-40 p-4 sticky top-0">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-emerald-500 font-mono-term text-2xl animate-pulse">⚙</span>
+                <div>
+                    <h1 class="font-header text-xl font-bold tracking-widest text-emerald-400">PROJECT: SCI-ENIGMA</h1>
+                    <p class="font-mono-term text-[10px] text-emerald-700 uppercase">Classified Database // TH-Region</p>
+                </div>
+            </div>
+            
+            <nav class="flex gap-2 w-full md:w-auto font-mono-term text-xs">
+                <button onclick="switchTab('db')" id="btn-db" class="btn-terminal active flex-1 md:flex-none px-4 py-2 rounded">
+                    [1] Database
+                </button>
+                <button onclick="switchTab('cases')" id="btn-cases" class="btn-terminal flex-1 md:flex-none px-4 py-2 rounded">
+                    [2] Case Files
+                </button>
+                <button onclick="switchTab('decoder')" id="btn-decoder" class="btn-terminal flex-1 md:flex-none px-4 py-2 rounded">
+                    [3] Decoder
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-8">
+        
+        <!-- ==================== TAB 1: DATABASE ==================== -->
+        <section id="tab-content-db" class="block space-y-6">
+            <div class="border border-emerald-900 bg-black/50 p-4 rounded-lg">
+                <p class="font-mono-term text-xs text-emerald-500 cursor-blink">> SYSTEM_LOGIN: GUEST<br>> ACCESSING CLASSIFIED MAJORS...<br>> INSTRUCTION: เลือกเปิดแฟ้มข้อมูลลับเพื่อดูเบื้องหลังสายอาชีพของคณะวิทยาศาสตร์แต่ละสาขา</p>
+            </div>
+
+            <!-- Grid of Folders -->
+            <div id="db-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Detail Modal -->
+            <div id="file-modal" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm">
+                <div class="bg-[#050505] border border-emerald-500 w-full max-w-3xl rounded shadow-[0_0_20px_rgba(16,185,129,0.3)] flex flex-col max-h-[90vh]">
+                    <!-- Modal Header -->
+                    <div class="border-b border-emerald-800 p-3 flex justify-between items-center bg-emerald-950/30">
+                        <span class="font-mono-term text-xs text-emerald-400" id="modal-id">FILE ID: XXXX</span>
+                        <button onclick="closeModal()" class="text-emerald-500 hover:text-white font-mono-term text-xs border border-emerald-800 px-2 py-1 rounded bg-black">CLOSE [X]</button>
+                    </div>
+                    
+                    <!-- Modal Body -->
+                    <div class="p-6 overflow-y-auto space-y-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 border-2 border-emerald-500 flex items-center justify-center text-3xl shadow-[0_0_10px_rgba(16,185,129,0.5)] bg-black" id="modal-icon">🧪</div>
+                            <div>
+                                <h2 class="font-header text-2xl font-bold text-white tracking-wide" id="modal-title">สาขาเคมี</h2>
+                                <p class="text-emerald-600 font-mono-term text-xs" id="modal-alias">Alias: The Alchemists</p>
+                            </div>
+                        </div>
+
+                        <div class="border-l-2 border-emerald-700 pl-4">
+                            <p class="text-emerald-300 text-sm leading-relaxed" id="modal-desc">Description here...</p>
+                        </div>
+
+                        <!-- Top Secret Jobs -->
+                        <div>
+                            <h3 class="font-mono-term text-sm text-emerald-500 border-b border-emerald-900 pb-2 mb-4">>> CLASSIFIED CAREERS (อาชีพที่ซ่อนอยู่)</h3>
+                            <div id="modal-jobs" class="grid md:grid-cols-2 gap-4">
+                                <!-- Injected via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 2: CASE FILES ==================== -->
+        <section id="tab-content-cases" class="hidden space-y-6">
+            <div class="border border-emerald-900 bg-black/50 p-4 rounded-lg flex justify-between items-center">
+                <p class="font-mono-term text-xs text-emerald-500 cursor-blink">> INCOMING_TRANSMISSION: UNRESOLVED CASES<br>> REQUIREMENT: เลือกส่งผู้เชี่ยวชาญให้ตรงกับคดี</p>
+                <div class="text-right">
+                    <span class="block text-[10px] text-emerald-700 font-mono-term">CASES RESOLVED</span>
+                    <span class="font-header text-2xl text-emerald-400 font-bold" id="case-score">0 / 5</span>
+                </div>
+            </div>
+
+            <!-- Active Case Container -->
+            <div id="case-container" class="border border-emerald-700 bg-[#0a0a0a] rounded-lg p-6 relative overflow-hidden shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]">
+                <!-- Case Content -->
+                <div class="space-y-4 relative z-10">
+                    <div class="flex justify-between border-b border-emerald-900 pb-2">
+                        <span class="font-mono-term text-xs text-red-500 font-bold animate-pulse" id="case-level">THREAT LEVEL: HIGH</span>
+                        <span class="font-mono-term text-xs text-emerald-600" id="case-id">CASE #001</span>
+                    </div>
+                    
+                    <h3 class="font-header text-xl text-white" id="case-title">พบผงสีขาวปริศนาในที่เกิดเหตุ</h3>
+                    <div class="bg-black border border-emerald-900 p-4 font-mono-term text-sm text-emerald-400 h-24 overflow-y-auto">
+                        <span id="case-desc" class="typewriter-text">กำลังถอดรหัสข้อความ...</span>
+                    </div>
+
+                    <div class="pt-4">
+                        <p class="font-mono-term text-xs text-emerald-600 mb-3">> SELECT AGENT (เลือกส่งนักวิทยาศาสตร์สาขาที่ตรงกับคดี)</p>
+                        <div id="case-options" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <!-- Options injected -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Case Result Overlay -->
+                <div id="case-result" class="hidden absolute inset-0 bg-black/95 z-20 flex flex-col items-center justify-center p-8 text-center backdrop-blur-md">
+                    <h2 id="result-status" class="font-mono-term text-3xl font-bold mb-2">ACCESS GRANTED</h2>
+                    <p id="result-text" class="text-emerald-300 text-sm mb-6 max-w-md">Explanation...</p>
+                    <button onclick="nextCase()" class="btn-terminal px-6 py-2 rounded text-sm">> PROCEED_</button>
+                </div>
+            </div>
+
+            <!-- Final Report (Hidden initially) -->
+            <div id="cases-final" class="hidden border border-emerald-500 bg-emerald-900/20 p-8 text-center rounded-lg shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+                <span class="text-5xl block mb-4">🏆</span>
+                <h2 class="font-header text-2xl font-bold text-white mb-2">ปิดคดีทั้งหมดสำเร็จ!</h2>
+                <p class="text-emerald-400 text-sm mb-6">คุณได้พิสูจน์แล้วว่าเข้าใจบทบาทของนักวิทยาศาสตร์แต่ละสาขาในการแก้ปัญหาโลกความเป็นจริง</p>
+                <button onclick="restartCases()" class="btn-terminal px-6 py-2 rounded">> RESTART_SIMULATION</button>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: DECODER (QUIZ) ==================== -->
+        <section id="tab-content-decoder" class="hidden space-y-6">
+            <div class="border border-emerald-900 bg-black/50 p-4 rounded-lg text-center">
+                <h2 class="font-header text-xl font-bold text-emerald-400 cursor-blink">> CAREER_GENOME_DECODER</h2>
+                <p class="font-mono-term text-xs text-emerald-600 mt-2">ทำแบบทดสอบจิตวิทยาเพื่อค้นหาว่าคุณมี DNA ของนักวิทยาศาสตร์สาขาใด</p>
+            </div>
+
+            <div id="quiz-container" class="max-w-2xl mx-auto border border-emerald-700 bg-[#050505] p-6 md:p-8 rounded-lg shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                <div class="flex justify-between items-center mb-6 font-mono-term text-xs text-emerald-600 border-b border-emerald-900 pb-2">
+                    <span>PROCESSING...</span>
+                    <span id="quiz-progress">1/5</span>
+                </div>
+                
+                <h3 class="font-header text-lg md:text-xl text-white mb-6" id="quiz-question">Question here?</h3>
+                
+                <div id="quiz-options" class="space-y-3">
+                    <!-- Options -->
+                </div>
+            </div>
+
+            <!-- Quiz Result -->
+            <div id="quiz-result-container" class="hidden max-w-2xl mx-auto border-2 border-emerald-500 bg-[#050505] p-8 rounded-lg text-center shadow-[0_0_30px_rgba(16,185,129,0.2)] relative overflow-hidden">
+                <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-20 pointer-events-none"></div>
+                
+                <p class="font-mono-term text-xs text-emerald-500 mb-2">> DECRYPTION COMPLETE. YOUR MATCH:</p>
+                <div class="inline-block p-4 border border-emerald-500 rounded-full mb-4 bg-emerald-900/30">
+                    <span class="text-4xl" id="res-icon">🧬</span>
+                </div>
+                <h2 class="font-header text-3xl font-bold text-white tracking-widest mb-1" id="res-title">สาขาชีววิทยา</h2>
+                <p class="font-mono-term text-xs text-emerald-400 mb-6" id="res-alias">Alias: The Pathologist</p>
+                
+                <div class="bg-black border border-emerald-800 p-4 rounded text-left mb-6">
+                    <p class="text-emerald-300 text-sm leading-relaxed" id="res-desc">You are ...</p>
+                </div>
+
+                <div class="text-left mb-6">
+                    <p class="font-mono-term text-xs text-emerald-600 mb-2">> SUGGESTED_CAREER_PATHS:</p>
+                    <ul id="res-jobs" class="list-disc list-inside text-sm text-emerald-400 space-y-1">
+                        <!-- Jobs -->
+                    </ul>
+                </div>
+
+                <button onclick="restartQuiz()" class="btn-terminal px-6 py-2 rounded text-sm w-full md:w-auto">> RUN_DIAGNOSTIC_AGAIN</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- DATA & LOGIC -->
+    <script>
+        // --- 1. DATABASE ---
+        const sciMajors = [
+            {
+                id: "chem", icon: "🧪", title: "สาขาเคมี / เคมีอุตสาหกรรม", alias: "The Alchemists (นักเล่นแร่แปรธาตุ)",
+                desc: "ผู้เจาะลึกถึงโครงสร้างโมเลกุลของสสาร สร้างการเปลี่ยนแปลงทางเคมี ไม่ใช่แค่อยู่ในแล็บ แต่พวกเขาคือผู้อยู่เบื้องหลังผลิตภัณฑ์ทุกอย่างตั้งแต่เครื่องสำอาง สบู่ ไปจนถึงชิ้นส่วนยานยนต์",
+                jobs: [
+                    { name: "นักวิจัยและพัฒนาผลิตภัณฑ์ (R&D)", detail: "คิดค้นสูตรใหม่ๆ เครื่องสำอาง ยา อาหาร" },
+                    { name: "นักพิสูจน์หลักฐาน (Forensic Scientist)", detail: "ตรวจคราบเลือด เขม่าปืน สารเสพติดในที่เกิดเหตุ" },
+                    { name: "Technical Sales (ตัวแทนขายเคมีภัณฑ์)", detail: "ใช้ความรู้เคมีไปคุยธุรกิจ รายได้สูงมาก" }
+                ]
+            },
+            {
+                id: "bio", icon: "🧬", title: "สาขาชีววิทยา / จุลชีววิทยา", alias: "The Code Breakers (ผู้ถอดรหัสชีวิต)",
+                desc: "ผู้ศึกษาความลับของสิ่งมีชีวิต ตั้งแต่แบคทีเรียตัวจิ๋วไปจนถึงระบบนิเวศน์ขนาดใหญ่ ควบคุมโรคระบาด และคิดค้นเทคโนโลยีชีวภาพ",
+                jobs: [
+                    { name: "นักวิจัยทางการแพทย์", detail: "ศึกษาไวรัส พัฒนาวัคซีนและตัวยาในห้องแล็บ" },
+                    { name: "นักระบาดวิทยา (Epidemiologist)", detail: "ติดตามและวิเคราะห์การแพร่กระจายของโรคระบาด" },
+                    { name: "นักวิทยาศาสตร์ควบคุมเชื้อ (Microbiologist)", detail: "คุมเชื้อจุลินทรีย์ในอุตสาหกรรมอาหารและเครื่องดื่ม" }
+                ]
+            },
+            {
+                id: "physics", icon: "⚛️", title: "สาขาฟิสิกส์", alias: "The Reality Benders (ผู้ดัดแปลงกฎฟิสิกส์)",
+                desc: "ผู้ควบคุมพลังงานและกฎของธรรมชาติ เข้าใจเรื่องคลื่น รังสี เลเซอร์ และกลศาสตร์ นำไปประยุกต์ใช้ในอุตสาหกรรมไฮเทคและการแพทย์",
+                jobs: [
+                    { name: "นักฟิสิกส์การแพทย์", detail: "คำนวณโดสรังสีรักษาโรคมะเร็ง ทำงานกับรังสีแพทย์ใน รพ." },
+                    { name: "นักธรณีฟิสิกส์", detail: "ใช้คลื่นวิเคราะห์ชั้นหิน สำรวจหาน้ำมันหรือแหล่งแร่" },
+                    { name: "นักมาตรวิทยา", detail: "สอบเทียบเครื่องมือวัดระดับสูงในโรงงานอุตสาหกรรม" }
+                ]
+            },
+            {
+                id: "math", icon: "📐", title: "สาขาคณิตศาสตร์ / สถิติ", alias: "The Prophesiers (ผู้ทำนายอนาคต)",
+                desc: "ผู้เปลี่ยนตัวเลขที่ซับซ้อนให้กลายเป็นข้อมูลล้ำค่า พวกเขาสามารถทำนายความเสี่ยงทางธุรกิจ ประเมินความน่าจะเป็น และสร้างโมเดลคณิตศาสตร์ที่ขับเคลื่อนโลกการเงิน",
+                jobs: [
+                    { name: "นักคณิตศาสตร์ประกันภัย (Actuary)", detail: "ประเมินความเสี่ยงและออกแบบกรมธรรม์ (รายได้สูงจัด)" },
+                    { name: "นักวิเคราะห์ข้อมูล (Data Analyst)", detail: "แปลงข้อมูลสถิติเป็น Insight เพื่อวางกลยุทธ์บริษัท" },
+                    { name: "นักวิเคราะห์ความเสี่ยงการลงทุน", detail: "ทำงานในธนาคาร ทายทิศทางกราฟเศรษฐกิจ" }
+                ]
+            },
+            {
+                id: "cs", icon: "💻", title: "สาขาวิทยาการคอมพิวเตอร์ / IT", alias: "The Matrix Weavers (ผู้ถักทอโลกไซเบอร์)",
+                desc: "ผู้สร้างสรรค์ระบบตรรกะในโลกดิจิทัล เปลี่ยนบรรทัดโค้ดให้กลายเป็นแอปพลิเคชัน โครงข่าย AI และระบบความปลอดภัยระดับโลก",
+                jobs: [
+                    { name: "โปรแกรมเมอร์ / Software Developer", detail: "เขียนโค้ดสร้างแอป เว็บไซต์ หรือระบบหลังบ้าน" },
+                    { name: "นักวิทยาศาสตร์ข้อมูล (Data Scientist)", detail: "สร้าง AI/Machine Learning เพื่อทำนายพฤติกรรม" },
+                    { name: "Cybersecurity Specialist", detail: "แฮกเกอร์หมวกขาว ป้องกันระบบจากการถูกเจาะข้อมูล" }
+                ]
+            },
+            {
+                id: "food", icon: "🥫", title: "สาขาวิทยาศาสตร์การอาหาร", alias: "The Elixir Crafters (ผู้ปรุงน้ำอมฤต)",
+                desc: "ไม่ได้แค่ทำอาหารให้อร่อย แต่คือการใช้หลักวิทยาศาสตร์ถนอมอาหาร แปรรูป ควบคุมคุณภาพไม่ให้มีเชื้อปนเปื้อน และยืดอายุให้อยู่ได้นาน",
+                jobs: [
+                    { name: "ผู้ควบคุมกระบวนการผลิต (QA/QC)", detail: "คุมโรงงานอาหารให้ได้มาตรฐาน GMP, HACCP" },
+                    { name: "Food R&D", detail: "คิดค้นสูตรขนม เครื่องดื่ม Plant-based รสชาติใหม่ๆ" },
+                    { name: "นักวิชาการอาหารและยา (อย.)", detail: "ตรวจประเมินความปลอดภัยของสินค้าบริโภค" }
+                ]
+            },
+            {
+                id: "env", icon: "🌍", title: "สาขาวิทยาศาสตร์สิ่งแวดล้อม", alias: "The Earth Wardens (ผู้พิทักษ์โลก)",
+                desc: "ผู้ต่อกรกับมลพิษ วิเคราะห์ระดับสารพิษในน้ำ อากาศ ดิน เพื่อหาวิธีแก้ไขและประเมินผลกระทบก่อนการก่อสร้างโครงสร้างขนาดใหญ่",
+                jobs: [
+                    { name: "ผู้ชำนาญการสิ่งแวดล้อม (EIA)", detail: "ประเมินและจัดทำรายงานผลกระทบก่อนสร้างตึก/โรงงาน" },
+                    { name: "เจ้าหน้าที่สิ่งแวดล้อมโรงงาน", detail: "ดูแลระบบบำบัดน้ำเสีย กากอุตสาหกรรม" },
+                    { name: "นักวิชาการสิ่งแวดล้อม", detail: "ทำงานกรมควบคุมมลพิษ กระทรวงทรัพยากรฯ" }
+                ]
+            }
+        ];
+
+        // --- 2. CASES DATA ---
+        const cases = [
+            {
+                id: "C-001", level: "THREAT: MEDIUM", title: "คดีผงสีขาวปริศนาในที่เกิดเหตุ",
+                desc: "พบสารตกค้างสีขาวไม่มีกลิ่นในแก้วกาแฟของผู้บริหารที่หมดสติไป เราต้องการใครสักคนมาสกัดหาองค์ประกอบของโมเลกุลในห้องแล็บด่วน!",
+                correct: "chem",
+                explanation: "ถูกต้อง! นักเคมี (สายนักพิสูจน์หลักฐาน/Forensic) เชี่ยวชาญการวิเคราะห์สารประกอบด้วยเครื่องมือทางเคมี เช่น GC-MS เพื่อแยกแยะว่ามันคือยาพิษ น้ำตาล หรือยาสลบ",
+                options: [{id:"bio", label:"[🧬] นักจุลชีววิทยา"}, {id:"chem", label:"[🧪] นักเคมี"}, {id:"math", label:"[📐] นักสถิติ"}, {id:"env", label:"[🌍] นักสิ่งแวดล้อม"}]
+            },
+            {
+                id: "C-002", level: "THREAT: HIGH", title: "การโจมตีระบบธนาคารแห่งชาติ",
+                desc: "เซิร์ฟเวอร์กลางถูกแฮก มีการฝัง Malware ล่องหนที่ดึงเงินออกทีละ 0.01 บาท เราต้องการคนมาไล่ล่าโค้ดและสร้างกำแพงไฟป้องกันใหม่",
+                correct: "cs",
+                explanation: "แม่นยำมาก! ผู้เชี่ยวชาญด้านวิทยาการคอมพิวเตอร์ (Cybersecurity) คือผู้ที่อ่านโค้ดออกและสามารถตามรอย (Trace) แฮกเกอร์ รวมถึงสร้างระบบรักษาความปลอดภัย (Firewall) ได้",
+                options: [{id:"cs", label:"[💻] นักวิทยาการคอมฯ"}, {id:"physics", label:"[⚛️] นักฟิสิกส์"}, {id:"math", label:"[📐] นักคณิตศาสตร์"}, {id:"chem", label:"[🧪] นักเคมี"}]
+            },
+            {
+                id: "C-003", level: "THREAT: CRITICAL", title: "ประเมินความพินาศหากพายุเข้าเมือง",
+                desc: "บริษัทยักษ์ใหญ่ต้องการซื้อประกันความคุ้มครองภัยพิบัติล่วงหน้า 10 ปี ใครสามารถเอาข้อมูลสถิติพายุย้อนหลัง 100 ปี มาคำนวณเบี้ยประกันความเสี่ยงนี้ได้บ้าง?",
+                correct: "math",
+                explanation: "เยี่ยมมาก! อาชีพนี้เรียกว่า 'นักคณิตศาสตร์ประกันภัย (Actuary)' ใช้หลักสถิติและความน่าจะเป็นมาประเมินความเสี่ยงและตั้งราคา ซึ่งเป็นอาชีพที่ค่าตัวสูงมากในตลาดแรงงาน!",
+                options: [{id:"env", label:"[🌍] นักสิ่งแวดล้อม"}, {id:"bio", label:"[🧬] นักชีววิทยา"}, {id:"math", label:"[📐] นักคณิตศาสตร์ประกันภัย"}, {id:"physics", label:"[⚛️] นักฟิสิกส์"}]
+            },
+            {
+                id: "C-004", level: "THREAT: HIGH", title: "เครื่องสแกนสมอง (MRI) ให้ภาพบิดเบี้ยว",
+                desc: "ผู้ป่วยกำลังรอการรักษามะเร็ง แต่เครื่องฉายรังสีและ MRI ในโรงพยาบาลทำงานผิดพลาด ปล่อยคลื่นแม่เหล็กไม่คงที่ ใครคือคนที่ดูแลระบบนี้ร่วมกับหมอ?",
+                correct: "physics",
+                explanation: "ถูกต้อง! นี่คือหน้าที่ของ 'นักฟิสิกส์การแพทย์' พวกเขาจะคำนวณโดสรังสี ปรับเทียบคลื่นแม่เหล็กไฟฟ้าให้ทำงานแม่นยำ เพื่อความปลอดภัยสูงสุดของผู้ป่วย",
+                options: [{id:"cs", label:"[💻] โปรแกรมเมอร์"}, {id:"physics", label:"[⚛️] นักฟิสิกส์การแพทย์"}, {id:"chem", label:"[🧪] นักเคมี"}, {id:"food", label:"[🥫] นักวิทย์ฯ อาหาร"}]
+            },
+            {
+                id: "C-005", level: "THREAT: CRITICAL", title: "วิกฤตปลากระป๋องมรณะ",
+                desc: "มีรายงานคนท้องร่วงเฉียบพลันหลังทานปลากระป๋องลอตใหม่ ต้องมีผู้เชี่ยวชาญไปตรวจสอบสายพานการผลิตและหาแบคทีเรียที่ปนเปื้อนในกระบวนการถนอมอาหารด่วน!",
+                correct: "food",
+                explanation: "เฉียบขาด! นักวิทยาศาสตร์การอาหาร (QA/QC) และนักจุลชีววิทยาอาหาร จะเข้าไปตรวจหาเชื้อ คุมอุณหภูมิฆ่าเชื้อ (Sterilization) และสั่งระงับลอตที่มีปัญหาทันที",
+                options: [{id:"food", label:"[🥫] นักวิทยาศาสตร์การอาหาร"}, {id:"math", label:"[📐] นักสถิติ"}, {id:"env", label:"[🌍] นักสิ่งแวดล้อม"}, {id:"physics", label:"[⚛️] นักฟิสิกส์"}]
+            }
+        ];
+
+        // --- 3. QUIZ DATA ---
+        const questions = [
+            {
+                q: "1. หากคุณเจอตู้เซฟล็อครหัสที่เปิดไม่ได้ คุณจะพยายามเปิดมันด้วยวิธีไหน?",
+                opts: [
+                    { t: "A) นั่งคำนวณความน่าจะเป็นของรหัสผ่าน (Math/Stat)", v: "math" },
+                    { t: "B) ใช้กรดกัดกร่อนบานพับให้ละลาย (Chem)", v: "chem" },
+                    { t: "C) แฮกแผงวงจรอิเล็กทรอนิกส์ (CS)", v: "cs" },
+                    { t: "D) ใช้คลื่นเสียง/รังสีสแกนดูกลไกข้างใน (Physics)", v: "physics" }
+                ]
+            },
+            {
+                q: "2. เวลาดูหนังระทึกขวัญ คุณมักจะอินหรือตั้งคำถามกับฉากไหนมากที่สุด?",
+                opts: [
+                    { t: "A) ฉากพิสูจน์ศพ หาเชื้อไวรัสซอมบี้ (Bio)", v: "bio" },
+                    { t: "B) ฉากเตือนภัยสึนามิหรือโลกแตกเพราะมลพิษ (Env)", v: "env" },
+                    { t: "C) ฉากพระเอกเขียนโค้ดแฮกระบบคอมฯ (CS)", v: "cs" },
+                    { t: "D) ฉากปรุงยาถอนพิษในห้องแล็บใต้ดิน (Chem)", v: "chem" }
+                ]
+            },
+            {
+                q: "3. ในโลกการทำงาน คุณอยากมีปฏิสัมพันธ์กับสิ่งใดมากที่สุด?",
+                opts: [
+                    { t: "A) ตัวเลข กราฟ และ Data มหาศาล (Math)", v: "math" },
+                    { t: "B) กล้องจุลทรรศน์ หลอดทดลอง และสารละลาย (Chem/Bio)", v: "chem" }, // Can bias to Chem
+                    { t: "C) โน้ตบุ๊ก 2 จอ โค้ดสีเขียว และคีย์บอร์ดเงียบๆ (CS)", v: "cs" },
+                    { t: "D) ลงพื้นที่สำรวจธรรมชาติ แหล่งน้ำ ป่าไม้ (Env)", v: "env" }
+                ]
+            },
+            {
+                q: "4. ปัญหาโลกแตกข้อไหนที่คุณอยากคิดค้นวิธีแก้มากที่สุด?",
+                opts: [
+                    { t: "A) คิดค้นแหล่งอาหารแห่งอนาคตที่ไม่มีวันเน่าเสีย (Food)", v: "food" },
+                    { t: "B) สร้าง AI ที่ฉลาดพอจะช่วยมนุษย์ทำงานทุกอย่าง (CS)", v: "cs" },
+                    { t: "C) รักษาโรคมะเร็งด้วยรังสีเป้าหมายที่แม่นยำ (Physics)", v: "physics" },
+                    { t: "D) สร้างแบคทีเรียกลายพันธุ์ที่กินขยะพลาสติกได้ (Bio)", v: "bio" }
+                ]
+            },
+            {
+                q: "5. เพื่อนๆ มักจะบอกว่าคุณเป็นคนแบบไหน?",
+                opts: [
+                    { t: "A) สายคิดวิเคราะห์ มีเหตุผล ตัวเลขเป๊ะ (Math)", v: "math" },
+                    { t: "B) สายเทคฯ มีปัญหาเรื่องคอมฯ/เน็ตเรียกหาคุณ (CS)", v: "cs" },
+                    { t: "C) สายชอบตั้งคำถาม ช่างสังเกต ชอบทดลองทำอาหาร/ผสมนู่นนี่ (Food)", v: "food" },
+                    { t: "D) สายรักษ์โลก สนใจข่าวสุขภาพและสิ่งแวดล้อม (Env)", v: "env" }
+                ]
+            }
+        ];
+
+
+        // --- LOGIC ---
+        
+        // Tab System
+        function switchTab(tab) {
+            playSound('beep');
+            ['db', 'cases', 'decoder'].forEach(t => {
+                document.getElementById(`tab-content-${t}`).classList.add('hidden');
+                document.getElementById(`btn-${t}`).classList.remove('active');
+            });
+            document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
+            document.getElementById(`btn-${tab}`).classList.add('active');
+        }
+
+        // --- Database Logic ---
+        function initDB() {
+            const grid = document.getElementById('db-grid');
+            grid.innerHTML = '';
+            sciMajors.forEach((major, idx) => {
+                const folder = document.createElement('button');
+                folder.className = "secret-folder border border-emerald-800 bg-[#0a0a0a] p-4 flex flex-col items-center justify-center text-center rounded transition-all cursor-pointer h-32 relative overflow-hidden group";
+                folder.onclick = () => openModal(major.id);
+                folder.innerHTML = `
+                    <div class="absolute top-0 left-0 w-full h-1 bg-emerald-900 group-hover:bg-emerald-500 transition-colors"></div>
+                    <span class="text-4xl mb-2 grayscale group-hover:grayscale-0 transition-all">${major.icon}</span>
+                    <span class="font-mono-term text-[10px] text-emerald-600 group-hover:text-emerald-400">FILE_${idx+1}</span>
+                    <span class="font-header text-sm text-white mt-1 group-hover:text-emerald-300 line-clamp-1">${major.title.split('/')[0]}</span>
+                `;
+                grid.appendChild(folder);
+            });
+        }
+
+        function openModal(id) {
+            playSound('beep');
+            const major = sciMajors.find(m => m.id === id);
+            document.getElementById('modal-id').innerText = `FILE ID: ${id.toUpperCase()}_DB`;
+            document.getElementById('modal-icon').innerText = major.icon;
+            document.getElementById('modal-title').innerText = major.title;
+            document.getElementById('modal-alias').innerText = `Alias: ${major.alias}`;
+            document.getElementById('modal-desc').innerText = major.desc;
+            
+            const jobsContainer = document.getElementById('modal-jobs');
+            jobsContainer.innerHTML = major.jobs.map(job => `
+                <div class="bg-[#0a0a0a] border border-emerald-800 p-3 rounded">
+                    <h4 class="font-header text-emerald-300 text-sm font-bold">${job.name}</h4>
+                    <p class="font-mono-term text-[10px] text-emerald-500 mt-1">${job.detail}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('file-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            playSound('beep');
+            document.getElementById('file-modal').classList.add('hidden');
+        }
+
+        // --- Cases Logic ---
+        let currentCaseIdx = 0;
+        let caseScore = 0;
+
+        // Typewriter effect function
+        function typeWriter(elementId, text, speed = 20) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = '';
+            let i = 0;
+            playSound('typing');
+            
+            function type() {
+                if (i < text.length) {
+                    el.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        function loadCase() {
+            if (currentCaseIdx >= cases.length) {
+                document.getElementById('case-container').classList.add('hidden');
+                document.getElementById('cases-final').classList.remove('hidden');
+                playSound('access_granted');
+                return;
+            }
+
+            const c = cases[currentCaseIdx];
+            document.getElementById('case-score').innerText = `${caseScore} / ${cases.length}`;
+            document.getElementById('case-id').innerText = `CASE #${currentCaseIdx + 1}`;
+            document.getElementById('case-level').innerText = c.level;
+            document.getElementById('case-title').innerText = c.title;
+            
+            // Trigger typewriter
+            typeWriter('case-desc', c.desc, 15);
+
+            const optionsContainer = document.getElementById('case-options');
+            optionsContainer.innerHTML = '';
+            c.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "btn-terminal p-3 rounded font-mono-term text-xs text-left hover:pl-5 transition-all";
+                btn.innerText = opt.label;
+                btn.onclick = () => checkCase(opt.id);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('case-result').classList.add('hidden');
+        }
+
+        function checkCase(selectedId) {
+            const c = cases[currentCaseIdx];
+            const resultDiv = document.getElementById('case-result');
+            const statusEl = document.getElementById('result-status');
+            const textEl = document.getElementById('result-text');
+
+            resultDiv.classList.remove('hidden');
+
+            if (selectedId === c.correct) {
+                playSound('access_granted');
+                statusEl.innerText = ">> ACCESS GRANTED // SUCCESS";
+                statusEl.className = "font-mono-term text-2xl font-bold mb-2 text-emerald-400";
+                textEl.innerText = c.explanation;
+                textEl.className = "text-emerald-300 text-sm mb-6 max-w-md";
+                if(currentCaseIdx === caseScore) caseScore++; // increment only first try
+            } else {
+                playSound('access_denied');
+                statusEl.innerText = ">> ACCESS DENIED // EXPERT MISMATCH";
+                statusEl.className = "font-mono-term text-2xl font-bold mb-2 text-red-500 animate-pulse";
+                textEl.innerText = "นักวิทย์สาขานี้ไม่ตรงกับเนื้องาน! ลองอ่านรายละเอียดคดีอีกครั้ง หรือกลับไปเช็คข้อมูลใน Database";
+                textEl.className = "text-red-400 text-sm mb-6 max-w-md";
+                // Modify button temporarily to retry instead of next
+                const btn = resultDiv.querySelector('button');
+                btn.innerText = "> RETRY_";
+                btn.onclick = () => { resultDiv.classList.add('hidden'); btn.innerText = "> PROCEED_"; btn.onclick = nextCase; };
+                return; // Stop here, don't increment idx
+            }
+        }
+
+        function nextCase() {
+            playSound('beep');
+            currentCaseIdx++;
+            loadCase();
+        }
+
+        function restartCases() {
+            currentCaseIdx = 0;
+            caseScore = 0;
+            document.getElementById('cases-final').classList.add('hidden');
+            document.getElementById('case-container').classList.remove('hidden');
+            loadCase();
+        }
+
+        // --- Decoder Quiz Logic ---
+        let quizIdx = 0;
+        let quizAnswers = [];
+
+        function loadQuiz() {
+            if (quizIdx >= questions.length) {
+                calculateQuiz();
+                return;
+            }
+            const q = questions[quizIdx];
+            document.getElementById('quiz-progress').innerText = `${quizIdx + 1}/${questions.length}`;
+            
+            // Reapply typewriter for question to give it that terminal feel
+            typeWriter('quiz-question', q.q, 20);
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+            
+            // Delay showing options slightly
+            setTimeout(() => {
+                q.opts.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full text-left p-3 border border-emerald-900 bg-black text-emerald-400 font-mono-term text-xs md:text-sm hover:border-emerald-500 hover:bg-emerald-950/30 transition-all rounded";
+                    btn.innerText = opt.t;
+                    btn.onclick = () => { playSound('beep'); quizAnswers.push(opt.v); quizIdx++; loadQuiz(); };
+                    optionsContainer.appendChild(btn);
+                });
+            }, q.q.length * 20 + 200);
+        }
+
+        function calculateQuiz() {
+            playSound('access_granted');
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-result-container').classList.remove('hidden');
+
+            // Count frequencies
+            const counts = {};
+            quizAnswers.forEach(a => counts[a] = (counts[a] || 0) + 1);
+            
+            // Find max
+            let topMajorId = 'chem';
+            let maxCount = 0;
+            for (const [key, value] of Object.entries(counts)) {
+                if (value > maxCount) {
+                    maxCount = value;
+                    topMajorId = key;
+                }
+            }
+
+            const match = sciMajors.find(m => m.id === topMajorId) || sciMajors[0];
+
+            document.getElementById('res-icon').innerText = match.icon;
+            document.getElementById('res-title').innerText = match.title;
+            document.getElementById('res-alias').innerText = `Alias: ${match.alias}`;
+            document.getElementById('res-desc').innerText = `บุคลิกภาพของคุณเข้าข่าย ${match.title} เนื่องจากคุณมีแนวทางการแก้ปัญหาที่สอดคล้องกับธรรมชาติของสาขานี้ คุณชอบวิเคราะห์และจัดการกับปัญหาในสไตล์ที่เป็นเอกลักษณ์`;
+
+            const jobsList = document.getElementById('res-jobs');
+            jobsList.innerHTML = match.jobs.map(j => `<li>${j.name}</li>`).join('');
+        }
+
+        function restartQuiz() {
+            playSound('beep');
+            quizIdx = 0;
+            quizAnswers = [];
+            document.getElementById('quiz-result-container').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            loadQuiz();
+        }
+
+        // Initialize Everything
+        window.onload = () => {
+            initDB();
+            loadCase();
+            loadQuiz();
+        };
+    </script>
+</body>
+</html>

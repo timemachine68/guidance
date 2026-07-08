@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แผนที่สู่มหาวิทยาลัยในฝัน – University Roadmap</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', 'TH SarabunPSK', sans-serif;
+    background: linear-gradient(160deg, #e0f4ff 0%, #c8eaff 40%, #d8f5e8 100%);
+    min-height: 100vh;
+    padding: 16px;
+    font-size: 15px;
+    color: #222;
+  }
+
+  /* ── SAVE BUTTON BAR ── */
+  .save-bar {
+    max-width: 940px;
+    margin: 0 auto 12px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  .btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: linear-gradient(135deg, #2176c7 0%, #0dbfa0 100%);
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    border-radius: 24px;
+    padding: 10px 22px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(33,118,199,0.35);
+    transition: opacity .2s, transform .15s;
+    user-select: none;
+  }
+  .btn-save:active { transform: scale(.97); opacity: .9; }
+  .btn-save svg { width:18px; height:18px; fill:currentColor; flex-shrink:0; }
+  #save-status {
+    font-size: 13px;
+    color: #1a4fa0;
+    font-weight: 700;
+    align-self: center;
+    display: none;
+  }
+  #submit-status {
+    font-size: 13px;
+    font-weight: 700;
+    align-self: center;
+  }
+
+  /* ── PAGE WRAPPER ── */
+  .page {
+    max-width: 940px;
+    margin: 0 auto;
+    background: linear-gradient(170deg, #f0faff 0%, #e8f7ff 60%, #edfaf3 100%);
+    border-radius: 24px;
+    border: 3px solid #6bbfef;
+    box-shadow: 0 8px 32px rgba(60,140,220,.15);
+    overflow: hidden;
+    padding-bottom: 24px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #2176c7 0%, #1a9be0 50%, #0dbfa0 100%);
+    padding: 22px 80px 18px;
+    text-align: center;
+    position: relative;
+  }
+  .header-badge {
+    position: absolute; top: 16px; left: 16px;
+    background: #ff4e4e; color: #fff; font-weight: 800; font-size: 13px;
+    border-radius: 14px; padding: 6px 12px; line-height: 1.3;
+    transform: rotate(-8deg); box-shadow: 0 3px 8px rgba(200,0,0,.3);
+  }
+  .header-cloud {
+    position: absolute; top: 14px; right: 16px;
+    background: #fff; color: #1a9be0; font-size: 12px; font-weight: 700;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    padding: 8px 14px; line-height: 1.4; text-align: center;
+    box-shadow: 0 3px 10px rgba(30,120,200,.2);
+  }
+  .header h1 { font-size: 26px; font-weight: 800; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,.25); letter-spacing: 1px; }
+  .header h2 { font-size: 36px; font-weight: 800; color: #fff700; text-shadow: 2px 2px 0 #e57c00, 0 4px 12px rgba(0,0,0,.3); letter-spacing: 2px; }
+  .header-sub {
+    display: inline-block; margin-top: 6px;
+    background: #1a4fa0; color: #fff; font-size: 15px; font-weight: 700;
+    border-radius: 20px; padding: 5px 20px;
+  }
+
+  /* ── GRIDS ── */
+  .grid { display: grid; gap: 14px; padding: 16px 18px 0; }
+  .g3 { grid-template-columns: 1.1fr 1.2fr 0.9fr; }
+  .g1 { grid-template-columns: 1fr; }
+  .g2a { grid-template-columns: 1fr 1.4fr; }
+  .g3b { grid-template-columns: 1fr 1fr 1fr; }
+  .g3c { grid-template-columns: 1.1fr 1fr 1.1fr; }
+  .subtable-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: #fff; border-radius: 16px; padding: 14px 16px 16px;
+    box-shadow: 0 3px 12px rgba(60,140,220,.10); border: 2px solid #d0eaff;
+  }
+  .card-title { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .num {
+    display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 50%;
+    font-size: 17px; font-weight: 800; color: #fff; flex-shrink: 0;
+  }
+  .num-blue   { background: #2176c7; }
+  .num-red    { background: #e84040; }
+  .num-orange { background: #f58220; }
+  .num-purple { background: #8e44ad; }
+  .num-green  { background: #27ae60; }
+  .num-pink   { background: #e91e8c; }
+  .num-teal   { background: #0dbfa0; }
+  .card-title h3 { font-size: 16px; font-weight: 800; color: #1a4fa0; }
+
+  /* ── INPUTS ── */
+  input[type="text"], textarea {
+    width: 100%; border: none; border-bottom: 1.5px dotted #aac8e8;
+    background: transparent; font-family: inherit; font-size: 14px; color: #333;
+    padding: 3px 4px; outline: none; transition: border-color .2s;
+  }
+  input[type="text"]:focus, textarea:focus {
+    border-bottom-color: #2176c7; background: #f0f8ff;
+    border-radius: 4px 4px 0 0;
+  }
+  textarea { resize: none; }
+  .line-row { display: flex; align-items: flex-end; gap: 6px; margin-bottom: 8px; }
+  .line-label { white-space: nowrap; font-size: 14px; font-weight: 600; color: #555; min-width: 110px; }
+  .line-label.heart::before { content: "❤ "; color: #e84040; }
+
+  /* ── CHECKBOXES ── */
+  .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+  .checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 14px; }
+  .checkbox-item input[type="checkbox"] { width: 15px; height: 15px; accent-color: #2176c7; flex-shrink: 0; }
+
+  /* ── TABLES ── */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: #2176c7; color: #fff; font-weight: 700; padding: 6px 8px; text-align: center; border: 1px solid #aaa; }
+  td { border: 1px solid #ccc; padding: 4px 6px; vertical-align: middle; }
+  td:first-child { font-weight: 600; background: #eaf4ff; color: #1a4fa0; white-space: nowrap; }
+  td input[type="text"] { border-bottom: 1px dotted #bbb; font-size: 13px; }
+  tr:nth-child(even) td { background: #f7fbff; }
+  tr:nth-child(even) td:first-child { background: #ddeeff; }
+
+  /* ── COSTS ── */
+  .cost-row { display: flex; align-items: flex-end; gap: 6px; margin-bottom: 8px; }
+  .cost-label { font-size: 14px; font-weight: 600; color: #555; min-width: 130px; flex-shrink: 0; }
+  .cost-unit { font-size: 11px; color: #888; white-space: nowrap; padding-bottom: 3px; }
+  .cost-input { flex: 1; }
+  .total-row .cost-label { color: #e84040; font-weight: 800; }
+
+  /* ── CHECKLIST ── */
+  .check-list { list-style: none; }
+  .check-list li { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 14px; border-bottom: 1px dotted #cce0f5; }
+  .check-list li:last-child { border-bottom: none; }
+  .check-list input[type="checkbox"] { width: 16px; height: 16px; accent-color: #27ae60; flex-shrink: 0; }
+
+  /* ── GOAL ── */
+  .goal-line { display: flex; align-items: flex-end; gap: 6px; margin-bottom: 10px; }
+  .goal-label { font-size: 14px; font-weight: 600; color: #1a4fa0; min-width: 90px; }
+
+  /* ── MIDDLE BANNER ── */
+  .middle-banner {
+    background: linear-gradient(135deg, #ffe066 0%, #ffc33a 100%);
+    border-radius: 14px; text-align: center; padding: 16px 12px;
+    box-shadow: 0 4px 14px rgba(240,180,0,.25);
+  }
+  .middle-banner p { font-size: 17px; font-weight: 800; color: #7a3d00; line-height: 1.4; }
+  .middle-banner span { font-size: 21px; font-weight: 800; color: #a01a1a; }
+
+  /* ── MOTIVATE ── */
+  .motivate-box {
+    background: linear-gradient(135deg, #fff8f0 0%, #fff0fa 100%) !important;
+    border: 2px dashed #f093b0 !important;
+  }
+  .motivate-box h3 { color: #e91e8c; }
+
+  /* ── REMEMBER BAR ── */
+  .remember-bar {
+    background: linear-gradient(90deg, #1a4fa0 0%, #2176c7 50%, #0dbfa0 100%);
+    margin: 16px 18px 0; border-radius: 12px; padding: 10px 18px;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center;
+  }
+  .remember-bar .rb-label { font-size: 15px; font-weight: 900; color: #ffe066; }
+  .rb-item { display: flex; align-items: center; gap: 5px; color: #fff; font-size: 13px; font-weight: 700; }
+
+  /* ── FOOTER INFO ── */
+  .footer-info {
+    margin: 14px 18px 0; background: #fff; border-radius: 10px;
+    border: 2px solid #c0dff8; padding: 10px 16px;
+    display: flex; gap: 14px; flex-wrap: wrap;
+  }
+  .fi-item { display: flex; align-items: flex-end; gap: 6px; flex: 1; min-width: 140px; }
+  .fi-label { font-size: 14px; font-weight: 700; color: #1a4fa0; white-space: nowrap; }
+
+  /* ── DREAM ── */
+  .dream-label { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 4px; }
+  .dream-input { margin-bottom: 8px; }
+
+  /* ======================================================
+     RESPONSIVE — TABLET  (≤ 768px)
+  ====================================================== */
+  @media (max-width: 768px) {
+    body { padding: 10px; font-size: 14px; }
+    .save-bar { justify-content: center; }
+
+    .header { padding: 60px 16px 16px; }
+    .header h1 { font-size: 20px; }
+    .header h2 { font-size: 28px; }
+    .header-sub { font-size: 13px; }
+
+    /* all grids go single-column on tablet */
+    .grid.g3  { grid-template-columns: 1fr; }
+    .grid.g2a { grid-template-columns: 1fr; }
+    .grid.g3b { grid-template-columns: 1fr 1fr; }
+    .grid.g3c { grid-template-columns: 1fr; }
+    .subtable-grid { grid-template-columns: 1fr; }
+
+    .middle-banner { order: -1; }   /* banner before cards in section 9 area */
+
+    .cost-label { min-width: 110px; }
+    table { font-size: 12px; }
+    th, td { padding: 4px 5px; }
+  }
+
+  /* ======================================================
+     RESPONSIVE — MOBILE  (≤ 480px)
+  ====================================================== */
+  @media (max-width: 480px) {
+    body { padding: 6px; }
+    .header { padding: 60px 10px 14px; }
+    .header h1 { font-size: 17px; letter-spacing: 0; }
+    .header h2 { font-size: 22px; }
+    .header-badge { font-size: 11px; padding: 5px 9px; top: 10px; left: 10px; }
+    .header-cloud { font-size: 10px; padding: 6px 10px; top: 10px; right: 10px; }
+
+    .grid { padding: 10px 10px 0; gap: 10px; }
+    .grid.g3b { grid-template-columns: 1fr; }
+
+    .card { padding: 12px 12px 14px; border-radius: 12px; }
+    .card-title h3 { font-size: 15px; }
+
+    /* tables scroll horizontally on tiny screens */
+    .table-scroll { overflow-x: auto; }
+    table { min-width: 420px; }
+
+    .checkbox-grid { grid-template-columns: 1fr; }
+    .cost-label { min-width: 100px; font-size: 13px; }
+    .cost-unit { font-size: 10px; }
+
+    .remember-bar { margin: 12px 10px 0; padding: 10px 12px; }
+    .footer-info { margin: 10px 10px 0; padding: 8px 12px; gap: 8px; }
+    .fi-item { min-width: 100px; }
+
+    .btn-save { font-size: 14px; padding: 9px 18px; }
+  }
+
+  /* ── CAPTURE MODE (hide form chrome for screenshot) ── */
+  body.capturing .btn-save,
+  body.capturing .save-bar,
+  body.capturing #save-status { display: none !important; }
+  body.capturing input[type="text"],
+  body.capturing textarea {
+    border-bottom-color: transparent !important;
+    background: transparent !important;
+  }
+  body.capturing input[type="checkbox"] { outline: none; }
+</style>
+</head>
+<body>
+
+<!-- SAVE BAR -->
+<div class="save-bar">
+  <span id="save-status">⏳ กำลังบันทึก...</span>
+  <span id="submit-status"></span>
+  <button class="btn-save" id="submitBtn" onclick="submitToSheet()" style="background:linear-gradient(135deg, #27ae60 0%, #0dbfa0 100%);">
+    <svg viewBox="0 0 24 24"><path d="M12 2l9 4.5v11L12 22l-9-4.5v-11L12 2z" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><path d="M8 12l3 3 5-6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    ส่งข้อมูลเข้าระบบ
+  </button>
+  <button class="btn-save" onclick="saveAsImage()">
+    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10" style="fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/><line x1="12" y1="15" x2="12" y2="3" style="fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round"/></svg>
+    บันทึกเป็นรูปภาพ
+  </button>
+</div>
+
+<!-- PAGE -->
+<div class="page" id="roadmap-page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-badge">แจกฟรี!<br>กิจกรรมแนะแนว</div>
+    <div class="header-cloud">อนาคตดี<br>เริ่มที่การวางแผน</div>
+    <h1>แผนที่สู่มหาวิทยาลัยในฝัน</h1>
+    <h2>University Roadmap</h2>
+    <div class="header-sub">วางแผนวันนี้...ถึงฝันได้แน่นอน! 🎓</div>
+  </div>
+
+  <!-- ROW 1 -->
+  <div class="grid g3">
+
+    <!-- 1 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num num-blue">1</span>
+        <span>🔍</span>
+        <h3>รู้จักตัวเอง</h3>
+      </div>
+      <div class="line-row"><span class="line-label heart">ฉันชอบอะไร</span><input type="text" name="self_like"/></div>
+      <div class="line-row"><span class="line-label heart">ฉันเก่งอะไร</span><input type="text" name="self_good"/></div>
+      <div class="line-row"><span class="line-label heart">ฉันมีความสุขกับอะไร</span><input type="text" name="self_happy"/></div>
+      <div style="margin-top:6px;">
+        <div style="font-size:13px;font-weight:700;color:#555;margin-bottom:4px;">สิ่งที่ฉันภูมิใจและถนัด</div>
+        <textarea rows="3" name="self_proud" style="border:1px dotted #aac8e8;border-radius:6px;padding:4px 6px;width:100%;"></textarea>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num num-orange">2</span>
+        <span>🎓</span>
+        <h3>เลือกคณะที่สนใจ</h3>
+      </div>
+      <div class="checkbox-grid">
+        <label class="checkbox-item"><input type="checkbox" name="fac_med">แพทยศาสตร์</label>
+        <label class="checkbox-item"><input type="checkbox" name="fac_sci">วิทยาศาสตร์</label>
+        <label class="checkbox-item"><input type="checkbox" name="fac_eng">วิศวกรรมศาสตร์</label>
+        <label class="checkbox-item"><input type="checkbox" name="fac_nurse">พยาบาลศาสตร์</label>
+        <label class="checkbox-item"><input type="checkbox" name="fac_acc">บัญชี</label>
+        <label class="checkbox-item"><input type="checkbox" name="fac_biz">บริหารธุรกิจ</label>
+        <label class="checkbox-item"><input type="checkbox" name="fac_comm">นิเทศศาสตร์</label>
+        <label class="checkbox-item"><input type="checkbox" name="fac_art">ศิลปกรรมศาสตร์</label>
+        <label class="checkbox-item"><input type="checkbox" name="fac_law">นิติศาสตร์</label>
+        <label class="checkbox-item"><input type="checkbox" name="fac_it">เทคโนโลยีสารสนเทศ</label>
+        <label class="checkbox-item"><input type="checkbox" name="fac_edu">ครุศาสตร์/ศึกษาศาสตร์</label>
+        <label class="checkbox-item"><input type="checkbox" name="fac_other">อื่น ๆ <input type="text" name="fac_other_text" placeholder="ระบุ..." style="font-size:12px;max-width:70px;"/></label>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num num-purple">3</span>
+        <span>🏫</span>
+        <h3>มหาวิทยาลัยที่สนใจ</h3>
+      </div>
+      <div class="line-row"><span class="line-label">อันดับ 1</span><input type="text" name="uni_rank1"/></div>
+      <div style="border-bottom:1px dotted #c0d8f0;margin:6px 0;"></div>
+      <div class="line-row"><span class="line-label">อันดับ 2</span><input type="text" name="uni_rank2"/></div>
+      <div style="border-bottom:1px dotted #c0d8f0;margin:6px 0;"></div>
+      <div class="line-row"><span class="line-label">อันดับ 3</span><input type="text" name="uni_rank3"/></div>
+    </div>
+  </div>
+
+  <!-- ROW 2 -->
+  <div class="grid g1">
+
+    <!-- 4 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num num-red">4</span>
+        <span>📋</span>
+        <h3>คะแนนที่ต้องใช้</h3>
+      </div>
+      <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>รายการ</th>
+            <th>เป้าหมายของฉัน</th>
+            <th>คะแนนที่ต้องใช้<br><span style="font-weight:400;font-size:11px;">(โดยประมาณ)</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>GPAX</td><td><input type="text" name="score_gpax_target"/></td><td><input type="text" name="score_gpax_needed"/></td></tr>
+          <tr><td>เกณฑ์อื่น ๆ</td><td><input type="text" name="score_other_target"/></td><td><input type="text" name="score_other_needed"/></td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="subtable-grid">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#1a4fa0;margin-bottom:6px;">TGAT — ติ๊กพาร์ทที่จะสอบ</div>
+          <div class="table-scroll">
+          <table style="font-size:12.5px;">
+            <thead>
+              <tr>
+                <th style="width:24px;"></th>
+                <th>พาร์ท</th>
+                <th>คะแนน</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="text-align:center;"><input type="checkbox" name="tgat1_check"></td><td>TGAT1 สื่อสารอังกฤษ</td><td><input type="text" name="tgat1_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="tgat2_check"></td><td>TGAT2 คิดอย่างมีเหตุผล</td><td><input type="text" name="tgat2_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="tgat3_check"></td><td>TGAT3 สมรรถนะการทำงาน</td><td><input type="text" name="tgat3_needed"/></td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#1a4fa0;margin-bottom:6px;">TPAT — ติ๊กพาร์ทที่จะสอบ</div>
+          <div class="table-scroll">
+          <table style="font-size:12.5px;">
+            <thead>
+              <tr>
+                <th style="width:24px;"></th>
+                <th>พาร์ท</th>
+                <th>คะแนน</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="text-align:center;"><input type="checkbox" name="tpat1_check"></td><td>TPAT1 กสพท</td><td><input type="text" name="tpat1_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="tpat2_check"></td><td>TPAT2 ศิลปกรรมศาสตร์</td><td><input type="text" name="tpat2_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="tpat3_check"></td><td>TPAT3 วิทย์-เทคโน-วิศวะ</td><td><input type="text" name="tpat3_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="tpat4_check"></td><td>TPAT4 สถาปัตยกรรมศาสตร์</td><td><input type="text" name="tpat4_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="tpat5_check"></td><td>TPAT5 ครุศาสตร์</td><td><input type="text" name="tpat5_needed"/></td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#1a4fa0;margin-bottom:6px;">A-Level — ติ๊กวิชาที่จะสอบ</div>
+          <div class="table-scroll">
+          <table style="font-size:12.5px;">
+            <thead>
+              <tr>
+                <th style="width:24px;"></th>
+                <th>รายวิชา</th>
+                <th>คะแนน</th>
+              </tr>
+            </thead>
+            <tbody id="alevel-subjects">
+              <tr><td style="text-align:center;"><input type="checkbox" name="alevel_math1_check"></td><td>คณิตศาสตร์ประยุกต์ 1</td><td><input type="text" name="alevel_math1_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="alevel_math2_check"></td><td>คณิตศาสตร์ประยุกต์ 2</td><td><input type="text" name="alevel_math2_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="alevel_sciapp_check"></td><td>วิทยาศาสตร์ประยุกต์</td><td><input type="text" name="alevel_sciapp_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="alevel_phy_check"></td><td>ฟิสิกส์</td><td><input type="text" name="alevel_phy_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="alevel_chem_check"></td><td>เคมี</td><td><input type="text" name="alevel_chem_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="alevel_bio_check"></td><td>ชีววิทยา</td><td><input type="text" name="alevel_bio_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="alevel_thai_check"></td><td>ภาษาไทย</td><td><input type="text" name="alevel_thai_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="alevel_soc_check"></td><td>สังคมศึกษา</td><td><input type="text" name="alevel_soc_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="alevel_eng_check"></td><td>ภาษาอังกฤษ</td><td><input type="text" name="alevel_eng_needed"/></td></tr>
+              <tr><td style="text-align:center;"><input type="checkbox" name="alevel_other_check"></td><td>ภาษาอื่นๆ <input type="text" name="alevel_other_text" placeholder="ระบุ" style="font-size:11px;max-width:50px;"/></td><td><input type="text" name="alevel_other_needed"/></td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2b -->
+  <div class="grid g1">
+    <!-- 5 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num num-blue">5</span>
+        <span>⚖️</span>
+        <h3>เปรียบเทียบมหาวิทยาลัย</h3>
+      </div>
+      <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>รายการ</th>
+            <th>มหาวิทยาลัย A</th>
+            <th>มหาวิทยาลัย B</th>
+            <th>มหาวิทยาลัย C</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>ชื่อคณะ</td><td><input type="text" name="cmp_faculty_A"/></td><td><input type="text" name="cmp_faculty_B"/></td><td><input type="text" name="cmp_faculty_C"/></td></tr>
+          <tr><td>เกณฑ์คะแนน</td><td><input type="text" name="cmp_criteria_A"/></td><td><input type="text" name="cmp_criteria_B"/></td><td><input type="text" name="cmp_criteria_C"/></td></tr>
+          <tr><td>ชื่อเสียง/อันดับ</td><td><input type="text" name="cmp_rank_A"/></td><td><input type="text" name="cmp_rank_B"/></td><td><input type="text" name="cmp_rank_C"/></td></tr>
+          <tr><td>ค่าเทอม</td><td><input type="text" name="cmp_tuition_A"/></td><td><input type="text" name="cmp_tuition_B"/></td><td><input type="text" name="cmp_tuition_C"/></td></tr>
+          <tr><td>โอกาสในการทำงาน</td><td><input type="text" name="cmp_job_A"/></td><td><input type="text" name="cmp_job_B"/></td><td><input type="text" name="cmp_job_C"/></td></tr>
+          <tr><td>สภาพแวดล้อม</td><td><input type="text" name="cmp_env_A"/></td><td><input type="text" name="cmp_env_B"/></td><td><input type="text" name="cmp_env_C"/></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="line-row" style="margin-top:8px;">
+        <span class="line-label" style="min-width:165px;color:#1a4fa0;font-weight:700;">สรุป: อันไหนเหมาะกับฉันที่สุด?</span>
+        <input type="text" name="cmp_summary"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3 -->
+  <div class="grid g3b">
+
+    <!-- 6 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num num-green">6</span>
+        <span>💰</span>
+        <h3>ค่าใช้จ่ายในการศึกษา</h3>
+      </div>
+      <div class="cost-row">
+        <span class="cost-label">ค่าเทอม</span>
+        <span class="cost-unit">(ต่อเทอม)</span>
+        <div class="cost-input"><input type="text" name="cost_tuition" placeholder="บาท"/></div>
+      </div>
+      <div class="cost-row">
+        <span class="cost-label">ค่าหอพัก/ที่พัก</span>
+        <span class="cost-unit">(ต่อเดือน)</span>
+        <div class="cost-input"><input type="text" name="cost_dorm" placeholder="บาท"/></div>
+      </div>
+      <div class="cost-row">
+        <span class="cost-label">ค่าเดินทาง</span>
+        <span class="cost-unit">(ต่อเดือน)</span>
+        <div class="cost-input"><input type="text" name="cost_transport" placeholder="บาท"/></div>
+      </div>
+      <div class="cost-row">
+        <span class="cost-label">ค่าใช้จ่ายส่วนตัว</span>
+        <span class="cost-unit">(ต่อเดือน)</span>
+        <div class="cost-input"><input type="text" name="cost_personal" placeholder="บาท"/></div>
+      </div>
+      <div style="border-top:1.5px dashed #b0d0f0;margin:8px 0;"></div>
+      <div class="cost-row total-row">
+        <span class="cost-label">รวมโดยประมาณ</span>
+        <span class="cost-unit" style="color:#e84040;">(ต่อเดือน)</span>
+        <div class="cost-input"><input type="text" name="cost_total" placeholder="บาท" style="color:#e84040;font-weight:700;"/></div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:#555;margin:6px 0 4px;">แหล่งทุน/ทุนการศึกษาที่สนใจ</div>
+      <input type="text" name="cost_scholarship" style="width:100%;"/>
+    </div>
+
+    <!-- 7 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num num-orange">7</span>
+        <span>💼</span>
+        <h3>อาชีพในฝัน</h3>
+      </div>
+      <div class="dream-label">อาชีพที่ฉันอยากเป็น</div>
+      <div class="dream-input"><input type="text" name="career_dream"/></div>
+      <div style="border-bottom:1px dotted #c8e0f8;margin-bottom:8px;"></div>
+      <div class="dream-label">ลักษณะงานที่ฉันชอบ</div>
+      <textarea rows="3" name="career_traits" class="dream-input" style="border:1px dotted #aac8e8;border-radius:6px;padding:4px 6px;width:100%;"></textarea>
+      <div class="dream-label">ทักษะที่จำเป็นสำหรับอาชีพนี้</div>
+      <textarea rows="3" name="career_skills" style="border:1px dotted #aac8e8;border-radius:6px;padding:4px 6px;width:100%;"></textarea>
+    </div>
+
+    <!-- 8 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num num-teal">8</span>
+        <span>📌</span>
+        <h3>สิ่งที่ต้องเริ่มทำตั้งแต่วันนี้</h3>
+      </div>
+      <ul class="check-list">
+        <li><input type="checkbox" name="todo_plan"><span>ตั้งเป้าหมายและวางแผนการเรียน</span></li>
+        <li><input type="checkbox" name="todo_gpa"><span>พัฒนาคะแนน GPA</span></li>
+        <li><input type="checkbox" name="todo_exam"><span>เตรียมสอบ TGAT / TPAT / A-Level</span></li>
+        <li><input type="checkbox" name="todo_portfolio"><span>ทำ Portfolio</span></li>
+        <li><input type="checkbox" name="todo_activity"><span>เข้าร่วมกิจกรรม / จิตอาสา</span></li>
+        <li><input type="checkbox" name="todo_english"><span>พัฒนาทักษะภาษาอังกฤษ</span></li>
+        <li><input type="checkbox" name="todo_experience"><span>หาประสบการณ์ที่เกี่ยวข้อง</span></li>
+        <li><input type="checkbox" name="todo_other"><span>อื่น ๆ</span><input type="text" name="todo_other_text" placeholder="ระบุ..." style="font-size:12px;flex:1;"/></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ROW 4 -->
+  <div class="grid g3c">
+
+    <!-- 9 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="num num-red">9</span>
+        <span>🎯</span>
+        <h3>เป้าหมายของฉัน</h3>
+      </div>
+      <div class="goal-line"><span class="goal-label">ฉันจะเข้าคณะ</span><input type="text" name="goal_faculty"/></div>
+      <div class="goal-line"><span class="goal-label">มหาวิทยาลัย</span><input type="text" name="goal_university"/></div>
+      <div class="goal-line"><span class="goal-label">ภายในปี</span><input type="text" name="goal_year"/></div>
+      <div style="border-top:1px dotted #c0d8f0;padding-top:8px;margin-top:2px;">
+        <div class="goal-label" style="margin-bottom:6px;">เพราะฉันอยากเป็น</div>
+        <textarea rows="3" name="goal_reason" style="border:1px dotted #aac8e8;border-radius:6px;padding:4px 6px;width:100%;"></textarea>
+      </div>
+    </div>
+
+    <!-- middle banner -->
+    <div style="display:flex;align-items:center;justify-content:center;">
+      <div class="middle-banner" style="width:100%;">
+        <div style="font-size:28px;margin-bottom:6px;">🎓✨</div>
+        <p>ก้าวเล็ก ๆ ในวันนี้</p>
+        <span>สร้างอนาคต<br>ที่ยิ่งใหญ่ในวันหน้า</span>
+        <div style="margin-top:10px;font-size:12px;color:#7a4a00;font-style:italic;">fb page : แนะให้แนว</div>
+      </div>
+    </div>
+
+    <!-- motivate -->
+    <div class="card motivate-box">
+      <div class="card-title" style="margin-bottom:10px;">
+        <span class="num num-pink">❤</span>
+        <h3 style="color:#e91e8c;">ข้อความให้กำลังใจตัวเอง</h3>
+      </div>
+      <textarea rows="8" name="motivate_message" placeholder="เขียนข้อความให้กำลังใจตัวเองที่นี่..." style="border:1px dashed #f0a0c0;border-radius:8px;padding:8px;width:100%;background:rgba(255,255,255,0.7);font-size:14px;"></textarea>
+    </div>
+  </div>
+
+  <!-- REMEMBER BAR -->
+  <div class="remember-bar">
+    <span class="rb-label">จำไว้!</span>
+    <div class="rb-item"><span>✅</span> รู้จักตัวเอง</div>
+    <div class="rb-item"><span>📝</span> วางแผนและลงมือทำ</div>
+    <div class="rb-item"><span>💪</span> สม่ำเสมอ ไม่ท้อ</div>
+    <div class="rb-item"><span>❤</span> เชื่อมั่นในตัวเอง</div>
+    <div class="rb-item"><span>⭐</span> ถึงฝันได้แน่นอน!</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-info">
+    <div class="fi-item"><span class="fi-label">ชื่อ-สกุล</span><input type="text" name="student_name"/></div>
+    <div class="fi-item"><span class="fi-label">ชั้น</span><input type="text" name="student_class" style="max-width:60px;"/></div>
+    <div class="fi-item"><span class="fi-label">เลขที่</span><input type="text" name="student_number" style="max-width:60px;"/></div>
+    <div class="fi-item"><span class="fi-label">โรงเรียน</span><input type="text" name="student_school"/></div>
+  </div>
+
+</div><!-- end .page -->
+
+<script>
+// ⚠️ แก้ URL นี้เป็น Web App URL ของ Google Apps Script เดียวกับที่ใช้กับเกมสายอาชีพและ Pre-Post VIA
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyQu4AWpxtanBTD84l-uGZM8R2MuBXi3IukLDa1sxoMMSdsiF-ksFcQBFuZ1Bw7ldI-/exec";
+
+async function submitToSheet() {
+  const status = document.getElementById('submit-status');
+  const btn = document.getElementById('submitBtn');
+  const page = document.getElementById('roadmap-page');
+
+  const fd = new FormData();
+  fd.append("source", "roadmap");
+  fd.append("timestamp", new Date().toISOString());
+
+  // เก็บค่าจากทุก input[name], textarea[name]
+  page.querySelectorAll('input[name], textarea[name]').forEach(el => {
+    if (el.type === 'checkbox') {
+      fd.append(el.name, el.checked ? "1" : "0");
+    } else {
+      fd.append(el.name, el.value || "");
+    }
+  });
+
+  btn.disabled = true;
+  status.textContent = "⏳ กำลังส่งข้อมูล...";
+  status.style.color = "#1a4fa0";
+
+  try {
+    await fetch(GAS_URL, { method: "POST", mode: "no-cors", body: fd });
+    status.textContent = "✅ ส่งข้อมูลเรียบร้อยแล้ว";
+    status.style.color = "#27ae60";
+  } catch (err) {
+    status.textContent = "❌ ส่งไม่สำเร็จ กรุณาลองใหม่";
+    status.style.color = "#e84040";
+  }
+  btn.disabled = false;
+}
+
+async function saveAsImage() {
+  const status = document.getElementById('save-status');
+  status.style.display = 'inline';
+
+  // Snapshot all current input / textarea / checkbox values
+  const page = document.getElementById('roadmap-page');
+  const inputs    = page.querySelectorAll('input[type="text"]');
+  const textareas = page.querySelectorAll('textarea');
+  const checks    = page.querySelectorAll('input[type="checkbox"]');
+
+  // Replace each input with a <div> so html2canvas captures the text
+  const replacements = [];
+
+  inputs.forEach(el => {
+    const div = document.createElement('div');
+    div.textContent = el.value || '';
+    div.style.cssText = `
+      font-family: inherit; font-size: ${getComputedStyle(el).fontSize};
+      color: ${el.style.color || '#333'}; font-weight: ${el.style.fontWeight || 'normal'};
+      border-bottom: 1.5px dotted #aac8e8; min-height: 22px;
+      padding: 3px 4px; width: 100%; display: block;
+      background: transparent;
+    `;
+    el.parentNode.insertBefore(div, el);
+    el.style.display = 'none';
+    replacements.push({ type: 'input', el, div });
+  });
+
+  textareas.forEach(el => {
+    const div = document.createElement('div');
+    div.textContent = el.value || '';
+    div.style.cssText = `
+      font-family: inherit; font-size: ${getComputedStyle(el).fontSize};
+      color: #333; border: ${el.style.border || '1px dotted #aac8e8'};
+      border-radius: 6px; padding: 4px 6px; width: 100%; min-height: 60px;
+      white-space: pre-wrap; word-break: break-word; background: transparent;
+    `;
+    el.parentNode.insertBefore(div, el);
+    el.style.display = 'none';
+    replacements.push({ type: 'textarea', el, div });
+  });
+
+  checks.forEach(el => {
+    const span = document.createElement('span');
+    span.textContent = el.checked ? '☑' : '☐';
+    span.style.cssText = 'font-size:16px; color:' + (el.checked ? '#2176c7' : '#aaa') + '; flex-shrink:0;';
+    el.parentNode.insertBefore(span, el);
+    el.style.display = 'none';
+    replacements.push({ type: 'check', el, span });
+  });
+
+  // Hide save bar
+  document.body.classList.add('capturing');
+
+  try {
+    const canvas = await html2canvas(page, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: null,
+      logging: false,
+      scrollX: 0,
+      scrollY: -window.scrollY
+    });
+
+    const link = document.createElement('a');
+    link.download = 'University_Roadmap.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) {
+    alert('เกิดข้อผิดพลาดในการบันทึก: ' + e.message);
+  }
+
+  // Restore everything
+  document.body.classList.remove('capturing');
+  replacements.forEach(r => {
+    r.el.style.display = '';
+    if (r.type === 'check') r.span.remove();
+    else r.div.remove();
+  });
+
+  status.style.display = 'none';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COMP-RED PROTOCOL: เจาะลึกคอมพิวเตอร์และเทคโนโลยี</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --alert-red: #e60012;
+            --alert-red-glow: 0 0 12px rgba(230, 0, 18, 0.4);
+            --stark-black: #111111;
+            --off-white: #fcfcfc;
+        }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--off-white);
+            color: var(--stark-black);
+        }
+        .font-ui {
+            font-family: 'Chakra Petch', sans-serif;
+        }
+        .font-mono-tech {
+            font-family: 'IBM Plex Mono', monospace;
+        }
+        
+        /* High-Contrast Hazard Border Style */
+        .hazard-border {
+            background: repeating-linear-gradient(
+                -45deg,
+                #e60012,
+                #e60012 10px,
+                #ffffff 10px,
+                #ffffff 20px
+            );
+        }
+
+        /* Red Theme Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: var(--alert-red); border-radius: 3px; }
+
+        /* Sleek Button */
+        .btn-red {
+            border: 2px solid var(--stark-black);
+            background: transparent;
+            color: var(--stark-black);
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+        .btn-red:hover, .btn-red.active {
+            background: var(--alert-red);
+            color: white;
+            border-color: var(--alert-red);
+            box-shadow: var(--alert-red-glow);
+        }
+
+        /* CRT pulsing effect */
+        .pulse-alert {
+            animation: pulse-red 2s infinite;
+        }
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; filter: drop-shadow(0 0 2px rgba(230,0,18,0.5)); }
+            50% { opacity: 0.6; filter: drop-shadow(0 0 8px rgba(230,0,18,0.8)); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-red-600 selection:text-white">
+<a href="index.html" style="position:fixed;top:12px;left:12px;z-index:99999;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#1E1B4B;font-family:'Prompt',system-ui,sans-serif;font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;box-shadow:0 6px 18px -6px rgba(30,27,75,.35);text-decoration:none;">← หน้าหลัก</a>
+
+    <!-- Web Audio System -->
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSfx(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'click') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(500, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'breach') {
+                // Emergency alarm pulse
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(440, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'secured') {
+                // Access granted synth chime
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.12); // A5
+                osc.frequency.setValueAtTime(1174.66, audioCtx.currentTime + 0.24); // D6
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            } else if (type === 'keyboard') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800 + Math.random()*300, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.04);
+            }
+        }
+    </script>
+
+    <!-- Top Navigation Header -->
+    <header class="border-b-4 border-black bg-white sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <!-- Brand -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-red-600 border-2 border-black flex items-center justify-center pulse-alert">
+                    <span class="text-white font-mono-tech font-bold text-lg">!</span>
+                </div>
+                <div>
+                    <h1 class="font-ui text-xl font-extrabold tracking-tight text-red-600">COMP-RED PROTOCOL</h1>
+                    <p class="font-mono-tech text-[10px] text-gray-500 uppercase">Interactive Computer Science Guide // v1.1</p>
+                </div>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <nav class="flex gap-2 w-full md:w-auto font-ui text-xs">
+                <button onclick="changeTab('database')" id="btn-database" class="btn-red active px-4 py-2 flex-1 md:flex-none">[1] DATABASE</button>
+                <button onclick="changeTab('missions')" id="btn-missions" class="btn-red px-4 py-2 flex-1 md:flex-none">[2] INTRUSION CHANNELS</button>
+                <button onclick="changeTab('matcher')" id="btn-matcher" class="btn-red px-4 py-2 flex-1 md:flex-none">[3] DNA ALIGNMENT</button>
+            </nav>
+        </div>
+        
+        <!-- Red Hazard Accent Line -->
+        <div class="h-2 hazard-border"></div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-8">
+
+        <!-- ==================== TAB 1: DATABASE ==================== -->
+        <section id="tab-database" class="block space-y-8 animate-fade-in">
+            <!-- Instructions and Header -->
+            <div class="bg-black text-white p-4 border-2 border-red-600 font-mono-tech text-xs rounded-none shadow-[4px_4px_0px_#000000]">
+                <p class="text-red-500 font-bold mb-1">> ACCESS STATE: UNLOCKED_</p>
+                <p class="text-gray-300">คลิกที่แฟ้มระบบคอมพิวเตอร์ระดับชั้นนำของไทยเพื่อทำความเข้าใจศาสตร์ของแต่ละสาขาหลัก</p>
+            </div>
+
+            <!-- Majors Grid -->
+            <div id="majors-grid" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <!-- Javascript will inject cards here -->
+            </div>
+
+            <!-- Detail Display Area -->
+            <div id="blueprint-panel" class="hidden border-4 border-black bg-white p-6 md:p-8 relative shadow-[8px_8px_0px_#e60012] transition-all">
+                <div class="absolute top-0 right-0 hazard-border w-16 h-4"></div>
+
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    <!-- Left: Basic Stats -->
+                    <div class="lg:w-2/5 w-full space-y-4">
+                        <div class="flex items-center gap-4">
+                            <span id="bp-icon" class="text-5xl p-2 border-2 border-black bg-neutral-100">💻</span>
+                            <div>
+                                <span id="bp-tag" class="text-xs font-mono-tech font-bold px-2 py-0.5 bg-red-600 text-white">CS</span>
+                                <h3 id="bp-title" class="font-ui text-xl md:text-2xl font-black mt-1">วิทยาการคอมพิวเตอร์</h3>
+                            </div>
+                        </div>
+                        <p id="bp-desc" class="text-gray-700 text-sm leading-relaxed">คำอธิบายสาขา...</p>
+
+                        <!-- Universities -->
+                        <div class="p-4 border-2 border-black bg-neutral-50 space-y-2">
+                            <h4 class="font-ui text-xs font-bold text-red-600 uppercase tracking-widest">🏫 สถาบันการศึกษาชั้นนำในไทย</h4>
+                            <p id="bp-unis" class="text-xs text-gray-800 font-semibold leading-relaxed">มหาลัยชั้นนำ...</p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Career Details -->
+                    <div class="lg:w-3/5 w-full space-y-4">
+                        <h4 class="font-ui text-lg font-black text-red-600 border-b-2 border-black pb-2 flex items-center gap-2">
+                            <span>⚡</span> สายอาชีพเป้าหมายหลังเรียนจบ
+                        </h4>
+                        <div id="bp-careers" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Injected careers -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 2: INTRUSION CHANNELS ==================== -->
+        <section id="tab-missions" class="hidden space-y-6">
+            <div class="bg-black text-white p-4 border-2 border-red-600 font-mono-tech text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <p class="text-red-500 font-extrabold uppercase pulse-alert">> SECURITY INCIDENTS DETECTED</p>
+                    <p class="text-gray-400">เลือกส่งนักศึกษาหรือวิศวกรคอมพิวเตอร์ที่มีทักษะตรงกับภัยคุกคามเพื่อลดความเสียหาย</p>
+                </div>
+                <div class="border-2 border-red-600 px-3 py-1 bg-red-950/20">
+                    <span class="text-[10px] text-gray-400 block uppercase font-bold">Incidents Cleared</span>
+                    <span class="font-ui text-xl text-red-500 font-black" id="mission-counter">0 / 5</span>
+                </div>
+            </div>
+
+            <!-- Active incident card -->
+            <div id="incident-box" class="border-4 border-black bg-white p-6 relative overflow-hidden shadow-[8px_8px_0px_#000]">
+                <!-- Danger stripes left side -->
+                <div class="absolute left-0 top-0 bottom-0 w-3 hazard-border"></div>
+
+                <div class="pl-6 space-y-6">
+                    <div class="flex justify-between items-center border-b border-black pb-2">
+                        <span class="font-mono-tech text-xs text-red-600 font-bold" id="incident-threat">THREAT CODE: CPE-01</span>
+                        <span class="font-mono-tech text-xs text-gray-500" id="incident-num">CASE FILE 1/5</span>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3 class="font-ui text-xl md:text-2xl font-black text-black" id="incident-title">ระบบกล้องวงจรปิดอัจฉริยะล้มเหลว</h3>
+                        <div class="bg-red-50 border border-red-300 p-4 font-mono-tech text-xs text-red-700 h-24 overflow-y-auto">
+                            <span id="incident-desc">ระบบการประมวลผลคำสั่งขัดข้อง...</span>
+                        </div>
+                    </div>
+
+                    <!-- Dispatch area -->
+                    <div class="space-y-3">
+                        <p class="font-ui text-xs font-bold text-gray-500 uppercase tracking-widest">> มอบหมายงานทีมผู้เชี่ยวชาญเพื่อแก้ไข</p>
+                        <div id="incident-options" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <!-- Injected button options -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation Result Overlay -->
+                <div id="simulation-overlay" class="hidden absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center p-8 text-center border-l-8 border-red-600">
+                    <h2 id="sim-status" class="font-ui text-3xl font-black mb-2 text-red-600">BREACH RESOLVED</h2>
+                    <p id="sim-text" class="text-gray-700 text-sm mb-6 max-w-md">รายละเอียดคำอธิบายผลลัพธ์...</p>
+                    <button onclick="nextIncident()" class="btn-red px-6 py-2 rounded-none text-xs">> ดำเนินการคดีต่อไป_</button>
+                </div>
+            </div>
+
+            <!-- System Clear Panel -->
+            <div id="system-cleared-panel" class="hidden border-4 border-red-600 bg-white p-8 text-center space-y-6">
+                <span class="text-6xl block">🛡️</span>
+                <h2 class="font-ui text-2xl font-black text-black">COMP-RED NETWORK SECURED!</h2>
+                <p class="text-gray-600 text-sm max-w-md mx-auto">คุณสามารถจัดการทีมคอมพิวเตอร์เพื่อแก้จุดบกพร่องและวิกฤตของเมืองได้สมบูรณ์แบบครบทุกคดี</p>
+                <button onclick="restartIncidents()" class="btn-red px-6 py-2 text-xs">> เริ่มจำลองเหตุการณ์ใหม่</button>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: DNA ALIGNMENT ==================== -->
+        <section id="tab-matcher" class="hidden space-y-6">
+            <div class="text-center max-w-xl mx-auto space-y-2">
+                <h2 class="font-ui text-2xl font-black text-black">แบบทดสอบ DNA คอมพิวเตอร์ย้อนกลับ</h2>
+                <p class="text-gray-500 text-sm">ค้นหาว่าทักษะและกรอบความคิดของคุณเหมาะที่จะเป็นผู้พิทักษ์ ผู้สร้าง หรือผู้นำเทคโนโลยีด้านใด</p>
+            </div>
+
+            <!-- Question container -->
+            <div id="matcher-quiz" class="max-w-2xl mx-auto border-4 border-black bg-white p-6 md:p-8 shadow-[6px_6px_0px_#e60012]">
+                <div class="flex justify-between items-center mb-6 font-mono-tech text-xs text-red-600 border-b border-black pb-2">
+                    <span class="font-bold">DNA PROCESSOR RUNNING...</span>
+                    <span id="quiz-progress-num">Q: 1/5</span>
+                </div>
+
+                <div class="space-y-6">
+                    <h3 class="font-ui text-lg md:text-xl font-extrabold text-black" id="quiz-question-txt">คำถามประเมิน?</h3>
+                    <div id="quiz-options-box" class="space-y-3">
+                        <!-- Choices injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result output -->
+            <div id="matcher-result" class="hidden max-w-2xl mx-auto border-4 border-black bg-white p-8 shadow-[8px_8px_0px_#000] relative overflow-hidden">
+                <!-- Left hazard stripe bar -->
+                <div class="absolute left-0 top-0 bottom-0 w-3 bg-red-600"></div>
+
+                <div class="pl-6 text-center space-y-6">
+                    <p class="font-mono-tech text-xs text-red-600 font-bold">> COMP-RED ANALYSIS COMPLETE. DNA MATCH:</p>
+                    
+                    <div class="inline-block p-4 border-2 border-black bg-neutral-100 rounded-none">
+                        <span class="text-5xl" id="match-icon">💻</span>
+                    </div>
+                    
+                    <h2 class="font-ui text-2xl md:text-3xl font-black text-black" id="match-title">วิศวกรรมซอฟต์แวร์</h2>
+                    
+                    <div class="bg-red-50 border border-red-300 p-4 text-left">
+                        <p class="text-gray-800 text-xs md:text-sm leading-relaxed" id="match-desc">คำอธิบายผลลัพธ์ลักษณะนิสัย...</p>
+                    </div>
+
+                    <!-- Career Paths suggested -->
+                    <div class="text-left space-y-2">
+                        <h4 class="font-mono-tech text-xs text-red-600 font-bold uppercase">> เส้นทางวิชาชีพที่แนะนำสูงสุด:</h4>
+                        <ul id="match-jobs-ul" class="list-disc list-inside text-xs text-gray-700 space-y-1">
+                            <!-- Career recommendations -->
+                        </ul>
+                    </div>
+
+                    <div class="border-t border-gray-200 pt-4 flex justify-between items-center text-[10px] text-gray-500 font-mono-tech">
+                        <span>#SYSTEM-ID: COMPUTER-GENE</span>
+                        <button onclick="restartQuiz()" class="text-red-600 font-bold hover:underline">> รันระบบวิเคราะห์ความถนัดอีกครั้ง</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer System -->
+    <footer class="mt-auto border-t-4 border-black bg-white py-6">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 font-mono-tech">
+            <span>// THAI COMPUTER INITIATIVE 2026 //</span>
+            <span>ความลับคอมพิวเตอร์คือวิทยาศาสตร์แห่งอนาคต</span>
+        </div>
+    </footer>
+
+    <!-- LOGIC SCRIPTS -->
+    <script>
+        // 1. DATA: Major details and careers
+        const computerMajors = [
+            {
+                id: "cpe",
+                title: "วิศวกรรมคอมพิวเตอร์",
+                tag: "CPE",
+                icon: "⚙️",
+                desc: "เจาะลึกทั้ง Hardware (ฮาร์ดแวร์), Software (ซอฟต์แวร์) และ Network (เครือข่ายความปลอดภัย) ผสมผสานหลักการทางวิศวกรรมไฟฟ้าและวิทยาการคอมพิวเตอร์เข้าด้วยกัน เหมาะสำหรับคนชอบต่อระบบวงจร ออกแบบระบบฝังตัว ตลอดจนเขียนซอฟต์แวร์ระดับต่ำเพื่อคุมฮาร์ดแวร์",
+                unis: "จุฬาลงกรณ์มหาวิทยาลัย, มหาวิทยาลัยเกษตรศาสตร์, สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง (สจล.), มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี (มจธ.)",
+                careers: [
+                    { name: "IoT & Embedded Developer", detail: "ออกแบบชิ้นส่วนวงจร และระบบอัจฉริยะฝังตัว (เช่น แขนกลอุตสาหกรรม, สมาร์ทโฮม)" },
+                    { name: "Network Security Engineer", detail: "วางผังเครือข่ายและระบบป้องกันความปลอดภัยข้อมูลของธนาคารและองค์กรขนาดใหญ่" }
+                ]
+            },
+            {
+                id: "cs",
+                title: "วิทยาการคอมพิวเตอร์",
+                tag: "CS",
+                icon: "💻",
+                desc: "เน้นกระบวนการและทฤษฎี (Theory) เป็นรากฐานเบื้องหลังการทำงานของคอมพิวเตอร์ ศึกษาการวิเคราะห์อัลกอริทึม (Algorithms) โครงสร้างข้อมูล ปัญญาประดิษฐ์ (AI) การสร้างความน่าจะเป็น และทฤษฎีการคำนวณที่ซับซ้อน",
+                unis: "คณะวิทยาศาสตร์ จุฬาฯ, มหาวิทยาลัยธรรมศาสตร์, มหาวิทยาลัยเกษตรศาสตร์, มหาวิทยาลัยเชียงใหม่, คณะ ICT มหาวิทยาลัยมหิดล",
+                careers: [
+                    { name: "AI/Machine Learning Researcher", detail: "นักวิทยาศาสตร์วิจัยเพื่อสร้างสรรค์ระบบสมองกลอัจฉริยะ คาดเดารูปแบบ และพัฒนาอัลกอริทึมขั้นสูง" },
+                    { name: "Software Developer", detail: "โปรแกรมเมอร์ผู้ออกแบบและเขียนโค้ดระบบหลังบ้าน/หน้าบ้าน พัฒนาแพลตฟอร์มต่างๆ" }
+                ]
+            },
+            {
+                id: "it",
+                title: "เทคโนโลยีสารสนเทศ (IT)",
+                tag: "IT",
+                icon: "🌐",
+                desc: "ศาสตร์ที่เน้นการนำเทคโนโลยีไปประยุกต์ใช้กับธุรกิจและองค์กร ไม่ได้สร้างระบบขึ้นใหม่จากศูนย์ แต่ดูแลการเชื่อมต่อระบบ นำข้อมูลคลาวด์และฐานข้อมูลไปวิเคราะห์แก้ปัญหา การออกแบบประสิทธิผลของระบบ และดูแลความราบรื่นของระบบสารสนเทศ",
+                unis: "คณะเทคโนโลยีสารสนเทศ มจธ. บางมด, สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง, คณะ ICT มหาวิทยาลัยมหิดล",
+                careers: [
+                    { name: "IT Consultant", detail: "ที่ปรึกษาด้านเทคโนโลยี คอยวิเคราะห์ว่าองค์กรต้องใช้เครื่องมือแบบใดในการขยายธุรกิจและลดต้นทุน" },
+                    { name: "Database & Cloud Architect", detail: "ดูแลและออกแบบระบบฐานข้อมูล โครงสร้าง Server บนคลาวด์ให้มีเสถียรภาพและเสถียรภาพระดับสูงสุด" }
+                ]
+            },
+            {
+                id: "se",
+                title: "วิศวกรรมซอฟต์แวร์",
+                tag: "SE",
+                icon: "🏗️",
+                desc: "เรียนรู้กระบวนการพัฒนาซอฟต์แวร์ขนาดใหญ่ให้เป็นระบบอย่างมีคุณภาพ (Software Development Life Cycle - SDLC) ตั้งแต่การคุยงานกับลูกค้า วางแผนสถาปัตยกรรมซอฟต์แวร์ การจัดการทีม การทดสอบระบบ (Testing) จนเสร็จสิ้นและปรับแต่งสเกลขยายตัว",
+                unis: "วิทยาลัยนวัตกรรมด้านเทคโนโลยีและวิศวกรรมศาสตร์ (CITE) ม.ธุรกิจบัณฑิตย์, สจล., มหาวิทยาลัยเชียงใหม่ (CAMT)",
+                careers: [
+                    { name: "Software QA / Tester Engineer", detail: "วิศวกรผู้คอยตรวจสอบ ค้นหาบั๊ก และควบคุมความถูกต้องของระบบก่อนส่งมอบให้ผู้ใช้จริง" },
+                    { name: "DevOps Engineer", detail: "ผู้เชื่อมต่อประสานงานระหว่างฝ่ายพัฒนาซอฟต์แวร์และฝ่ายดูแลระบบ ช่วยปล่อยระบบงานได้รวดเร็วและปลอดภัย" }
+                ]
+            },
+            {
+                id: "ds",
+                title: "วิทยาการข้อมูล & AI",
+                tag: "DSAI",
+                icon: "📊",
+                desc: "ศาสตร์ทางเลือกใหม่ที่เน้นจัดการกับ 'ข้อมูลขนาดใหญ่ (Big Data)' นำมาจัดระเบียบ ประยุกต์ทฤษฎีทางสถิติ คณิตศาสตร์ และโปรแกรมคอมพิวเตอร์เข้าด้วยกัน เพื่อทำเหมืองข้อมูล ค้นหาข้อมูลเชิงลึก พยากรณ์กระแสพฤติกรรมผู้บริโภค",
+                unis: "สาขาสถิติ (เอก Data Sci) คณะพาณิชยศาสตร์และการบัญชี จุฬาฯ, สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง, มหาวิทยาลัยเชียงใหม่, มหาวิทยาลัยธรรมศาสตร์",
+                careers: [
+                    { name: "Data Scientist", detail: "นักวิทยาศาสตร์ข้อมูล นำข้อมูลเชิงลึกมาประยุกต์ร่วมกับสถิติเพื่อช่วยผู้บริหารตัดสินใจกลยุทธ์สำคัญทางธุรกิจ" },
+                    { name: "Data Engineer", detail: "วิศวกรสร้างระบบท่อส่งข้อมูล (Data Pipeline) เพื่อย้ายข้อมูลปริมาณมหาศาลจากภายนอกเข้าสู่ระบบอย่างไร้การติดขัด" }
+                ]
+            }
+        ];
+
+        // 2. DATA: Incident scenarios
+        const incidents = [
+            {
+                id: "IN-001",
+                threat: "THREAT LEVEL: CRITICAL",
+                title: "ระบบแขนกลสายพานการผลิตรถยนต์ไฟฟ้าหยุดชะงัก",
+                desc: "เกิดปัญหาร้ายแรงในการอัปเดตเฟิร์มแวร์ทำให้หุ่นยนต์และเซนเซอร์จับชิ้นงานไม่เชื่อมต่อกับเครือข่ายบอร์ดไมโครคอนโทรลเลอร์ควบคุมกระแสไฟ ต้องส่งผู้มีความสามารถเข้าไปคุมบอร์ดและโมดูลชิ้นส่วนโดยด่วน!",
+                correct: "cpe",
+                explan: "ระบบเชื่อมต่อฮาร์ดแวร์ ไมโครคอนโทรลเลอร์ และการส่งสัญญาณระดับต่ำควบคุมวงจรไฟฟ้า เป็นหน้าที่สำคัญของ 'วิศวกรรมคอมพิวเตอร์' ที่ประสานความรู้ทางวิศวะอิเล็กทรอนิกส์และเทคโนโลยีคอมพิวเตอร์เข้าด้วยกันอย่างพอเหมาะพอเจาะ!",
+                options: [{id:"se", label: "🏗️ ส่งวิศวกรซอฟต์แวร์"}, {id:"it", label: "🌐 ส่งวิศวกรเทคโนโลยีสารสนเทศ (IT)"}, {id:"cpe", label: "⚙️ ส่งวิศวกรคอมพิวเตอร์"}, {id:"ds", label: "📊 ส่งนักวิทยาศาสตร์ข้อมูล"}]
+            },
+            {
+                id: "IN-002",
+                threat: "THREAT LEVEL: HIGH",
+                title: "ระบบแปลภาษาทางการแพทย์ของแอปฯ วิเคราะห์โรคล้มเหลว",
+                desc: "ระบบประมวลผลการจัดลำดับประโยคการวิเคราะห์ตัวอย่างเคสสุขภาพที่ไร้ระบบ เกิดความเข้าใจผิดพลาดในความหมายของโรค แพลตฟอร์มต้องการการปรับแก้โมเดลภาษาปัญญาประดิษฐ์ (AI Core) เพื่อสร้างความแม่นยำสูง",
+                correct: "cs",
+                explan: "แม่นยำมาก! ผู้มีความสามารถของ 'วิทยาการคอมพิวเตอร์' มีทักษะและความเข้าใจลึกซึ้งในการฝึกฝนสถาปัตยกรรม Machine Learning, ปัญญาประดิษฐ์ (AI) ตลอดจนการคำนวณอัลกอริทึมที่ซับซ้อนให้มีผลลัพธ์แม่นยำ",
+                options: [{id:"cs", label: "💻 ส่งนักวิทยาการคอมพิวเตอร์"}, {id:"it", label: "🌐 ส่งเจ้าหน้าที่ IT"}, {id:"se", label: "🏗️ ส่งวิศวกรซอฟต์แวร์"}, {id:"cpe", label: "⚙️ ส่งวิศวกรคอมพิวเตอร์"}]
+            },
+            {
+                id: "IN-003",
+                threat: "THREAT LEVEL: WARNING",
+                title: "แอปพลิเคชันค้างเมื่อยอดผู้ซื้อถล่มทลายในวัน 11.11",
+                desc: "เกิดปัญหาแอปพลิเคชันช้อปปิ้งออนไลน์ล่มเนื่องจากปัญหาการออกแบบโครงสร้างสถาปัตยกรรมโค้ดขนาดใหญ่ที่ไม่เป็นระบบ ขาดการวางแผนจัดขั้นตอน Lifecycle ของการจำลองรับส่งภาระงานและผู้ทดสอบ (Tester) เคลียร์ไม่ละเอียดก่อนปล่อยใช้จริง",
+                correct: "se",
+                explan: "ถูกต้อง! 'วิศวกรรมซอฟต์แวร์' เชี่ยวชาญวงจรชีวิตซอฟต์แวร์ (SDLC) เป็นระบบ วางแผนเรื่องการทำ Test Automation, วางแผนโครงสร้างสถาปัตยกรรมระบบเพื่อให้ระบบขนาดใหญ่ยังทำงานได้มีประสิทธิภาพและปลอดภัย",
+                options: [{id:"cpe", label: "⚙️ ส่งวิศวกรคอมพิวเตอร์"}, {id:"se", label: "🏗️ ส่งวิศวกรซอฟต์แวร์"}, {id:"ds", label: "📊 ส่งนักวิเคราะห์ข้อมูล"}, {id:"cs", label: "💻 ส่งนักวิทยาการคอมพิวเตอร์"}]
+            },
+            {
+                id: "IN-004",
+                threat: "THREAT LEVEL: INFO",
+                title: "บริษัทจัดส่งอาหารต้องการย้ายฐานเซิร์ฟเวอร์ขึ้นสู่ระบบคลาวด์",
+                desc: "องค์กรต้องการนำระบบฐานข้อมูลสาขา จัดหาบริการระบบคลาวด์ และวางแผนการปรับปรุงระบบความปลอดภัย และให้คำแนะนำทางธุรกิจเพื่อให้ระบบคลาวด์สอดรับกับนโยบายของเครือข่ายธุรกิจ",
+                correct: "it",
+                explan: "นั่นคือบทบาทหลักของ 'เทคโนโลยีสารสนเทศ (IT)' ที่จะเน้นเรื่องการวิเคราะห์ บริหารจัดการ จัดหาเชื่อมโยง และออกแบบสถาปัตยกรรมระบบเชื่อมต่อธุรกิจเข้ากับเทคโนโลยีอย่างมีประสิทธิภาพ",
+                options: [{id:"ds", label: "📊 ส่งนักวิจัยข้อมูล"}, {id:"cs", label: "💻 ส่งโปรแกรมเมอร์"}, {id:"it", label: "🌐 ส่งที่ปรึกษาด้านเทคโนโลยี (IT)"}, {id:"cpe", label: "⚙️ ส่งวิศวกรคอมพิวเตอร์"}]
+            },
+            {
+                id: "IN-005",
+                threat: "THREAT LEVEL: CRITICAL",
+                title: "บริษัทรถแท็กซี่เผชิญปัญหาลูกค้าหนีเพราะกะเกณฑ์เวลาและพื้นที่ไม่ได้",
+                desc: "มีความจำเป็นต้องนำข้อมูล GPS ตารางประวัติเวลา และความถี่ในการใช้บริการแท็กซี่ย้อนหลัง 3 ปี ของประชากรเมืองนับล้านคนมาจำลองการไหล ค้นหาจุดอุปสงค์ เพื่อพยากรณ์การส่งรถล่วงหน้า",
+                correct: "ds",
+                explan: "ยอดเยี่ยมมาก! นักวิทยาศาสตร์ข้อมูล (Data Scientist จากสายวิทยาการข้อมูล) มีความรู้เรื่องการใช้สถิติคณิตศาสตร์และการโปรแกรมสตรีมข้อมูลมหาศาล (Big Data) พยากรณ์เชิงธุรกิจและสร้างมูลค่ามหาศาลจากสิ่งนี้",
+                options: [{id:"it", label: "🌐 ส่งเจ้าหน้าที่เทคโนโลยีสารสนเทศ"}, {id:"se", label: "🏗️ ส่งวิศวกรระบบ"}, {id:"ds", label: "📊 ส่งทีมวิทยาการข้อมูล & AI"}, {id:"cs", label: "💻 ส่งนักวิทยาการคอมพิวเตอร์"}]
+            }
+        ];
+
+        // 3. DATA: DNA Alignment Quiz
+        const quizQuestions = [
+            {
+                id: 1,
+                q: "1. เมื่อเครื่องใช้ไฟฟ้าหรืออุปกรณ์คอมพิวเตอร์ของคุณมีปัญหา คุณจะเริ่มสำรวจอย่างไร?",
+                choices: [
+                    { t: "A) ค้นหาอุปกรณ์ไขควง แกะดูวงจรอิเล็กทรอนิกส์ด้านในและขั้วสายไฟสลับกระแส", v: "cpe" },
+                    { t: "B) ลองเขียนแนวทาง Logical เงื่อนไขคิดค้นวิธีที่ทำให้โปรแกรมไม่ขัดแย้งเชิงตรรกะ", v: "cs" },
+                    { t: "C) สนใจประเด็นการติดตั้งการตั้งระบบให้พร้อมแชร์ และการวิเคราะห์ขั้นตอนให้คุ้มค่าเวลา", v: "it" },
+                    { t: "D) วิเคราะห์ประเด็นเรื่องขั้นตอนอย่างปลอดภัย วางแผนจัดการงานเป็นกลุ่ม ให้งานเสร็จลุล่วงดีขึ้น", v: "se" }
+                ]
+            },
+            {
+                id: 2,
+                q: "2. วิกฤตปัญหาเทคโนโลยีรูปแบบไหนที่คุณตื่นเต้นและอยากร่วมพัฒนามากที่สุด?",
+                choices: [
+                    { t: "A) การสร้างสรรค์โมเดลสมองอัจฉริยะ (AI Neural Network) เลียนแบบพฤติกรรมการตัดสินใจ", v: "cs" },
+                    { t: "B) การสร้างระบบท่อส่งข้อมูลปริมาณมหาศาล เชื่อมต่อกราฟวิเคราะห์ยอดธุรกิจแบบรวดเร็ว", v: "ds" },
+                    { t: "C) การจัดระบบโครงสร้างแอปฯ ขนาดใหญ่ ป้องกันการล่มเมื่อเปิดใช้งานพร้อมกันระดับล้านคน", v: "se" },
+                    { t: "D) การพัฒนาเทคโนโลยีคลาวด์อัจฉริยะเพื่อให้องค์กรธุรกิจขนาดใหญ่ใช้งานง่ายและปลอดภัย", v: "it" }
+                ]
+            },
+            {
+                id: 3,
+                q: "3. ในโครงงานกลุ่มของทางห้องเรียน บทบาทไหนที่คุณรู้สึกว่าคุณทำแล้วมีความสุขสุด?",
+                choices: [
+                    { t: "A) นักสืบค้นทฤษฎี ตรวจสอบหาความถูกต้อง ค้นหาแนวคิดหลักทางวิทยาศาสตร์", v: "cs" },
+                    { t: "B) นักวางแผนงาน ควบคุมขั้นตอนเวลา คอยจัดการบทบาทและทดสอบจุดบกพร่องก่อนนำเสนอจริง", v: "se" },
+                    { t: "C) นักเชื่อมประสาน คอยให้คำแนะนำช่วยเหลือและหาเครื่องมืออำนวยความสะดวกมาช่วยทีม", v: "it" },
+                    { t: "D) นักพัฒนาอุปกรณ์ ประดิษฐ์คิดค้นสิ่งของกลไกจับต้องได้เพื่อร่วมประชัน", v: "cpe" }
+                ]
+            },
+            {
+                id: 4,
+                q: "4. ความสนใจด้านไหนที่สามารถกระตุ้นจินตนาการของคุณได้ดีกว่ากัน?",
+                choices: [
+                    { t: "A) แผงวงจร บอร์ดควบคุม ชิปอัจฉริยะ โครงข่ายโมเดลเสาสัญญาณความเร็วดิจิทัล", v: "cpe" },
+                    { t: "B) งานกราฟ สถิติตัวเลขพฤติกรรม แนวโน้มประชากร และการเดาสุ่มโอกาสความน่าจะเป็น", v: "ds" },
+                    { t: "C) แพลตฟอร์มแอปพลิเคชันที่มีการไหลลื่นของขั้นตอนดี คุณภาพสูง ไร้บั๊กเสถียรภาพสูง", v: "se" },
+                    { t: "D) การวิเคราะห์ปรับตัวธุรกิจ วิธีการใช้เครื่องมือเทคโนโลยีเข้าเปลี่ยนผ่านโลกดั้งเดิม", v: "it" }
+                ]
+            },
+            {
+                id: 5,
+                q: "5. ถ้าเปรียบเทียบตัวคุณเองเป็นเครื่องมือในองค์กรอวกาศ คุณคิดว่าคุณใกล้เคียงกับสิ่งใด?",
+                choices: [
+                    { t: "A) ระบบควบคุมแขนกลและแผงควบคุมหลักที่ใช้วิทยุสื่อสารตรงกับดาวเทียมภายนอก", v: "cpe" },
+                    { t: "B) ระบบถอดสมการภาษาและสมองนำร่องเส้นทางการบินที่ซับซ้อนในหลุมดำ", v: "cs" },
+                    { t: "C) ระบบฐานจัดหาทรัพยากร ประเมินคัดสรร และควบคุมเสถียรภาพพนักงานภาคพื้นดิน", v: "it" },
+                    { t: "D) ระบบสถิติจับเวลาและการกระจายอุทกวิทยา วิเคราะห์ชั้นดินแวดล้อมดาวดวงใหม่จากข้อมูลดิบ", v: "ds" }
+                ]
+            }
+        ];
+
+        // --- STATE VARIABLES ---
+        let currentTabState = 'database';
+        
+        // Incident Game State
+        let currentIncidentIdx = 0;
+        let solvedCount = 0;
+
+        // Quiz State
+        let quizIdx = 0;
+        let selectedAnswers = [];
+
+        // ONLOAD ACTION
+        window.onload = () => {
+            renderMajorsGrid();
+            renderIncident();
+            renderQuiz();
+            showMajorDetails('cpe'); // Load default CPE
+        };
+
+        // Tab Management
+        function changeTab(tabId) {
+            playSfx('click');
+            currentTabState = tabId;
+
+            // Toggle visibility of panels
+            ['database', 'missions', 'matcher'].forEach(id => {
+                const el = document.getElementById(`tab-${id}`);
+                const btn = document.getElementById(`btn-${id}`);
+                if (id === tabId) {
+                    el.classList.remove('hidden');
+                    btn.classList.add('active');
+                } else {
+                    el.classList.add('hidden');
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // --- TAB 1: CODE DATABASE ---
+        function renderMajorsGrid() {
+            const grid = document.getElementById('majors-grid');
+            grid.innerHTML = '';
+
+            computerMajors.forEach(major => {
+                const card = document.createElement('button');
+                card.id = `major-card-${major.id}`;
+                card.onclick = () => { playSfx('click'); showMajorDetails(major.id); };
+                card.className = "p-4 border-2 border-black bg-white hover:border-red-600 hover:shadow-[4px_4px_0px_#e60012] transition-all text-left flex flex-col justify-between group";
+                
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <span class="text-3xl p-1 bg-neutral-100 border border-black inline-block group-hover:bg-red-50 transition-colors">${major.icon}</span>
+                        <div>
+                            <span class="text-[10px] font-mono-tech font-bold text-red-600 bg-red-100 px-1.5 py-0.5">${major.tag}</span>
+                            <h3 class="font-ui text-sm font-black mt-1 text-black group-hover:text-red-600 transition-colors">${major.title}</h3>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-mono-tech text-red-600 font-bold mt-4 inline-flex items-center gap-1 group-hover:underline">
+                        >> LOAD_DB_
+                    </span>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function showMajorDetails(id) {
+            const major = computerMajors.find(m => m.id === id);
+            if (!major) return;
+
+            // Mark active cards visually
+            computerMajors.forEach(m => {
+                const card = document.getElementById(`major-card-${m.id}`);
+                if (card) {
+                    card.classList.remove('border-red-600', 'shadow-[4px_4px_0px_#e60012]');
+                    card.classList.add('border-black');
+                }
+            });
+            const activeCard = document.getElementById(`major-card-${id}`);
+            if (activeCard) {
+                activeCard.classList.remove('border-black');
+                activeCard.classList.add('border-red-600', 'shadow-[4px_4px_0px_#e60012]');
+            }
+
+            // Populate right workspace blueprint
+            document.getElementById('blueprint-panel').classList.remove('hidden');
+            document.getElementById('bp-icon').innerText = major.icon;
+            document.getElementById('bp-title').innerText = major.title;
+            document.getElementById('bp-tag').innerText = major.tag;
+            document.getElementById('bp-desc').innerText = major.desc;
+            document.getElementById('bp-unis').innerText = major.unis;
+
+            const careersGrid = document.getElementById('bp-careers');
+            careersGrid.innerHTML = '';
+            major.careers.forEach(job => {
+                const jobCard = document.createElement('div');
+                jobCard.className = "p-4 border-2 border-black bg-neutral-50 space-y-1.5";
+                jobCard.innerHTML = `
+                    <h5 class="font-ui text-sm font-black text-black">${job.name}</h5>
+                    <p class="text-xs text-gray-600 leading-relaxed">${job.detail}</p>
+                `;
+                careersGrid.appendChild(jobCard);
+            });
+        }
+
+        // --- TAB 2: INTRUSION GAME ---
+        function renderIncident() {
+            if (currentIncidentIdx >= incidents.length) {
+                document.getElementById('incident-box').classList.add('hidden');
+                document.getElementById('system-cleared-panel').classList.remove('hidden');
+                playSfx('secured');
+                return;
+            }
+
+            const incident = incidents[currentIncidentIdx];
+            document.getElementById('incident-threat').innerText = `INCIDENT STATE: ${incident.threat}`;
+            document.getElementById('incident-num').innerText = `CASE FILE: ${currentIncidentIdx + 1} / ${incidents.length}`;
+            document.getElementById('incident-title').innerText = incident.title;
+
+            // Trigger typing effect or set description
+            document.getElementById('incident-desc').innerText = incident.desc;
+
+            const optionsContainer = document.getElementById('incident-options');
+            optionsContainer.innerHTML = '';
+
+            incident.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.onclick = () => submitIncidentChoice(opt.id);
+                btn.className = "w-full text-left p-3 border-2 border-black bg-white hover:bg-neutral-50 hover:border-red-600 font-mono-tech text-xs transition-all flex justify-between items-center group";
+                btn.innerHTML = `
+                    <span>${opt.label}</span>
+                    <span class="text-red-600 font-bold opacity-0 group-hover:opacity-100 transition-opacity">>> DISPATCH_</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('simulation-overlay').classList.add('hidden');
+        }
+
+        function submitIncidentChoice(id) {
+            const incident = incidents[currentIncidentIdx];
+            const overlay = document.getElementById('simulation-overlay');
+            const status = document.getElementById('sim-status');
+            const explanationText = document.getElementById('sim-text');
+
+            overlay.classList.remove('hidden');
+
+            if (id === incident.correct) {
+                playSfx('secured');
+                solvedCount++;
+                document.getElementById('mission-counter').innerText = `${solvedCount} / ${incidents.length}`;
+
+                status.innerText = "ACCESS GRANTED // BREACH SECURED";
+                status.className = "font-ui text-2xl font-black mb-2 text-red-600";
+                explanationText.innerText = incident.explan;
+            } else {
+                playSfx('breach');
+                status.innerText = "ACCESS DENIED // MISMATCH ONGOING";
+                status.className = "font-ui text-2xl font-black mb-2 text-black pulse-alert";
+                explanationText.innerText = "ทักษะของผู้เชี่ยวชาญสาขานี้ไม่ตรงกับจุดล้มเหลวของเครือข่าย! โปรดทบทวนขอบข่ายหน้าที่ในระบบย่อยอีกครั้งเพื่อวิเคราะห์ใหม่";
+                
+                // Allow user to retry
+                const btn = overlay.querySelector('button');
+                btn.innerText = "RE-CALIBRATE PROTOCOL [RETRY]";
+                btn.onclick = () => { playSfx('click'); overlay.classList.add('hidden'); };
+                return;
+            }
+
+            // Normal flow next case
+            const btn = overlay.querySelector('button');
+            btn.innerText = ">> PROCEED TO NEXT FILE_";
+            btn.onclick = () => nextIncident();
+        }
+
+        function nextIncident() {
+            playSfx('click');
+            currentIncidentIdx++;
+            renderIncident();
+        }
+
+        function restartIncidents() {
+            playSfx('click');
+            currentIncidentIdx = 0;
+            solvedCount = 0;
+            document.getElementById('mission-counter').innerText = `0 / ${incidents.length}`;
+            document.getElementById('incident-box').classList.remove('hidden');
+            document.getElementById('system-cleared-panel').classList.add('hidden');
+            renderIncident();
+        }
+
+        // --- TAB 3: DNA ALIGNMENT ---
+        function renderQuiz() {
+            if (quizIdx >= quizQuestions.length) {
+                calculateQuizResult();
+                return;
+            }
+
+            const q = quizQuestions[quizIdx];
+            document.getElementById('quiz-progress-num').innerText = `DECODER PROCESS: ${quizIdx + 1} / ${quizQuestions.length}`;
+            document.getElementById('quiz-question-txt').innerText = q.q;
+
+            const box = document.getElementById('quiz-options-box');
+            box.innerHTML = '';
+
+            q.choices.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.onclick = () => submitQuizAnswer(opt.v);
+                btn.className = "w-full text-left p-4 border-2 border-black bg-white hover:border-red-600 hover:bg-red-50 text-xs md:text-sm transition-all";
+                btn.innerText = opt.t;
+                box.appendChild(btn);
+            });
+        }
+
+        function submitQuizAnswer(val) {
+            playSfx('click');
+            selectedAnswers.push(val);
+            quizIdx++;
+            renderQuiz();
+        }
+
+        function calculateQuizResult() {
+            playSfx('secured');
+            document.getElementById('matcher-quiz').classList.add('hidden');
+            document.getElementById('matcher-result').classList.remove('hidden');
+
+            // Find most frequent answer code
+            const counts = {};
+            selectedAnswers.forEach(ans => counts[ans] = (counts[ans] || 0) + 1);
+
+            let bestId = 'cpe'; // Fallback
+            let maxVal = 0;
+            for (const key in counts) {
+                if (counts[key] > maxVal) {
+                    maxVal = counts[key];
+                    bestId = key;
+                }
+            }
+
+            const major = computerMajors.find(m => m.id === bestId) || computerMajors[0];
+
+            document.getElementById('match-icon').innerText = major.icon;
+            document.getElementById('match-title').innerText = major.title;
+            document.getElementById('match-desc').innerText = `คุณเป็นคนที่ให้ความสำคัญกับการแก้ปัญหาระบบที่เป็นรูปธรรม ตรรกะความคิดมีความเป็นแบบแผน คุณเหมาะที่จะสวมบทบาทนักคิดในแวดวงสายคอมพิวเตอร์อย่างลึกซึ้งผ่านทักษะเฉพาะด้านของสาขา ${major.title}!`;
+
+            const jobsUl = document.getElementById('match-jobs-ul');
+            jobsUl.innerHTML = '';
+            major.careers.forEach(job => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong class="text-black font-extrabold">${job.name}:</strong> ${job.detail}`;
+                jobsUl.appendChild(li);
+            });
+        }
+
+        function restartQuiz() {
+            playSfx('click');
+            quizIdx = 0;
+            selectedAnswers = [];
+            document.getElementById('matcher-quiz').classList.remove('hidden');
+            document.getElementById('matcher-result').classList.add('hidden');
+            renderQuiz();
+        }
+    </script>
+</body>
+</html>

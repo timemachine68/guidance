@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เส้นทางที่เลือกเอง — เกมตัดสินใจเส้นทางชีวิต</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@400;500;600;700&family=Mitr:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-deep:#0F2018; --bg-panel:#1B3328; --bg-panel-2:#20402F;
+  --gold:#D4A24C; --gold-soft:#EACB8B; --teal:#6FA98C;
+  --parchment:#EFE9DD; --parchment-dim:#C9C2AE;
+  --rust:#B5502E; --ink:#081209; --line:rgba(239,233,221,0.14);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(1100px 700px at 15% -10%,rgba(111,169,140,.16),transparent 60%),
+    radial-gradient(900px 600px at 100% 110%,rgba(212,162,76,.10),transparent 55%),
+    var(--bg-deep);
+  color:var(--parchment); font-family:'Mitr',sans-serif;
+  min-height:100vh; display:flex; align-items:flex-start; justify-content:center;
+  padding:32px 18px 60px;
+}
+.contour{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;}
+.app{position:relative;z-index:1;width:100%;max-width:900px;}
+h1,h2,h3{font-family:'Taviraj',serif;font-weight:600;margin:0;}
+
+/* Brand */
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.brand .mark{width:40px;height:40px;border-radius:50%;background:conic-gradient(from 210deg,var(--gold),var(--teal),var(--gold));display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px var(--bg-panel),0 0 0 4px var(--line);flex-shrink:0;}
+.brand .mark::after{content:"◆";color:var(--ink);font-size:14px;}
+.brand .titles .kicker{font-size:12px;letter-spacing:.14em;color:var(--gold-soft);text-transform:uppercase;}
+.brand .titles .name{font-size:19px;}
+.brand .fs-btn{margin-left:auto;background:transparent;border:1px solid var(--line);color:var(--parchment-dim);border-radius:8px;padding:6px 12px;font-family:'Mitr',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
+.brand .fs-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+/* Progress bar */
+.progress-wrap{margin-bottom:18px;}
+.progress-top{display:flex;justify-content:space-between;font-size:12px;color:var(--parchment-dim);margin-bottom:6px;}
+.progress-top .pct{color:var(--gold-soft);font-weight:500;}
+.progress-bg{height:5px;border-radius:100px;background:rgba(239,233,221,.08);overflow:hidden;}
+.progress-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--teal),var(--gold));width:0%;transition:width .6s cubic-bezier(.2,.8,.2,1);}
+
+/* Trail dots */
+.trail{display:flex;align-items:center;gap:5px;margin:0 0 22px;overflow-x:auto;padding-bottom:4px;}
+.trail .dot{width:9px;height:9px;border-radius:50%;background:var(--bg-panel-2);border:1.5px solid var(--line);flex-shrink:0;transition:all .4s ease;}
+.trail .dot.done{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(212,162,76,.6);}
+.trail .dot.current{background:var(--teal);border-color:var(--teal);transform:scale(1.35);}
+.trail .seg{flex:1;height:2px;background:var(--line);min-width:10px;}
+.trail .seg.done{background:var(--gold);}
+
+/* Card + fade */
+.card-wrap{position:relative;}
+.card{
+  background:linear-gradient(180deg,var(--bg-panel),var(--bg-panel-2));
+  border:1px solid var(--line);border-radius:18px;
+  padding:34px clamp(20px,4vw,46px);
+  box-shadow:0 30px 60px -20px rgba(0,0,0,.55);
+  position:relative;overflow:hidden;
+  opacity:1;transform:translateY(0);
+  transition:opacity .28s ease,transform .28s ease;
+}
+.card.fade-out{opacity:0;transform:translateY(10px);}
+.card.fade-in{animation:fadeIn .32s ease forwards;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.card::before{content:"";position:absolute;top:-40%;right:-15%;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(212,162,76,.10),transparent 65%);pointer-events:none;}
+
+.eyebrow{font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:10px;display:block;}
+.scene-title{font-size:clamp(22px,3.4vw,30px);line-height:1.35;margin-bottom:16px;color:var(--parchment);}
+.scene-text{font-size:16px;line-height:1.9;color:var(--parchment-dim);margin-bottom:10px;white-space:pre-line;}
+.scene-block{margin-bottom:26px;}
+
+/* Choices */
+.choices{display:flex;flex-direction:column;gap:12px;}
+.choice{
+  text-align:left;background:rgba(239,233,221,.03);border:1px solid var(--line);border-radius:12px;
+  padding:16px 18px;color:var(--parchment);font-family:'Mitr',sans-serif;cursor:pointer;
+  display:flex;align-items:flex-start;gap:12px;
+  transition:border-color .2s,background .2s,transform .15s;
+}
+.choice:hover{border-color:var(--gold);background:rgba(212,162,76,.08);transform:translateX(3px);}
+.choice:active{transform:translateX(1px) scale(.995);}
+.choice .tag{flex-shrink:0;margin-top:2px;width:22px;height:22px;border-radius:6px;background:var(--bg-deep);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'Taviraj',serif;font-size:12px;color:var(--gold-soft);}
+.choice .body .clabel{font-size:15px;line-height:1.6;display:block;}
+.choice .body .csub{font-size:13px;line-height:1.6;color:var(--parchment-dim);margin-top:4px;display:block;}
+
+/* Buttons */
+.startbtn,.restartbtn,.continuebtn,.pdfbtn,.submitbtn{
+  margin-top:8px;background:var(--gold);color:var(--ink);border:none;border-radius:12px;
+  padding:14px 24px;font-family:'Mitr',sans-serif;font-weight:500;font-size:15px;cursor:pointer;
+  box-shadow:0 10px 24px -10px rgba(212,162,76,.55);
+  transition:transform .15s,box-shadow .15s;
+}
+.startbtn:hover,.restartbtn:hover,.pdfbtn:hover,.submitbtn:hover{transform:translateY(-2px);box-shadow:0 14px 28px -10px rgba(212,162,76,.7);}
+.continuebtn{background:transparent;color:var(--teal);border:1px solid rgba(111,169,140,.4);box-shadow:none;}
+.continuebtn:hover{background:rgba(111,169,140,.1);transform:translateY(-1px);}
+.pdfbtn{background:rgba(239,233,221,.08);color:var(--parchment);border:1px solid var(--line);box-shadow:none;margin-left:8px;}
+.pdfbtn:hover{border-color:var(--gold);color:var(--gold);}
+.submitbtn{background:var(--teal);color:var(--ink);}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;align-items:center;}
+
+/* Intro list */
+.intro-list{list-style:none;padding:0;margin:22px 0 30px;display:grid;gap:10px;}
+.intro-list li{display:flex;gap:10px;align-items:flex-start;color:var(--parchment-dim);font-size:14.5px;line-height:1.7;}
+.intro-list li::before{content:"—";color:var(--gold);flex-shrink:0;}
+
+/* Pre/Post survey */
+.survey-wrap{margin:20px 0 28px;display:grid;gap:18px;}
+.survey-q{font-size:14.5px;color:var(--parchment);line-height:1.7;margin-bottom:8px;}
+.likert{display:flex;gap:6px;flex-wrap:wrap;}
+.likert label{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;}
+.likert input[type=radio]{display:none;}
+.likert .lbtn{
+  width:38px;height:38px;border-radius:9px;border:1.5px solid var(--line);
+  background:rgba(239,233,221,.03);display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:var(--parchment-dim);transition:all .15s;
+}
+.likert input:checked+.lbtn{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:600;}
+.likert label:hover .lbtn{border-color:var(--gold);color:var(--gold);}
+.likert-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--parchment-dim);margin-top:4px;}
+
+/* Checkpoint */
+.checkpoint-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(111,169,140,.1);border:1px solid rgba(111,169,140,.3);color:var(--teal);padding:6px 14px;border-radius:100px;font-size:12.5px;letter-spacing:.06em;margin-bottom:16px;}
+.mirror{background:rgba(212,162,76,.06);border:1px dashed rgba(212,162,76,.35);border-radius:14px;padding:16px 20px;margin:18px 0 26px;font-size:14.5px;color:var(--gold-soft);line-height:1.8;}
+
+/* Results */
+.result-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(212,162,76,.12);border:1px solid rgba(212,162,76,.4);color:var(--gold-soft);padding:6px 14px;border-radius:100px;font-size:12.5px;letter-spacing:.08em;margin-bottom:16px;}
+.tagline{font-size:15px;color:var(--teal);margin-bottom:18px;}
+.subhead{font-family:'Taviraj',serif;font-size:15.5px;color:var(--gold-soft);margin:26px 0 12px;}
+
+.career-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
+.career-tags span{font-size:13px;padding:6px 12px;border-radius:100px;background:rgba(239,233,221,.05);border:1px solid var(--line);color:var(--parchment-dim);}
+
+.watchout{font-size:14.5px;line-height:1.85;color:var(--parchment-dim);background:rgba(181,80,46,.08);border:1px solid rgba(181,80,46,.3);border-radius:12px;padding:14px 18px;margin-bottom:22px;}
+
+/* Recap */
+.recap{margin:22px 0;display:grid;gap:2px;}
+.recap-item{font-size:13.5px;color:var(--parchment-dim);line-height:1.7;padding:16px 18px 16px 20px;border-left:2px solid var(--line);transition:border-color .2s;}
+.recap-item:hover{border-left-color:var(--gold);}
+.recap-item .rstep{color:var(--gold-soft);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;}
+.recap-item .rchoice{color:var(--parchment);font-size:14.5px;font-weight:500;line-height:1.6;margin-bottom:4px;}
+.recap-item .rsub{color:var(--parchment-dim);font-size:13px;line-height:1.65;margin-bottom:6px;font-style:italic;}
+.recap-item .rtrait{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:3px 9px;border-radius:100px;background:rgba(111,169,140,.1);border:1px solid rgba(111,169,140,.25);color:var(--teal);}
+
+/* Traits bar */
+.traits{display:grid;gap:14px;margin:22px 0 30px;}
+.trait-row{display:grid;grid-template-columns:110px 1fr 34px;align-items:center;gap:12px;}
+.trait-label{font-size:13.5px;color:var(--parchment-dim);}
+.trait-bar-bg{height:8px;border-radius:100px;background:rgba(239,233,221,.08);overflow:hidden;}
+.trait-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--teal),var(--gold));width:0%;transition:width 1s cubic-bezier(.2,.8,.2,1);}
+.trait-val{font-size:12.5px;color:var(--gold-soft);text-align:right;}
+
+/* Transparency box */
+.transparency{background:rgba(239,233,221,.03);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:22px;}
+.transparency summary{cursor:pointer;font-size:14px;color:var(--gold-soft);list-style:none;display:flex;align-items:center;gap:8px;outline:none;}
+.transparency summary::before{content:"▶";font-size:10px;transition:transform .2s;}
+.transparency[open] summary::before{transform:rotate(90deg);}
+.transparency .t-body{margin-top:14px;font-size:13.5px;color:var(--parchment-dim);line-height:1.85;}
+.transparency .t-row{display:flex;gap:10px;margin-bottom:8px;align-items:baseline;}
+.transparency .t-k{flex-shrink:0;color:var(--parchment);font-weight:500;min-width:80px;}
+
+/* Next steps */
+.nextsteps{display:grid;gap:12px;margin-bottom:22px;}
+.nstep{background:rgba(239,233,221,.03);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
+.nstep .icon{flex-shrink:0;width:32px;height:32px;border-radius:8px;background:rgba(212,162,76,.1);border:1px solid rgba(212,162,76,.25);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.nstep .ncontent .ntitle{font-size:13.5px;color:var(--parchment);font-weight:500;margin-bottom:3px;}
+.nstep .ncontent .ndesc{font-size:13px;color:var(--parchment-dim);line-height:1.65;}
+
+/* Challenge */
+.challenge{background:rgba(212,162,76,.07);border:1px solid rgba(212,162,76,.3);border-radius:14px;padding:18px 20px;margin-bottom:18px;font-size:14.5px;color:var(--parchment);line-height:1.85;}
+.challenge b{color:var(--gold-soft);}
+
+/* Reflect */
+.reflect{background:rgba(111,169,140,.08);border:1px solid rgba(111,169,140,.25);border-radius:14px;padding:20px 22px;margin-top:6px;}
+.reflect h3{font-size:15.5px;color:var(--teal);margin-bottom:16px;}
+.reflect-item{margin-bottom:18px;}
+.reflect-item:last-child{margin-bottom:0;}
+.reflect-q{font-size:14.5px;color:var(--parchment-dim);line-height:1.85;margin-bottom:8px;}
+.reflect-q .qnum{color:var(--teal);margin-right:6px;font-weight:500;}
+.reflect-ans{background:rgba(239,233,221,.04);border:1px solid var(--line);border-radius:10px;padding:11px 14px 11px 22px;font-size:13.5px;color:var(--parchment);line-height:1.7;font-style:italic;position:relative;}
+.reflect-ans::before{content:"\201C";position:absolute;top:-2px;left:8px;font-size:26px;color:var(--gold-soft);opacity:.4;font-family:'Taviraj',serif;line-height:1;}
+.reflect-ans-label{font-size:11px;color:var(--gold-soft);letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;opacity:.7;font-style:normal;}
+
+/* GAS submit */
+.gas-form{background:rgba(111,169,140,.06);border:1px solid rgba(111,169,140,.2);border-radius:14px;padding:18px 20px;margin-bottom:18px;}
+.gas-form .gas-title{font-size:14px;color:var(--teal);margin-bottom:10px;}
+.gas-form .gas-note{font-size:12.5px;color:var(--parchment-dim);line-height:1.7;margin-bottom:12px;}
+.gas-input{width:100%;background:rgba(239,233,221,.04);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--parchment);font-family:'Mitr',sans-serif;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:10px;}
+.gas-input:focus{border-color:var(--teal);}
+.gas-status{font-size:13px;margin-top:6px;min-height:20px;color:var(--teal);}
+
+/* Post survey comparison */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 22px;}
+.compare-box{background:rgba(239,233,221,.03);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+.compare-box .cblabel{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;}
+.compare-box.pre .cblabel{color:var(--parchment-dim);}
+.compare-box.post .cblabel{color:var(--gold-soft);}
+.compare-bar-wrap{display:grid;gap:7px;}
+.compare-bar-row{display:flex;align-items:center;gap:8px;font-size:12px;}
+.compare-bar-row .cblabel2{width:90px;color:var(--parchment-dim);flex-shrink:0;}
+.compare-bar-mini-bg{flex:1;height:6px;border-radius:100px;background:rgba(239,233,221,.08);overflow:hidden;}
+.compare-bar-mini-fill{height:100%;border-radius:100px;}
+.compare-bar-mini-fill.pre-fill{background:var(--parchment-dim);}
+.compare-bar-mini-fill.post-fill{background:var(--gold);}
+.compare-bar-row .cbval{width:20px;text-align:right;color:var(--parchment-dim);font-size:11px;}
+
+footer{text-align:center;margin-top:26px;color:rgba(239,233,221,.35);font-size:12px;}
+
+@media(max-width:520px){
+  .card{padding:26px 18px;}
+  .trait-row{grid-template-columns:88px 1fr 30px;}
+  .compare-grid{grid-template-columns:1fr;}
+}
+/* ===== PRINT / PDF ===== */
+@media print{
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  body{
+    background:#F7F5F0!important;
+    color:#1A1A1A!important;
+    font-family:'Mitr',sans-serif!important;
+    padding:0!important; margin:0!important;
+    display:block!important;
+  }
+  .contour,.trail,.progress-wrap,.brand .fs-btn,
+  .btn-row,.gas-form,.choices,.startbtn,.restartbtn,
+  .continuebtn,.reflect,.challenge,.transparency{
+    display:none!important;
+  }
+  .app{max-width:100%!important;padding:0!important;}
+  .brand{
+    background:#1B3328!important;color:#EFE9DD!important;
+    padding:14px 24px!important;margin-bottom:0!important;
+    border-radius:0!important;
+  }
+  .brand .mark{display:none!important;}
+  .brand .titles .kicker{color:#EACB8B!important;font-size:10pt!important;}
+  .brand .titles .name{color:#EFE9DD!important;font-size:16pt!important;}
+  .card-wrap{margin-top:0!important;}
+  .card{
+    background:#FFFFFF!important;
+    border:none!important;border-radius:0!important;
+    box-shadow:none!important;
+    padding:24px 32px!important;
+    overflow:visible!important;
+  }
+  .card::before{display:none!important;}
+  /* Result badge → colored label */
+  .result-badge{
+    background:#E8F5EE!important;border:1px solid #6FA98C!important;
+    color:#1B5E3A!important;border-radius:6px!important;
+    font-size:9pt!important;padding:4px 10px!important;
+  }
+  .scene-title{color:#0F2018!important;font-size:18pt!important;}
+  .tagline{color:#2E7D56!important;font-size:11pt!important;margin-bottom:14px!important;}
+  .scene-text{color:#333!important;font-size:11pt!important;line-height:1.85!important;}
+  .subhead{
+    color:#1B5E3A!important;font-size:12pt!important;
+    border-bottom:1.5px solid #6FA98C!important;
+    padding-bottom:4px!important;margin:20px 0 10px!important;
+  }
+  /* Career tags */
+  .career-tags span{
+    background:#F0FBF5!important;border:1px solid #6FA98C!important;
+    color:#1B5E3A!important;font-size:9.5pt!important;
+    border-radius:100px!important;padding:3px 10px!important;
+  }
+  /* Watchout */
+  .watchout{
+    background:#FFF8F0!important;border:1px solid #D4A24C!important;
+    border-radius:8px!important;color:#5C3A00!important;
+    font-size:10.5pt!important;padding:12px 16px!important;
+  }
+  /* Next steps */
+  .nstep{
+    background:#F7FBF9!important;border:1px solid #D0E8DC!important;
+    border-radius:8px!important;padding:10px 14px!important;
+    page-break-inside:avoid!important;
+  }
+  .nstep .icon{background:#E0F2EA!important;border:none!important;font-size:13pt!important;}
+  .ntitle{color:#0F2018!important;font-size:11pt!important;}
+  .ndesc{color:#444!important;font-size:10pt!important;}
+  /* Recap */
+  .recap-item{
+    border-left:3px solid #6FA98C!important;
+    padding:10px 12px!important;margin-bottom:4px!important;
+    page-break-inside:avoid!important;
+    background:#FAFFF9!important;
+  }
+  .recap-item .rstep{color:#888!important;font-size:9pt!important;}
+  .recap-item .rchoice{color:#0F2018!important;font-size:11pt!important;}
+  .recap-item .rsub{color:#555!important;font-size:10pt!important;}
+  .recap-item .rtrait{
+    background:#E8F5EE!important;border:1px solid #6FA98C!important;
+    color:#1B5E3A!important;font-size:9pt!important;
+    border-radius:100px!important;padding:2px 8px!important;
+    display:inline-block!important;
+  }
+  /* Trait bars */
+  .trait-row{grid-template-columns:120px 1fr 40px!important;}
+  .trait-label{color:#333!important;font-size:10.5pt!important;}
+  .trait-bar-bg{background:#E0E0E0!important;}
+  .trait-bar-fill{background:#6FA98C!important;}
+  .trait-val{color:#1B5E3A!important;}
+  /* Compare */
+  .compare-grid{grid-template-columns:1fr 1fr!important;}
+  .compare-box{background:#FAFAFA!important;border:1px solid #DDD!important;border-radius:8px!important;}
+  .compare-box.pre .cblabel{color:#888!important;}
+  .compare-box.post .cblabel{color:#B5860E!important;}
+  .compare-bar-mini-bg{background:#E0E0E0!important;}
+  .compare-bar-mini-fill.pre-fill{background:#AAA!important;}
+  .compare-bar-mini-fill.post-fill{background:#D4A24C!important;}
+  /* Transparency — hide on print */
+  .transparency{display:none!important;}
+  /* Print footer */
+  .print-footer{
+    display:block!important;
+    margin-top:24px!important;
+    padding-top:12px!important;
+    border-top:1px solid #CCC!important;
+    font-size:9pt!important;color:#999!important;
+    text-align:center!important;
+  }
+  /* Page breaks */
+  .subhead{page-break-after:avoid!important;}
+  .recap,.nextsteps,.traits{page-break-inside:avoid!important;}
+}
+</style>
+</head>
+<body>
+
+<svg class="contour" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+  <path d="M-50,650 C200,600 350,700 600,640 C850,580 950,680 1250,600" stroke="#6FA98C" stroke-width="1" fill="none" opacity="0.5"/>
+  <path d="M-50,700 C220,660 380,740 620,690 C860,640 980,720 1250,660" stroke="#6FA98C" stroke-width="1" fill="none" opacity="0.35"/>
+  <path d="M-50,120 C250,60 420,160 700,100 C900,60 1000,140 1250,90" stroke="#D4A24C" stroke-width="1" fill="none" opacity="0.25"/>
+</svg>
+
+<div class="app">
+  <div class="brand">
+    <div class="mark"></div>
+    <div class="titles">
+      <div class="kicker">เกมตัดสินใจเส้นทางชีวิต · ม.6</div>
+      <div class="name">เส้นทางที่เลือกเอง</div>
+    </div>
+    <button class="fs-btn" onclick="toggleFS()" id="fsBtn">⛶ เต็มจอ</button>
+  </div>
+
+  <div class="progress-wrap" id="progressWrap" style="display:none">
+    <div class="progress-top"><span id="progressLabel">ทางแยกที่ 1 จาก 6</span><span class="pct" id="progressPct">0%</span></div>
+    <div class="progress-bg"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <div class="trail" id="trailBar"></div>
+  <div class="card-wrap"><div class="card" id="card"></div></div>
+  <footer>ทุกเส้นทางไม่มีคำตอบผิด — สร้างขึ้นเพื่อการสำรวจตัวเองก่อนวันเลือกทาง</footer>
+</div>
+
+<script>
+/* ===================== CONFIG ===================== */
+// แทนที่ด้วย URL ของ Google Apps Script ที่ deploy แล้ว
+var GAS_URL = "https://script.google.com/macros/s/AKfycbyQu4AWpxtanBTD84l-uGZM8R2MuBXi3IukLDa1sxoMMSdsiF-ksFcQBFuZ1Bw7ldI-/exec";
+
+/* ===================== DATA ===================== */
+var TRAITS = {
+  s:{name:"มั่นคง",full:"แสวงหาความมั่นคงและความชัดเจน"},
+  a:{name:"ท้าทาย",full:"กล้าเผชิญความไม่แน่นอน"},
+  c:{name:"สร้างสรรค์",full:"ขับเคลื่อนด้วยความคิดสร้างสรรค์"},
+  h:{name:"เพื่อสังคม",full:"อยากส่งต่อคุณค่าให้ผู้อื่น"}
+};
+
+var TRAIT_EXPLAIN = {
+  s:"สะท้อนว่าคุณให้ความสำคัญกับความมั่นคง ความแน่นอน และการวางรากฐานที่วัดผลได้",
+  a:"สะท้อนว่าคุณพร้อมรับมือกับความไม่แน่นอน และมองว่าความเสี่ยงคือส่วนหนึ่งของการเติบโต",
+  c:"สะท้อนว่าคุณขับเคลื่อนด้วยความคิดสร้างสรรค์ และอยากสร้างสิ่งที่มีตัวตนของคุณอยู่ในนั้น",
+  h:"สะท้อนว่าคุณวัดคุณค่าของการกระทำจากผลกระทบที่มีต่อชีวิตของคนอื่น"
+};
+
+var NODE_ORDER = ["start","n1","n2","checkpoint","n3","n4","n5","n6","n7","n8","end"];
+
+var nodes = {
+  n1:{
+    title:"เสียงในหัวคืนก่อนกรอกใบสมัคร",
+    texts:[
+      "10 โมงเย็น หน้าจอโน้ตบุ๊กของคุณเปิดค้างไว้ที่หน้ากรอกข้อมูลสมัครเรียน เคอร์เซอร์กะพริบอยู่ตรงช่องว่าง ๆ มาสิบนาทีแล้ว ในไลน์กลุ่มเพื่อน มีคนส่งผลคะแนนตัวเองมาอวด บางคนถามหาที่ปรึกษาเรื่องคณะ บางคนบอกว่ายังไม่รู้จะเลือกอะไรเลย",
+      "พ่อแม่เดินผ่านห้องมาถามเบา ๆ ว่า \"ตัดสินใจได้หรือยัง\" น้ำเสียงไม่ได้กดดัน แต่คุณรู้ว่าคำตอบของคุณคืนนี้จะกลายเป็นจุดเริ่มต้นของอะไรบางอย่างที่ใหญ่กว่าการกรอกฟอร์มธรรมดา",
+      "ถ้าต้องเลือก \"หลักการ\" ข้อเดียวเป็นเข็มทิศนำทางตอนนี้ คุณจะเลือกอะไร?"
+    ],
+    choices:[
+      {label:"เลือกทางที่วัดผลได้ชัดเจน",sub:"มีตัวเลขรองรับ เช่น อัตราการมีงานทำ เงินเดือนเริ่มต้น หรือคณะที่คนในครอบครัวแนะนำว่าไปได้ไกล",trait:"s",tag:"1",next:"n2"},
+      {label:"เลือกทางที่ยังไม่แน่นอนแต่ตื่นเต้น",sub:"แม้ยังไม่รู้ผลลัพธ์ปลายทาง แต่ทุกครั้งที่คิดถึงมันแล้วรู้สึกอยากลอง",trait:"a",tag:"2",next:"n2"},
+      {label:"เลือกทางที่ได้สร้างสิ่งใหม่ด้วยความคิดตัวเอง",sub:"อยากเห็นผลงานที่มีลายเซ็นของตัวเองอยู่ในนั้น มากกว่าทำตามแบบแผนที่มีอยู่แล้ว",trait:"c",tag:"3",next:"n2"},
+      {label:"เลือกทางที่ได้ดูแลหรือช่วยเหลือคนอื่น",sub:"วัดคุณค่าจากว่าชีวิตของใครสักคนดีขึ้นเพราะสิ่งที่คุณทำหรือเปล่า",trait:"h",tag:"4",next:"n2"},
+    ]
+  },
+  n2:{
+    title:"เมื่อแผนที่วางไว้เริ่มคลาดเคลื่อน",
+    texts:[
+      "หกเดือนผ่านไปตามเส้นทางที่คุณเลือก แต่ความจริงกลับไม่เรียบง่ายอย่างที่คิด — อาจเป็นผลสอบที่ออกมาไม่ตรงเป้า วิชาที่เรียนแล้วรู้สึกว่า \"ไม่ใช่แบบที่จินตนาการไว้\" หรืองานฝึกที่ได้ลองทำจริงกลับให้ความรู้สึกที่แตกต่างจากที่คาดหวังไว้มาก",
+      "คนรอบตัวเริ่มตั้งคำถามเบา ๆ กับทางที่คุณเลือก บางคนถามด้วยความเป็นห่วง บางคนถามเพราะอยากรู้ บางคนไม่ได้ถามอะไรเลยแต่สายตานั้นก็สื่อความหมายบางอย่าง",
+      "ความคลาดเคลื่อนนี้ไม่ใช่จุดจบ แต่เป็นจุดที่ต้องเลือกว่าจะเดินต่ออย่างไร"
+    ],
+    choices:[
+      {label:"ยึดแผนเดิมไว้แน่น ๆ",sub:"ปรับรายละเอียดเล็กน้อยได้ แต่ไม่เปลี่ยนเป้าหมายหลัก เพราะเชื่อว่าความสม่ำเสมอจะพาไปถึงปลายทาง",trait:"s",tag:"1",next:"checkpoint"},
+      {label:"ถือเป็นสัญญาณให้ลองทางใหม่ทันที",sub:"ในเมื่อรู้แล้วว่าทางเดิมอาจไม่ใช่ ทำไมต้องเสียเวลาฝืนต่อ ลองเปลี่ยนเส้นทางเลยดีกว่า",trait:"a",tag:"2",next:"checkpoint"},
+      {label:"หาวิธีใหม่ไปให้ถึงเป้าหมายเดิม",sub:"เป้าหมายยังเหมือนเดิม แต่วิธีการต้องคิดใหม่ทั้งหมด แม้ต้องออกนอกกรอบที่เคยทำมา",trait:"c",tag:"3",next:"checkpoint"},
+      {label:"คุยกับคนที่ไว้ใจและช่วยคนที่เจอปัญหาแบบเดียวกัน",sub:"ก่อนตัดสินใจอะไร อยากฟังมุมมองคนอื่นก่อน และอยากรู้ว่ามีใครกำลังเจอสถานการณ์คล้ายกันที่พอจะช่วยกันได้บ้าง",trait:"h",tag:"4",next:"checkpoint"},
+    ]
+  },
+  n3:{
+    title:"เสียงจากคนที่คุณรัก",
+    texts:[
+      "ในวงข้าวเย็นวันหนึ่ง ญาติผู้ใหญ่พูดขึ้นมาว่า \"เรียนจบไปแล้วได้งานทำแน่ ๆ ใช่ไหม\" เพื่อนสนิทที่เลือกเส้นทางตรงข้ามกับคุณโดยสิ้นเชิงก็ดูมั่นใจในทางของตัวเองมาก จนบางทีคุณก็อดถามตัวเองไม่ได้ว่ากำลังเลือกถูกอยู่หรือเปล่า",
+      "ไม่มีใครในบ้านคัดค้านคุณตรง ๆ แต่ทุกคำถามที่ถูกโยนมาล้วนแฝงความคาดหวังบางอย่างไว้ข้างใน ความคาดหวังที่บางครั้งก็ตรงกับสิ่งที่คุณอยากเป็น และบางครั้งก็ไม่ตรงเลย",
+      "คืนนั้นคุณนอนคิดอยู่นานว่า จะให้เสียงของคนรอบตัวมีน้ำหนักแค่ไหนในการตัดสินใจครั้งนี้"
+    ],
+    choices:[
+      {label:"ฟังเสียงของครอบครัวเป็นหลัก",sub:"เพราะพวกเขาผ่านชีวิตมาก่อน และความมั่นคงของครอบครัวก็คือความมั่นคงของคุณด้วย",trait:"s",tag:"1",next:"n4"},
+      {label:"ฟังเสียงตัวเองมากกว่าใคร",sub:"แม้จะรู้สึกกดดัน แต่สุดท้ายคนที่ต้องใช้ชีวิตในเส้นทางนี้ทุกวันคือตัวคุณเอง",trait:"a",tag:"2",next:"n4"},
+      {label:"หาวิธีอธิบายทางของตัวเองในแบบที่คนอื่นเข้าใจ",sub:"ไม่ปฏิเสธความเห็นของใคร แต่ลองสร้างคำอธิบายหรือผลงานที่พิสูจน์ทางที่ตัวเองเลือกให้เห็นภาพชัดขึ้น",trait:"c",tag:"3",next:"n4"},
+      {label:"ถามความรู้สึกของคนรอบตัวก่อนตัดสินใจ",sub:"อยากรู้ว่าการตัดสินใจของคุณจะกระทบใครบ้าง และพยายามหาทางที่ทุกฝ่ายสบายใจที่สุด",trait:"h",tag:"4",next:"n4"},
+    ]
+  },
+  n4:{
+    title:"โอกาสที่โผล่มาโดยไม่ทันตั้งตัว",
+    texts:[
+      "ระหว่างที่ทุกอย่างเริ่มลงตัว มีข้อเสนอบางอย่างโผล่เข้ามาในชีวิตคุณแบบไม่ทันตั้งตัว — อาจเป็นทุนเรียนต่อต่างประเทศที่ต้องตอบรับภายในหนึ่งสัปดาห์ รุ่นพี่ชวนร่วมทำธุรกิจเล็ก ๆ ที่ยังไม่มีอะไรแน่นอน งานอาสาสมัครระยะยาวในพื้นที่ห่างไกล หรือเวทีประกวดผลงานระดับประเทศที่ต้องทุ่มเวลาทั้งหมดให้",
+      "ข้อเสนอนี้ไม่ได้อยู่ในแผนเดิมของคุณเลยสักนิด มันมาพร้อมความเสี่ยง ความไม่แน่นอน และเวลาที่จำกัดในการตัดสินใจ",
+      "คุณมีเวลาไม่มากที่จะคิด — จะรับหรือปล่อยผ่านโอกาสนี้ไป?"
+    ],
+    choices:[
+      {label:"ปฏิเสธอย่างสุภาพ",sub:"เพราะแผนเดิมที่วางไว้อย่างมั่นคงยังตอบโจทย์ชีวิตคุณอยู่ ไม่อยากเสี่ยงทิ้งสิ่งที่มั่นใจแล้ว",trait:"s",tag:"1",next:"n5"},
+      {label:"คว้าโอกาสนี้ไว้ทันที",sub:"แม้ไม่รู้ผลลัพธ์ที่แน่ชัด แต่รู้สึกว่าโอกาสแบบนี้อาจไม่ได้เข้ามาอีกครั้งในชีวิต",trait:"a",tag:"2",next:"n5"},
+      {label:"ต่อยอดข้อเสนอให้เป็นแบบฉบับของตัวเอง",sub:"ไม่ปฏิเสธ แต่ก็ไม่รับตามที่เสนอมาทั้งหมด ขอปรับให้กลายเป็นโปรเจกต์ที่มีความเป็นตัวเองอยู่ในนั้นด้วย",trait:"c",tag:"3",next:"n5"},
+      {label:"รับโอกาสนี้เพราะช่วยคนได้มากขึ้น",sub:"เห็นว่าโอกาสนี้จะทำให้ช่วยเหลือคนอื่นได้ในวงกว้างกว่าที่ทำอยู่คนเดียว จึงตัดสินใจรับไว้",trait:"h",tag:"4",next:"n5"},
+    ]
+  },
+  n5:{
+    title:"ภาพชีวิตในอีก 5 ปีข้างหน้า",
+    texts:[
+      "ลองหลับตาสักครู่ แล้วจินตนาการถึงเช้าวันธรรมดาวันหนึ่งในอีก 5 ปีข้างหน้า คุณตื่นขึ้นมา มองไปรอบตัว แล้วรู้สึกว่า \"นี่แหละ ชีวิตที่ฉันสร้างขึ้นมาเอง\"",
+      "ภาพในหัวของแต่ละคนไม่เหมือนกัน บางคนเห็นออฟฟิศที่คุ้นเคยและเส้นทางอาชีพที่ก้าวหน้าไปทีละขั้น บางคนเห็นตัวเองอยู่ในที่ที่ไม่เคยคิดว่าจะได้ไปยืน บางคนเห็นผลงานที่มีชื่อของตัวเองติดอยู่ และบางคนเห็นใบหน้าของคนที่ชีวิตดีขึ้นเพราะมีคุณอยู่ตรงนั้น",
+      "ภาพไหนที่ทำให้หัวใจคุณเต้นแรงที่สุดตอนนี้?"
+    ],
+    choices:[
+      {label:"ตำแหน่งงาน รายได้ และเส้นทางอาชีพที่ชัดเจน",sub:"คาดเดาได้ว่าปีหน้าจะเป็นอย่างไร มีความก้าวหน้าที่วัดผลได้เป็นขั้นเป็นตอน",trait:"s",tag:"1",next:"n6"},
+      {label:"สถานที่ที่ไม่เคยคิดว่าจะได้มายืน",sub:"ผ่านการลองผิดลองถูกมาเยอะ แต่ทุกก้าวคือประสบการณ์ที่หาไม่ได้จากที่ไหน",trait:"a",tag:"2",next:"n6"},
+      {label:"ผลงานที่เป็นลายเซ็นเฉพาะตัว",sub:"คนอื่นมองปุ๊บก็รู้ว่าเป็นฝีมือคุณ เพราะมันสะท้อนความคิดและมุมมองที่ไม่เหมือนใคร",trait:"c",tag:"3",next:"n6"},
+      {label:"คนที่บอกว่า \"ถ้าไม่มีคุณ ฉันคงไปไม่ถึงจุดนี้\"",sub:"ความสำเร็จของคุณวัดจากชีวิตของคนรอบข้างที่ดีขึ้น ไม่ใช่แค่ตัวเลขของตัวเอง",trait:"h",tag:"4",next:"n6"},
+    ]
+  },
+  n6:{
+    title:"วันที่ต้องเผชิญกับความล้มเหลว",
+    texts:[
+      "มันเกิดขึ้นในวันที่คุณไม่ได้เตรียมใจ — สอบไม่ผ่าน สมัครงานแล้วไม่ได้รับเลือก ผลงานที่ใช้เวลาทำนานหลายเดือนถูกปฏิเสธ หรือแผนที่วางไว้อย่างรอบคอบพังทลายลงในชั่วพริบตา",
+      "ความล้มเหลวไม่ได้เจ็บปวดแค่เรื่องผลลัพธ์ มันเจ็บปวดเพราะมันตั้งคำถามกับสิ่งที่คุณเชื่อเกี่ยวกับตัวเอง คืนนั้นคุณนอนจ้องเพดาน หัวคิดวนซ้ำว่า \"ฉันเลือกผิดหรือเปล่า\" หรือ \"ฉันไม่เก่งพอจริง ๆ\"",
+      "ในที่สุดแล้ว คุณจะนิยามความล้มเหลวครั้งนี้ว่าอะไร?"
+    ],
+    choices:[
+      {label:"บทเรียนที่ต้องนำไปแก้ไขและวางแผนใหม่อย่างรอบคอบ",sub:"เก็บข้อมูลจากสิ่งที่ผิดพลาด แล้วกลับมาพร้อมแผนที่รัดกุมกว่าเดิม ความล้มเหลวคือ data ไม่ใช่คำตัดสิน",trait:"s",tag:"1",next:"n7"},
+      {label:"สัญญาณที่บอกว่าถึงเวลาลองทางที่กล้ากว่าเดิม",sub:"ถ้าทางที่ \"ปลอดภัย\" ยังพาล้มได้ ก็ไม่มีเหตุผลอะไรที่จะไม่เสี่ยงกับสิ่งที่อยากทำจริง ๆ อีกต่อไป",trait:"a",tag:"2",next:"n7"},
+      {label:"วัตถุดิบใหม่สำหรับสร้างบางอย่างที่ดีกว่าเดิม",sub:"ความผิดพลาดทุกอย่างมีเรื่องราวอยู่ในนั้น และเรื่องราวเหล่านั้นคือสิ่งที่ทำให้งานของคุณลึกและจริงมากขึ้น",trait:"c",tag:"3",next:"n7"},
+      {label:"ประสบการณ์ที่จะทำให้เข้าใจคนอื่นที่กำลังล้มได้ลึกขึ้น",sub:"ต่อไปเวลาเห็นคนที่กำลังเจ็บปวดจากความล้มเหลว คุณจะเข้าใจเขาได้อย่างแท้จริง ไม่ใช่แค่เห็นใจผ่าน ๆ",trait:"h",tag:"4",next:"n7"},
+    ]
+  },
+  n7:{
+    title:"เมื่อต้องเลือกระหว่างสองสิ่งที่รัก",
+    texts:[
+      "บางครั้งชีวิตไม่ได้ถามว่าคุณ \"อยากได้อะไร\" แต่ถามว่าคุณ \"ยอมสละอะไรได้\" สถานการณ์หน้านี้ไม่มีตัวเลือกที่สมบูรณ์แบบ — ทุกทางมีต้นทุนที่ต้องจ่าย",
+      "ลองนึกถึงสถานการณ์ที่คุณต้องตัดสินใจระหว่าง: คณะที่ฝันกับครอบครัวที่ต้องการความช่วยเหลือ, ความก้าวหน้าในอาชีพกับเวลาให้กับคนที่รัก, หรือความมั่นคงของตัวเองกับโอกาสที่เพื่อนสนิทชวนมาลงทุนร่วมกัน",
+      "เมื่อต้องเลือกระหว่างสองสิ่งที่ล้วนมีความหมาย คุณให้น้ำหนักกับอะไรมากกว่า?"
+    ],
+    choices:[
+      {label:"สิ่งที่ให้ความมั่นคงในระยะยาวแก่ทุกคนที่เกี่ยวข้อง",sub:"เลือกทางที่แม้จะไม่ตอบสนองความต้องการของตัวเองทั้งหมด แต่ทำให้ภาพรวมของทุกคนดีขึ้นอย่างยั่งยืน",trait:"s",tag:"1",next:"n8"},
+      {label:"สิ่งที่คุณจะเสียใจมากกว่าถ้าไม่ได้ลอง",sub:"เลือกทางที่ถ้าย้อนเวลาไปได้คุณจะไม่ปล่อยผ่าน เพราะความเสียใจจากการไม่ได้ลองหนักกว่าความเจ็บปวดจากการลองแล้วพลาด",trait:"a",tag:"2",next:"n8"},
+      {label:"สิ่งที่เปิดพื้นที่ให้คุณสร้างบางอย่างใหม่ที่ไม่มีอยู่ก่อน",sub:"เลือกทางที่ผลลัพธ์ยังไม่มีใครเคยทำ เพราะนั่นคือพื้นที่ที่ความคิดสร้างสรรค์ของคุณจะมีคุณค่ามากที่สุด",trait:"c",tag:"3",next:"n8"},
+      {label:"สิ่งที่ตอบสนองความต้องการของคนที่คุณรับผิดชอบมากที่สุด",sub:"เลือกทางที่ทำให้คนที่คุณรักและรับผิดชอบอยู่รู้สึกว่าคุณยังอยู่ตรงนั้น แม้จะต้องวางบางอย่างของตัวเองไว้ก่อน",trait:"h",tag:"4",next:"n8"},
+    ]
+  },
+  n8:{
+    title:"นิยามความสำเร็จของคุณ",
+    texts:[
+      "มาถึงทางแยกสุดท้ายของการเดินทางครั้งนี้ ก่อนจะเห็นภาพรวมทั้งหมด ลองตอบคำถามนี้อย่างตรงไปตรงมาที่สุดเท่าที่จะทำได้",
+      "เมื่อพูดถึงคำว่า \"ประสบความสำเร็จ\" ในระดับที่ลึกที่สุด — ไม่ใช่คำตอบที่ควรพูด แต่เป็นคำตอบที่รู้สึกจริง ๆ ข้างใน และหลังจากผ่านสถานการณ์ทั้งหมดมาแล้ว — คุณกำลังนึกถึงอะไรมากที่สุด?"
+    ],
+    choices:[
+      {label:"ความรู้สึกปลอดภัย มีหลักประกันให้ตัวเองและคนที่รัก",sub:"",trait:"s",tag:"1",next:"end"},
+      {label:"การได้ใช้ชีวิตแบบที่ไม่ต้องเสียใจว่า \"ไม่ได้ลอง\"",sub:"",trait:"a",tag:"2",next:"end"},
+      {label:"การได้เห็นความคิดของตัวเองกลายเป็นสิ่งที่จับต้องได้จริง",sub:"",trait:"c",tag:"3",next:"end"},
+      {label:"การรู้ว่าชีวิตของตัวเองทำให้ชีวิตคนอื่นดีขึ้น",sub:"",trait:"h",tag:"4",next:"end"},
+    ]
+  }
+};
+
+var endings = {
+  s:{
+    title:"เส้นทางนักสร้างรากฐาน",tagline:"มั่นคง · ชัดเจน · วางระบบระยะยาว",
+    desc:["คุณให้คุณค่ากับความมั่นคงและความชัดเจนมากที่สุด เส้นทางที่เหมาะกับคุณมักเป็นสายอาชีพที่มีโครงสร้างชัดเจน วัดผลได้ และให้หลักประกันในระยะยาว","จุดแข็งของคุณคือความรับผิดชอบ วินัย และความสามารถในการวางแผนระยะยาวที่คนรอบตัวไว้ใจได้ คุณมักเป็นคนที่ทำให้ทีมหรือครอบครัวรู้สึกอุ่นใจ เพราะมีคุณเป็นเสาหลัก"],
+    careers:["สายวิชาชีพเฉพาะทาง (บัญชี วิศวกรรม แพทย์)","ข้าราชการ / รัฐวิสาหกิจ","งานสายการเงินและการธนาคาร","องค์กรขนาดใหญ่ที่มีระบบเติบโตชัดเจน"],
+    watchout:"สิ่งที่ควรระวังคือการปิดโอกาสใหม่ ๆ เพราะกลัวความไม่แน่นอนมากเกินไป ลองถามตัวเองเป็นระยะว่า กำลังเลือกความมั่นคงเพราะมันใช่จริง ๆ หรือเพราะมันปลอดภัยที่สุดเท่านั้น",
+    challenge:"ลองนึกถึงช่วงเวลาหนึ่งที่คุณเคยอยากลองอะไรใหม่ ๆ แต่เลือกไม่ทำเพราะมันเสี่ยงเกินไป — ตอนนี้ยังรู้สึกแบบนั้นอยู่ไหม?",
+    nextsteps:[
+      {icon:"📚",title:"ศึกษาเพิ่มเติม",desc:"คณะบัญชี วิศวกรรมศาสตร์ แพทยศาสตร์ เภสัชศาสตร์ หรือนิติศาสตร์ — ดูข้อมูลอัตราการมีงานทำและเงินเดือนเฉลี่ยของแต่ละสาขา"},
+      {icon:"🎯",title:"กิจกรรมลองทำก่อน",desc:"ลองสมัครงาน Part-time หรือ Internship ในสายงานที่สนใจ แม้แค่ 1–2 สัปดาห์ก็ช่วยยืนยันความรู้สึกได้มาก"},
+      {icon:"❓",title:"คำถามก่อนสมัคร TCAS",desc:"\"ถ้าสอบไม่ติดรอบแรก ยังอยากเรียนคณะนี้อยู่ไหม?\" — ลองถามตัวเองก่อนกดสมัคร"},
+    ]
+  },
+  a:{
+    title:"เส้นทางนักบุกเบิก",tagline:"กล้าเสี่ยง · เปิดรับความไม่แน่นอน · เรียนรู้จากประสบการณ์จริง",
+    desc:["คุณพร้อมเผชิญความไม่แน่นอนเพื่อแลกกับประสบการณ์ที่ไม่มีใครให้ได้ เส้นทางที่เหมาะกับคุณมักเกี่ยวข้องกับการเริ่มต้นสิ่งใหม่และสภาพแวดล้อมที่เปลี่ยนแปลงเร็ว","จุดแข็งของคุณคือความกล้าและการปรับตัวไว คุณไม่กลัวที่จะเริ่มต้นจากศูนย์ และมักเป็นคนแรก ๆ ในกลุ่มที่กล้าลองสิ่งที่คนอื่นยังลังเล"],
+    careers:["ผู้ประกอบการ / เจ้าของธุรกิจ","งานสายเทคโนโลยีและสตาร์ทอัพ","การศึกษาหรือทำงานต่างประเทศ","อาชีพอิสระที่เปลี่ยนแปลงเร็ว"],
+    watchout:"สิ่งที่ควรระวังคือการวางแผนสำรองไว้บ้าง เพื่อไม่ให้ความเสี่ยงกลายเป็นภาระในภายหลัง ความกล้าที่ดีที่สุดมักมาพร้อมการประเมินความเสี่ยงอย่างมีสติ",
+    challenge:"ถ้าทางที่คุณเลือกไม่เป็นไปตามที่หวังใน 2 ปีข้างหน้า คุณมีแผนสำรองอะไรไว้บ้างหรือยัง?",
+    nextsteps:[
+      {icon:"🌏",title:"ศึกษาเพิ่มเติม",desc:"มหาวิทยาลัยที่มีโปรแกรม International หรือ Double Degree, คณะที่มีวิชา Entrepreneurship หรือ Innovation เป็นแกนหลัก"},
+      {icon:"🚀",title:"กิจกรรมลองทำก่อน",desc:"สมัครเข้าร่วม Startup Weekend, Hackathon, หรือแข่งขันแผนธุรกิจในระดับนักเรียน — เพื่อสัมผัสบรรยากาศจริง"},
+      {icon:"❓",title:"คำถามก่อนสมัคร TCAS",desc:"\"ถ้าต้องเรียนวิชาพื้นฐานซ้ำอีก 2 ปีก่อนได้ทำสิ่งที่อยากทำ — ฉันพร้อมรอไหม?\" — ทดสอบความอดทนของตัวเอง"},
+    ]
+  },
+  c:{
+    title:"เส้นทางนักสร้างสรรค์",tagline:"จินตนาการ · มุมมองเฉพาะตัว · สร้างสิ่งใหม่จากศูนย์",
+    desc:["คุณขับเคลื่อนด้วยความคิดและจินตนาการของตัวเองมากที่สุด เส้นทางที่เหมาะกับคุณมักอยู่ในสายที่ให้พื้นที่กับการแสดงออกและการสร้างสิ่งที่ไม่เคยมีมาก่อน","จุดแข็งของคุณคือมุมมองที่ไม่เหมือนใครและความสามารถในการสร้างสิ่งใหม่จากศูนย์ คุณมักมองเห็นความเป็นไปได้ในที่ที่คนอื่นมองไม่เห็น"],
+    careers:["สายศิลปะ การออกแบบ และแฟชั่น","งานสื่อ คอนเทนต์ครีเอเตอร์","สถาปัตยกรรมและมัณฑนศิลป์","อุตสาหกรรมบันเทิงและดนตรี"],
+    watchout:"สิ่งที่ควรระวังคือการหาวิธีทำให้ความคิดสร้างสรรค์นั้นยั่งยืนได้ในเชิงอาชีพจริง ความคิดที่ดีต้องมาพร้อมวินัยในการลงมือทำให้เสร็จ",
+    challenge:"มีผลงานหรือความคิดสร้างสรรค์ชิ้นไหนของคุณที่อยากทำให้เสร็จจริง ๆ แต่ยังไม่ได้เริ่มลงมือทำสักที?",
+    nextsteps:[
+      {icon:"🎨",title:"ศึกษาเพิ่มเติม",desc:"คณะสถาปัตยกรรมศาสตร์ มัณฑนศิลป์ นิเทศศาสตร์ วิจิตรศิลป์ หรือสายออกแบบดิจิทัล — ดู Portfolio ของรุ่นพี่ที่เรียนจบมาแล้ว"},
+      {icon:"✏️",title:"กิจกรรมลองทำก่อน",desc:"สร้าง Portfolio แม้เพียงเล็กน้อย เช่น โปรเจกต์ส่วนตัว, ภาพถ่าย, งานออกแบบ — เพื่อทดสอบว่าอยากทำจริงหรือแค่อยากเป็น"},
+      {icon:"❓",title:"คำถามก่อนสมัคร TCAS",desc:"\"ฉันมีผลงานที่ภูมิใจพอจะใส่ใน Portfolio ได้ไหม?\" — สายสร้างสรรค์วัดผลจากชิ้นงาน ไม่ใช่แค่คะแนน"},
+    ]
+  },
+  h:{
+    title:"เส้นทางนักส่งต่อคุณค่า",tagline:"เห็นอกเห็นใจ · อดทน · วัดผลจากชีวิตคนอื่น",
+    desc:["คุณวัดความสำเร็จจากชีวิตของคนรอบข้างที่ดีขึ้นเพราะคุณมากที่สุด เส้นทางที่เหมาะกับคุณมักอยู่ในสายที่ได้ดูแลหรือพัฒนาผู้อื่นโดยตรง","จุดแข็งของคุณคือความเห็นอกเห็นใจและความอดทน คุณมักเป็นคนที่คนอื่นเลือกเดินเข้ามาหาเวลามีปัญหา เพราะรู้สึกปลอดภัยที่จะเปิดใจกับคุณ"],
+    careers:["ครู อาจารย์ นักการศึกษา","พยาบาลและบุคลากรทางการแพทย์","นักพัฒนาสังคม / งาน NGO","ที่ปรึกษาหรือนักจิตวิทยา"],
+    watchout:"สิ่งที่ควรระวังคือการดูแลตัวเองให้เพียงพอก่อนจะดูแลคนอื่นได้อย่างยั่งยืน การให้โดยไม่เหลือพลังงานให้ตัวเองมักนำไปสู่ความเหนื่อยล้าในระยะยาว",
+    challenge:"ครั้งล่าสุดที่คุณดูแลตัวเองก่อนดูแลคนอื่นคือเมื่อไหร่ และคุณให้เวลาตัวเองมากพอหรือยัง?",
+    nextsteps:[
+      {icon:"🏥",title:"ศึกษาเพิ่มเติม",desc:"คณะครุศาสตร์ พยาบาลศาสตร์ สังคมสงเคราะห์ จิตวิทยา หรือสาธารณสุขศาสตร์ — ศึกษาเส้นทางและเงื่อนไขก่อนเรียนให้ชัดเจน"},
+      {icon:"🤝",title:"กิจกรรมลองทำก่อน",desc:"อาสาสมัครสอนน้อง, ค่ายพัฒนาชุมชน, หรืองานจิตอาสาในโรงพยาบาล — เพื่อสัมผัสว่าการ \"ช่วยเหลือคนจริง ๆ\" รู้สึกอย่างไร"},
+      {icon:"❓",title:"คำถามก่อนสมัคร TCAS",desc:"\"ฉันพร้อมดูแลตัวเองในวันที่งานหนักและรู้สึกหมดแรงไหม?\" — ทดสอบพลังสำรองของตัวเองก่อน"},
+    ]
+  },
+  sh:{
+    title:"เส้นทางผู้ดูแลระบบเพื่อคนอื่น",tagline:"มั่นคง + เพื่อสังคม",
+    desc:["คุณผสมผสานความมั่นคงเข้ากับความตั้งใจช่วยเหลือผู้อื่นได้อย่างลงตัว เส้นทางที่เหมาะกับคุณมักอยู่ในสายที่มีโครงสร้างชัดเจนแต่ทำเพื่อส่วนรวมเป็นแกนหลัก","จุดแข็งของคุณคือความน่าเชื่อถือและความเสียสละที่มีวินัยกำกับ คุณไม่ได้ช่วยเหลือคนอื่นแบบไร้ทิศทาง แต่ทำอย่างเป็นระบบและยั่งยืน"],
+    careers:["ครูสายวิชาการ","ข้าราชการเชิงนโยบายสังคม","บุคลากรสาธารณสุขในระบบ","งานบริหารองค์กรไม่แสวงหากำไร"],
+    watchout:"สิ่งที่ควรระวังคือการยึดติดกับระบบจนไม่กล้าผลักดันการเปลี่ยนแปลงที่จำเป็น บางครั้งการช่วยเหลือคนอื่นอย่างแท้จริงต้องอาศัยความกล้าออกนอกกรอบเดิมบ้าง",
+    challenge:"มีกฎหรือระบบอะไรที่คุณรู้สึกว่าควรเปลี่ยนเพื่อช่วยคนได้มากขึ้น แต่ยังไม่กล้าเสนอหรือเปล่า?",
+    nextsteps:[
+      {icon:"🏛️",title:"ศึกษาเพิ่มเติม",desc:"รัฐศาสตร์สายปกครอง สาธารณสุขศาสตร์ หรือครุศาสตร์บริหารการศึกษา — สายงานที่ผสานระบบกับการดูแลคน"},
+      {icon:"📋",title:"กิจกรรมลองทำก่อน",desc:"ลองนำกิจกรรมกลุ่มในโรงเรียน หรือเป็นประธานชมรม เพื่อฝึกการบริหารคนในระบบที่ตัวเองออกแบบได้"},
+      {icon:"❓",title:"คำถามก่อนสมัคร TCAS",desc:"\"ฉันอยากเปลี่ยนแปลงอะไรในระบบที่มีอยู่ และเส้นทางนี้ให้โอกาสทำได้ไหม?\""},
+    ]
+  },
+  ac:{
+    title:"เส้นทางผู้ทลายกรอบ",tagline:"ท้าทาย + สร้างสรรค์",
+    desc:["คุณพร้อมเสี่ยงเพื่อสร้างสิ่งใหม่ในแบบของตัวเองมากที่สุด เส้นทางที่เหมาะกับคุณมักอยู่ในวงการที่เปลี่ยนแปลงเร็วและให้พื้นที่กับความคิดสร้างสรรค์อย่างเต็มที่","จุดแข็งของคุณคือความกล้าคิดต่างและพลังในการลงมือทำทันที คุณไม่รอให้ทุกอย่างพร้อมก่อนเริ่ม แต่เรียนรู้ไปพร้อมกับการลงมือทำจริง"],
+    careers:["ครีเอเตอร์ / อินฟลูเอนเซอร์เชิงเนื้อหา","สตาร์ทอัพสายครีเอทีฟ","อุตสาหกรรมเกมและดิจิทัลมีเดีย","งานออกแบบผลิตภัณฑ์และนวัตกรรม"],
+    watchout:"สิ่งที่ควรระวังคือการเริ่มหลายอย่างพร้อมกันจนไม่มีชิ้นไหนเสร็จสมบูรณ์ ความกล้าคิดต่างต้องมาพร้อมโฟกัสที่มากพอ",
+    challenge:"ในบรรดาไอเดียที่คุณเคยคิดไว้ ไอเดียไหนที่คุณเชื่อมากที่สุดแต่ยังไม่ได้ลงมือทำอย่างจริงจัง?",
+    nextsteps:[
+      {icon:"💡",title:"ศึกษาเพิ่มเติม",desc:"คณะดิจิทัลมีเดีย, วิทยาลัยนวัตกรรม หรือหลักสูตรที่มีโปรเจกต์จริงตั้งแต่ปี 1 — ดูว่าเรียนแล้วได้ \"สร้าง\" หรือแค่ \"เรียนเกี่ยวกับการสร้าง\""},
+      {icon:"🎮",title:"กิจกรรมลองทำก่อน",desc:"ลองสร้างชิ้นงานสักหนึ่งชิ้นให้เสร็จจริง ๆ เช่น Clip สั้น, เกม Prototype, หรือ Zine — ทดสอบว่ากดดันตัวเองจนเสร็จได้ไหม"},
+      {icon:"❓",title:"คำถามก่อนสมัคร TCAS",desc:"\"ฉันโฟกัสกับสิ่งเดียวได้นานพอที่จะทำให้มันดีจริง ๆ ไหม?\" — ทักษะที่หายากที่สุดของนักสร้างสรรค์"},
+    ]
+  },
+  sa:{
+    title:"เส้นทางนักวางแผนกล้าเสี่ยง",tagline:"มั่นคง + ท้าทาย",
+    desc:["คุณอยากมีทั้งความมั่นคงและอิสระในการตัดสินใจไปพร้อมกัน เส้นทางที่เหมาะกับคุณมักเกี่ยวข้องกับการบริหารความเสี่ยงอย่างมีระบบ ไม่ใช่การเสี่ยงแบบสุ่มเดา","จุดแข็งของคุณคือการชั่งน้ำหนักระหว่างโอกาสกับความปลอดภัยได้ดี คุณมักเป็นคนที่คิดรอบด้านก่อนตัดสินใจ แต่ก็ไม่ปล่อยให้ความกลัวหยุดคุณจากการลงมือทำ"],
+    careers:["ธุรกิจครอบครัวที่ต่อยอดสู่สิ่งใหม่","การลงทุนและวางแผนการเงิน","อาชีพอิสระที่มีแผนรองรับชัดเจน","งานที่ปรึกษาด้านกลยุทธ์"],
+    watchout:"สิ่งที่ควรระวังคือการวิเคราะห์นานเกินไปจนพลาดจังหวะสำคัญ บางครั้งการตัดสินใจที่ \"ดีพอ\" ในเวลาที่เหมาะสม ดีกว่าการรอความสมบูรณ์แบบ",
+    challenge:"มีการตัดสินใจไหนในชีวิตที่คุณคิดนานเกินไปจนพลาดโอกาสไปแล้วหรือเปล่า?",
+    nextsteps:[
+      {icon:"📊",title:"ศึกษาเพิ่มเติม",desc:"บริหารธุรกิจ การเงิน หรือเศรษฐศาสตร์ — สายที่ให้ทั้งระบบที่ชัดเจนและพื้นที่ตัดสินใจเชิงกลยุทธ์"},
+      {icon:"💼",title:"กิจกรรมลองทำก่อน",desc:"ลองทำธุรกิจเล็ก ๆ สักอย่าง แม้แค่ขายของออนไลน์ — เพื่อฝึกการตัดสินใจภายใต้ความเสี่ยงจริง"},
+      {icon:"❓",title:"คำถามก่อนสมัคร TCAS",desc:"\"ถ้าต้องเลือกระหว่างงานที่มั่นคงกับธุรกิจของตัวเองที่ยังไม่แน่นอน — ฉันจะเลือกอะไร?\" — คำตอบบอกทิศทางได้ชัดมาก"},
+    ]
+  },
+  ch:{
+    title:"เส้นทางนักเล่าเรื่องเพื่อสังคม",tagline:"สร้างสรรค์ + เพื่อสังคม",
+    desc:["คุณอยากใช้ความคิดสร้างสรรค์เพื่อสร้างความเปลี่ยนแปลงให้ผู้อื่นมากที่สุด เส้นทางที่เหมาะกับคุณมักอยู่ในสายที่ผสานศิลปะเข้ากับผลกระทบทางสังคม","จุดแข็งของคุณคือการเล่าเรื่องที่ทำให้คนอื่นเข้าใจและอยากลงมือทำตาม คุณมักมองเห็นวิธีสื่อสารประเด็นยาก ๆ ให้เข้าถึงคนหมู่มากได้"],
+    careers:["สื่อสารมวลชนเชิงสังคม","งานออกแบบเพื่อสังคม (Social Design)","องค์กรไม่แสวงหากำไรที่เน้นความคิดสร้างสรรค์","ผู้ผลิตคอนเทนต์เชิงประเด็นสังคม"],
+    watchout:"สิ่งที่ควรระวังคือการโฟกัสที่ความสวยงามของการเล่าเรื่องจนลืมตรวจสอบว่าสิ่งที่ทำสร้างผลกระทบจริงหรือไม่",
+    challenge:"มีประเด็นสังคมไหนที่คุณอยากเล่าเรื่องให้คนอื่นเข้าใจมากขึ้น แต่ยังไม่รู้จะเริ่มต้นอย่างไร?",
+    nextsteps:[
+      {icon:"📰",title:"ศึกษาเพิ่มเติม",desc:"นิเทศศาสตร์ สังคมวิทยา หรือ Social Innovation — ดูงานของนักออกแบบเพื่อสังคมที่คุณชื่นชมแล้วย้อนดูว่าเขาเรียนอะไรมา"},
+      {icon:"🎬",title:"กิจกรรมลองทำก่อน",desc:"ลองสร้าง Short-form content เกี่ยวกับประเด็นที่ใส่ใจ เพื่อทดสอบว่าคนดูแล้วเข้าใจและรู้สึกอยากทำอะไรต่อจริง ๆ ไหม"},
+      {icon:"❓",title:"คำถามก่อนสมัคร TCAS",desc:"\"ฉันอยากสร้างการเปลี่ยนแปลงผ่านเนื้อหา หรือผ่านการลงมือทำโดยตรง?\" — ทั้งสองทางแตกต่างกันมาก"},
+    ]
+  },
+  balanced:{
+    title:"เส้นทางนักผสมผสาน",tagline:"สมดุลทั้งสี่ด้าน",
+    desc:["คะแนนของคุณกระจายอย่างสมดุลในทั้งสี่ด้าน นั่นหมายความว่าคุณไม่ได้ถูกขับเคลื่อนด้วยคุณค่าเดียว แต่ปรับตัวไปตามสถานการณ์ที่เจอ","จุดแข็งของคุณคือความยืดหยุ่นสูง คุณสามารถปรับตัวเข้ากับหลายสภาพแวดล้อมได้ดี และมักเป็นคนที่มองเห็นหลายมุมมองในสถานการณ์เดียวกัน"],
+    careers:["สายงานที่ต้องประสานหลายฝ่าย เช่น การจัดการโครงการ","งานที่ผสมผสานทักษะ เช่น ผู้ประกอบการเชิงสังคม","อาชีพที่ต้องปรับตัวสูง เช่น งานที่ปรึกษา","เส้นทางที่ยังเปิดกว้าง รอการค้นหาเพิ่มเติม"],
+    watchout:"สิ่งที่ควรระวังคือความสมดุลบางครั้งอาจแปลว่ายังไม่ได้ค้นพบสิ่งที่ใช่ที่สุด ลองสังเกตต่อไปว่าในสถานการณ์จริงแต่ละครั้ง อะไรคือสิ่งที่คุณเลือกก่อนเป็นอันดับแรก",
+    challenge:"ถ้าต้องเลือกเพียงหนึ่งในสี่ด้านนี้เป็นตัวตนหลักของคุณในอีก 5 ปีข้างหน้า คุณจะเลือกด้านไหน และเพราะอะไร?",
+    nextsteps:[
+      {icon:"🗺️",title:"ศึกษาเพิ่มเติม",desc:"ลองทำ RIASEC Assessment หรือ Strong Interest Inventory กับครูแนะแนว เพื่อเจาะลึกมากกว่าผลลัพธ์จากเกมนี้"},
+      {icon:"🧭",title:"กิจกรรมลองทำก่อน",desc:"ลองทำกิจกรรมหลาย ๆ แบบในช่วงที่เหลือของ ม.ปลาย แล้วจดว่ากิจกรรมไหนที่ทำแล้ว \"ลืมเวลา\" มากที่สุด"},
+      {icon:"❓",title:"คำถามก่อนสมัคร TCAS",desc:"\"ถ้าไม่มีความกดดันจากใคร ฉันจะเลือกเรียนอะไร?\" — คำตอบที่ไม่มีผู้ชมมักซื่อสัตย์ที่สุด"},
+    ]
+  }
+};
+
+var PRE_POST_QUESTIONS = [
+  "ฉันรู้ชัดเจนว่าตัวเองให้คุณค่ากับอะไรในชีวิตมากที่สุด",
+  "ฉันมั่นใจในทิศทางอาชีพที่อยากไปในอีก 5–10 ปีข้างหน้า",
+  "ฉันสามารถอธิบายให้คนอื่นเข้าใจได้ว่าทำไมถึงเลือกเส้นทางนี้",
+  "ฉันเปิดรับมุมมองใหม่ ๆ ที่อาจท้าทายสิ่งที่คิดไว้เดิม",
+];
+
+/* ===================== STATE ===================== */
+var scores = {s:0,a:0,c:0,h:0};
+var path = [];
+var current = "start";
+var preScores = null; // {q0,q1,q2,q3}
+var postScores = null;
+
+/* ===================== FULLSCREEN ===================== */
+function toggleFS(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+    document.getElementById('fsBtn').textContent = '✕ ออกจากเต็มจอ';
+  } else {
+    document.exitFullscreen();
+    document.getElementById('fsBtn').textContent = '⛶ เต็มจอ';
+  }
+}
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement) document.getElementById('fsBtn').textContent='⛶ เต็มจอ';
+});
+
+/* ===================== PROGRESS ===================== */
+function updateProgress(){
+  var choiceNodes = ["n1","n2","n3","n4","n5","n6"];
+  var doneCount = path.length;
+  var total = choiceNodes.length;
+  var pct = Math.round(doneCount/total*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressPct').textContent = pct+'%';
+  var stepNum = Math.min(doneCount+1, total);
+  document.getElementById('progressLabel').textContent =
+    current==='end' ? 'เสร็จสิ้น' : `ทางแยกที่ ${stepNum} จาก ${total}`;
+}
+
+/* ===================== TRAIL ===================== */
+function renderTrail(){
+  var bar = document.getElementById('trailBar');
+  bar.innerHTML='';
+  var idx = NODE_ORDER.indexOf(current);
+  NODE_ORDER.forEach((key,i)=>{
+    var dot = document.createElement('div');
+    dot.className='dot'+(i<idx?' done':i===idx?' current':'');
+    bar.appendChild(dot);
+    if(i<NODE_ORDER.length-1){
+      var seg=document.createElement('div');
+      seg.className='seg'+(i<idx?' done':'');
+      bar.appendChild(seg);
+    }
+  });
+}
+
+/* ===================== TRANSITIONS ===================== */
+function transitionTo(renderFn){
+  var card = document.getElementById('card');
+  card.classList.add('fade-out');
+  setTimeout(()=>{
+    renderFn();
+    card.classList.remove('fade-out');
+    card.classList.add('fade-in');
+    setTimeout(()=>card.classList.remove('fade-in'),400);
+    card.scrollIntoView({behavior:'smooth',block:'start'});
+  },280);
+}
+
+/* ===================== SURVEY RENDER ===================== */
+function surveyHTML(prefix, btnLabel, btnFn){
+  return `
+    <div class="survey-wrap">
+      ${PRE_POST_QUESTIONS.map((q,i)=>`
+        <div>
+          <div class="survey-q">${i+1}. ${q}</div>
+          <div class="likert">
+            ${[1,2,3,4,5].map(v=>`
+              <label>
+                <input type="radio" name="${prefix}_q${i}" value="${v}">
+                <div class="lbtn">${v}</div>
+              </label>
+            `).join('')}
+          </div>
+          <div class="likert-labels"><span>ไม่เห็นด้วยเลย</span><span>เห็นด้วยอย่างยิ่ง</span></div>
+        </div>
+      `).join('')}
+    </div>
+    <button class="startbtn" onclick="${btnFn}()">${btnLabel}</button>
+  `;
+}
+
+function collectSurvey(prefix){
+  var out = {};
+  PRE_POST_QUESTIONS.forEach((_,i)=>{
+    var r = document.querySelector(`input[name="${prefix}_q${i}"]:checked`);
+    out[`q${i}`] = r ? parseInt(r.value) : null;
+  });
+  return out;
+}
+
+/* ===================== PAGES ===================== */
+function renderIntro(){
+  current='start';
+  document.getElementById('progressWrap').style.display='none';
+  renderTrail();
+  var card=document.getElementById('card');
+  card.innerHTML=`
+    <span class="eyebrow">ก่อนออกเดินทาง</span>
+    <h1 class="scene-title">เส้นทางที่เลือกเอง</h1>
+    <div class="scene-block">
+      <p class="scene-text">เกมนี้ไม่มีคำตอบผิด — มีทางแยก 8 จุด และจุดพักหนึ่งจุดระหว่างทาง ให้คุณเลือกตามสิ่งที่รู้สึกจริง ๆ ในใจ ไม่ใช่คำตอบที่ "ควรจะเป็น"</p>
+      <p class="scene-text">แต่ละสถานการณ์สร้างขึ้นจากบริบทจริงของนักเรียน ม.6 ทั้งเรื่องการสอบเข้ามหาวิทยาลัย แรงกดดันจากครอบครัว โอกาสที่ไม่คาดคิด และคำถามเรื่องความหมายของความสำเร็จ</p>
+    </div>
+    <ul class="intro-list">
+      <li>ใช้เวลาประมาณ 12–18 นาที รวมแบบสำรวจก่อน-หลัง</li>
+      <li>ตอบตามความรู้สึก ไม่มีตัวเลือกที่ "ดีกว่า" ตัวเลือกอื่น</li>
+      <li>ผลลัพธ์เป็นจุดเริ่มคุยกับครูแนะแนว ไม่ใช่คำตัดสินสุดท้ายของชีวิต</li>
+    </ul>
+    <button class="startbtn" onclick="transitionTo(renderPreSurvey)">เริ่มการเดินทาง →</button>
+  `;
+}
+
+function renderPreSurvey(){
+  current='start';
+  renderTrail();
+  var card=document.getElementById('card');
+  card.innerHTML=`
+    <span class="eyebrow">แบบสำรวจก่อนเริ่มเกม</span>
+    <h2 class="scene-title">คุณรู้สึกอย่างไรกับตัวเองตอนนี้?</h2>
+    <p class="scene-text" style="margin-bottom:4px">โปรดให้คะแนน 1–5 กับแต่ละข้อตามความรู้สึกจริง ๆ ในตอนนี้ ก่อนที่คุณจะเริ่มเล่นเกม คำตอบนี้จะถูกเปรียบเทียบกับคำตอบหลังเกมเพื่อดูว่ามีอะไรเปลี่ยนแปลงหรือไม่</p>
+    ${surveyHTML('pre','เริ่มเดินทาง →','submitPreSurvey')}
+  `;
+}
+
+function submitPreSurvey(){
+  preScores = collectSurvey('pre');
+  var unanswered = Object.values(preScores).filter(v=>v===null).length;
+  if(unanswered>0){
+    if(!confirm(`คุณยังไม่ได้ตอบ ${unanswered} ข้อ ต้องการดำเนินการต่อโดยไม่ตอบข้อที่เหลือหรือไม่?`)) return;
+  }
+  document.getElementById('progressWrap').style.display='block';
+  updateProgress();
+  transitionTo(()=>renderNode('n1'));
+}
+
+function renderNode(key){
+  current=key;
+  renderTrail();
+  updateProgress();
+  var node=nodes[key];
+  var stepIdx=NODE_ORDER.indexOf(key);
+  var totalChoiceSteps=NODE_ORDER.filter(k=>nodes[k]).length;
+  var stepNum=NODE_ORDER.slice(0,stepIdx+1).filter(k=>nodes[k]).length;
+  var card=document.getElementById('card');
+  card.innerHTML=`
+    <span class="eyebrow">ทางแยกที่ ${stepNum} จาก ${totalChoiceSteps}</span>
+    <h2 class="scene-title">${node.title}</h2>
+    <div class="scene-block">
+      ${node.texts.map(t=>`<p class="scene-text">${t}</p>`).join('')}
+    </div>
+    <div class="choices">
+      ${node.choices.map(ch=>`
+        <button class="choice" onclick="choose('${key}','${ch.trait}','${ch.next}','${encodeURIComponent(node.title)}','${encodeURIComponent(ch.label)}','${encodeURIComponent(ch.sub||'')}')">
+          <span class="tag">${ch.tag}</span>
+          <span class="body">
+            <span class="clabel">${ch.label}</span>
+            ${ch.sub?`<span class="csub">${ch.sub}</span>`:''}
+          </span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderCheckpoint(){
+  current='checkpoint';
+  renderTrail();
+  updateProgress();
+  var order=["s","a","c","h"].sort((a,b)=>scores[b]-scores[a]);
+  var leading=order[0];
+  var card=document.getElementById('card');
+  card.innerHTML=`
+    <div class="checkpoint-badge">จุดพักกลางทาง</div>
+    <h2 class="scene-title">หยุดหายใจสักครู่</h2>
+    <div class="scene-block">
+      <p class="scene-text">คุณเดินทางมาได้ครึ่งทางแล้ว ก่อนจะไปต่อ ลองทบทวนสิ่งที่ผ่านมาสักนิด — ไม่ต้องรีบตัดสินใจอะไร แค่สังเกตว่าที่ผ่านมาคุณมักเลือกตอบสนองต่อสถานการณ์ด้วยแนวโน้มแบบไหน</p>
+    </div>
+    <div class="mirror">จากทางแยกที่ผ่านมา คุณดูเหมือนจะโน้มเอียงไปทาง "${TRAITS[leading].full}" มากกว่าด้านอื่นเล็กน้อย — ลองสังเกตดูว่าทางแยกที่เหลือจะยืนยันแนวโน้มนี้ หรือจะพลิกไปทางอื่นแทน</div>
+    <button class="continuebtn" onclick="transitionTo(()=>renderNode('n3'))">เดินทางต่อ →</button>
+  `;
+}
+
+function choose(fromKey,trait,next,titleEnc,labelEnc,subEnc){
+  scores[trait]+=1;
+  path.push({
+    stepTitle:decodeURIComponent(titleEnc),
+    choiceLabel:decodeURIComponent(labelEnc),
+    choiceSub:decodeURIComponent(subEnc||''),
+    trait
+  });
+  if(next==='checkpoint') transitionTo(renderCheckpoint);
+  else if(next==='end') transitionTo(renderPostSurvey);
+  else transitionTo(()=>renderNode(next));
+}
+
+function renderPostSurvey(){
+  current='end';
+  renderTrail();
+  var card=document.getElementById('card');
+  card.innerHTML=`
+    <span class="eyebrow">แบบสำรวจหลังเล่นเกม</span>
+    <h2 class="scene-title">หลังจากเดินทางผ่านมาแล้ว คุณรู้สึกอย่างไร?</h2>
+    <p class="scene-text" style="margin-bottom:4px">ตอบชุดคำถามเดิมอีกครั้ง เพื่อดูว่าหลังจากได้ลองตัดสินใจในสถานการณ์ต่าง ๆ มา ความรู้สึกหรือมุมมองของคุณเปลี่ยนไปบ้างหรือเปล่า</p>
+    ${surveyHTML('post','ดูผลการเดินทาง →','submitPostSurvey')}
+  `;
+}
+
+function submitPostSurvey(){
+  postScores = collectSurvey('post');
+  var unanswered = Object.values(postScores).filter(v=>v===null).length;
+  if(unanswered>0){
+    if(!confirm(`คุณยังไม่ได้ตอบ ${unanswered} ข้อ ต้องการดำเนินการต่อหรือไม่?`)) return;
+  }
+  transitionTo(renderEnd);
+}
+
+/* ===================== COMPUTE ===================== */
+function computeEnding(){
+  var keys=["s","a","c","h"];
+  var maxScore=Math.max(...keys.map(k=>scores[k]));
+  var minScore=Math.min(...keys.map(k=>scores[k]));
+  if(maxScore-minScore<=1) return "balanced";
+  var order=keys.slice().sort((a,b)=>scores[b]-scores[a]);
+  var top=order[0],second=order[1];
+  var pairKey=[top,second].sort().join('');
+  if(scores[top]-scores[second]<=1 && endings[pairKey]) return pairKey;
+  return top;
+}
+
+/* ===================== RENDER END ===================== */
+function renderEnd(){
+  current='end';
+  renderTrail();
+  var key=computeEnding();
+  var result=endings[key];
+  var maxScore=8;
+  var card=document.getElementById('card');
+  card.innerHTML=`
+    <div class="result-badge">ผลการเดินทางของคุณ</div>
+    <h2 class="scene-title">${result.title}</h2>
+    <div class="tagline">${result.tagline}</div>
+    <div class="scene-block">
+      ${result.desc.map(t=>`<p class="scene-text">${t}</p>`).join('')}
+    </div>
+
+    <div class="subhead">อาชีพหรือเส้นทางที่มักไปด้วยกันได้ดี</div>
+    <div class="career-tags">${result.careers.map(c=>`<span>${c}</span>`).join('')}</div>
+
+    <div class="watchout"><b>สิ่งที่ควรระวัง —</b> ${result.watchout}</div>
+
+    <div class="subhead">ขั้นต่อไปที่แนะนำ</div>
+    <div class="nextsteps">
+      ${result.nextsteps.map(ns=>`
+        <div class="nstep">
+          <div class="icon">${ns.icon}</div>
+          <div class="ncontent">
+            <div class="ntitle">${ns.title}</div>
+            <div class="ndesc">${ns.desc}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="subhead">เส้นทางที่คุณเดินผ่านมา</div>
+    <div class="recap">
+      ${path.map((p,i)=>`
+        <div class="recap-item">
+          <div class="rstep">ทางแยกที่ ${i+1} · ${p.stepTitle}</div>
+          <div class="rchoice">${p.choiceLabel}</div>
+          ${p.choiceSub?`<div class="rsub">${p.choiceSub}</div>`:''}
+          <span class="rtrait">◈ ${TRAIT_EXPLAIN[p.trait]}</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="subhead">แนวโน้มของคุณในแต่ละด้าน</div>
+    <div class="traits" id="traitBars">
+      ${Object.keys(TRAITS).map(k=>`
+        <div class="trait-row">
+          <div class="trait-label">${TRAITS[k].name}</div>
+          <div class="trait-bar-bg"><div class="trait-bar-fill" data-w="${scores[k]/maxScore*100}" id="bar-${k}"></div></div>
+          <div class="trait-val">${scores[k]}/${maxScore}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    ${buildTransparencyHTML(key)}
+    ${buildCompareHTML()}
+
+    <div class="challenge"><b>คำถามท้าทายตัวเอง —</b> ${result.challenge}</div>
+
+    <div class="reflect">
+      <h3>ชวนคิดต่อกับครูแนะแนว</h3>
+      ${buildReflectItems()}
+    </div>
+
+    ${buildGASForm()}
+
+    <div class="btn-row">
+      <button class="restartbtn" onclick="restart()">เดินเส้นทางใหม่ ↻</button>
+      <button class="pdfbtn" onclick="exportPDF()">⬇ บันทึก PDF</button>
+    </div>
+  `;
+
+  requestAnimationFrame(()=>{
+    Object.keys(TRAITS).forEach(k=>{
+      var el=document.getElementById('bar-'+k);
+      if(el) el.style.width=el.dataset.w+'%';
+    });
+    // animate compare bars
+    ['pre','post'].forEach(p=>{
+      document.querySelectorAll(`.compare-bar-mini-fill.${p}-fill`).forEach(el=>{
+        el.style.width=el.dataset.w+'%';
+        el.style.transition='width 1s cubic-bezier(.2,.8,.2,1)';
+      });
+    });
+  });
+}
+
+function buildTransparencyHTML(key){
+  var sc = scores;
+  var total = Object.values(sc).reduce((a,b)=>a+b,0)||1;
+  return `
+    <details class="transparency">
+      <summary>ทำไมคุณถึงได้ผลลัพธ์นี้? — ดูกลไกการคำนวณ</summary>
+      <div class="t-body">
+        <p style="margin:0 0 12px">เกมนี้นับคะแนนสะสมจากตัวเลือกที่คุณเลือกในแต่ละทางแยก แต่ละตัวเลือกจะเพิ่มคะแนนให้กับด้านใดด้านหนึ่งใน 4 ด้าน ไม่มีตัวเลือกไหนถูกหรือผิด — ทุกตัวเลือกล้วนสะท้อนมุมมองที่แตกต่างกัน</p>
+        ${Object.keys(TRAITS).map(k=>`
+          <div class="t-row">
+            <span class="t-k">${TRAITS[k].name}</span>
+            <span>${sc[k]} คะแนน (${Math.round(sc[k]/total*100)}%) — ${TRAIT_EXPLAIN[k]}</span>
+          </div>
+        `).join('')}
+        <p style="margin:12px 0 0;font-size:13px;opacity:.8">ผลลัพธ์ "${endings[key].title}" ได้จากการเปรียบเทียบคะแนนทั้งสี่ด้าน ${Object.values(sc).every((v,_,a)=>Math.abs(v-a[0])<=1)?'คะแนนใกล้เคียงกันมาก จึงได้รับผลลัพธ์แบบ "สมดุล"':'ด้านที่มีคะแนนสูงสุด (และใกล้เคียงกัน) จะกำหนดว่าได้รับเส้นทางเดี่ยวหรือผสม'}</p>
+      </div>
+    </details>
+  `;
+}
+
+function buildCompareHTML(){
+  if(!preScores && !postScores) return '';
+  var labels=["รู้ชัดถึงคุณค่า","มั่นใจในทิศทาง","อธิบายให้คนอื่นเข้าใจ","เปิดรับมุมมองใหม่"];
+  var preRows='', postRows='';
+  for(var i=0;i<labels.length;i++){
+    var l=labels[i];
+    var pv=(preScores&&preScores['q'+i])||0;
+    preRows+='<div class="compare-bar-row"><div class="cblabel2">'+l+'</div><div class="compare-bar-mini-bg"><div class="compare-bar-mini-fill pre-fill" style="width:0%" data-w="'+(pv/5*100)+'"></div></div><div class="cbval">'+(pv||'—')+'</div></div>';
+    var sv=(postScores&&postScores['q'+i])||0;
+    var sprev=(preScores&&preScores['q'+i])||0;
+    var sdiff=sv-sprev;
+    var sarrow=sdiff>0?' ▲+'+sdiff:sdiff<0?' ▼'+sdiff:'';
+    postRows+='<div class="compare-bar-row"><div class="cblabel2">'+l+'</div><div class="compare-bar-mini-bg"><div class="compare-bar-mini-fill post-fill" style="width:0%" data-w="'+(sv/5*100)+'"></div></div><div class="cbval">'+(sv||'—')+sarrow+'</div></div>';
+  }
+  return '<div class="subhead">การเปลี่ยนแปลงก่อน-หลังเล่นเกม</div><div class="compare-grid"><div class="compare-box pre"><div class="cblabel">ก่อนเล่นเกม</div><div class="compare-bar-wrap">'+preRows+'</div></div><div class="compare-box post"><div class="cblabel">หลังเล่นเกม</div><div class="compare-bar-wrap">'+postRows+'</div></div></div>';
+}
+
+function buildReflectItems(){
+  var qs=[
+    {q:"ในทางแยกแรก คุณเลือกใช้ \"หลักการ\" ใดเป็นเข็มทิศตอนเริ่มต้น? นั่นยังตรงกับสิ่งที่คุณให้คุณค่าตอนนี้ไหม?",idx:0},
+    {q:"เมื่อแผนคลาดเคลื่อน คุณเลือกรับมืออย่างไร? คำตอบนั้นตรงกับสิ่งที่คุณทำจริง ๆ ในชีวิตหรือเปล่า?",idx:1},
+    {q:"เมื่อมีเสียงจากคนรอบตัว คุณให้น้ำหนักกับใครมากที่สุด? ถ้าไม่มีความกดดันจากภายนอก คำตอบจะเปลี่ยนไปไหม?",idx:2},
+    {q:"เมื่อโอกาสที่ไม่ได้วางแผนไว้โผล่เข้ามา คุณตอบสนองอย่างไร? สะท้อนความกล้าหรือความระมัดระวังของคุณแค่ไหน?",idx:3},
+    {q:"ภาพชีวิตในอีก 5 ปีที่คุณเลือก — ตอนนี้รู้สึกว่ามันยังใช่อยู่ไหม หรือมีบางส่วนที่เปลี่ยนไปหลังจากเดินทางผ่านคำถามทั้งหมดมาแล้ว?",idx:4},
+    {q:"เมื่อเผชิญกับความล้มเหลว คุณนิยามมันว่าอะไร? นิยามนี้บอกอะไรเกี่ยวกับวิธีที่คุณมองตัวเองในเวลาที่ยากลำบาก?",idx:5},
+    {q:"เมื่อต้องเลือกระหว่างสองสิ่งที่รัก คุณให้น้ำหนักกับอะไรมากกว่า? มีสิ่งใดที่คุณ \"ยอมสละได้\" และมีสิ่งใดที่ \"สละไม่ได้ไม่ว่าจะเกิดอะไรขึ้น\"?",idx:6},
+    {q:"นิยามความสำเร็จที่คุณเลือกตอนท้าย ตรงกับสิ่งที่คนรอบตัวคุณคาดหวังหรือเปล่า? และถ้าไม่ตรง คุณจะอธิบายให้เขาเข้าใจว่าอย่างไร?",idx:7},
+  ];
+  return qs.map((item,i)=>`
+    <div class="reflect-item">
+      <div class="reflect-q"><span class="qnum">${i+1}.</span>${item.q}</div>
+      ${path[item.idx]?`
+        <div class="reflect-ans">
+          <div class="reflect-ans-label">คำตอบที่คุณเลือก</div>
+          ${path[item.idx].choiceLabel}${path[item.idx].choiceSub?' — '+path[item.idx].choiceSub:''}
+        </div>
+      `:''}
+    </div>
+  `).join('');
+}
+
+function buildGASForm(){
+  var today = new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+  return `
+    <div class="gas-form" id="gasForm">
+      <div class="gas-title">📤 ส่งผลให้ครูแนะแนว (ไม่บังคับ)</div>
+      <div class="gas-note">ข้อมูลที่ส่งจะไม่ระบุชื่อ เว้นแต่คุณกรอกเอง ใช้เพื่อประกอบการแนะแนวในห้องเรียนเท่านั้น</div>
+      <input class="gas-input" id="gasName" placeholder="ชื่อ-นามสกุล หรือรหัสนักเรียน (ไม่บังคับ)" />
+      <input class="gas-input" id="gasClass" placeholder="ชั้น/ห้อง เช่น ม.6/2 (ไม่บังคับ)" />
+      <button class="submitbtn" onclick="submitToGAS()">ส่งผล →</button>
+      <div class="gas-status" id="gasStatus"></div>
+    </div>
+    <div class="print-footer" style="display:none">
+      พิมพ์วันที่ ${today} · เส้นทางที่เลือกเอง — เกมตัดสินใจเส้นทางชีวิต ม.6<br>
+      ผลลัพธ์นี้ใช้ประกอบการพูดคุยกับครูแนะแนวเท่านั้น ไม่ใช่คำตัดสินสุดท้ายของชีวิต
+    </div>
+  `;
+}
+
+/* ===================== GAS SUBMIT ===================== */
+async function submitToGAS(){
+  if(GAS_URL==="YOUR_GAS_URL_HERE"){
+    document.getElementById('gasStatus').textContent='⚠ ครูยังไม่ได้ตั้งค่า URL สำหรับรับข้อมูล';
+    return;
+  }
+  var name=document.getElementById('gasName').value.trim()||'ไม่ระบุ';
+  var cls=document.getElementById('gasClass').value.trim()||'ไม่ระบุ';
+  var key=computeEnding();
+  var payload={
+    timestamp:new Date().toISOString(),
+    name, class:cls,
+    result:endings[key].title,
+    scores:JSON.stringify(scores),
+    path:path.map(p=>p.choiceLabel).join(' | '),
+    pre:preScores?JSON.stringify(preScores):'',
+    post:postScores?JSON.stringify(postScores):''
+  };
+  var statusEl=document.getElementById('gasStatus');
+  statusEl.textContent='กำลังส่ง...';
+  try{
+    var fd=new FormData();
+    Object.entries(payload).forEach(([k,v])=>fd.append(k,v));
+    await fetch(GAS_URL,{method:'POST',body:fd,mode:'no-cors'});
+    statusEl.textContent='✓ ส่งผลเรียบร้อยแล้ว ขอบคุณที่เข้าร่วม!';
+    statusEl.style.color='var(--teal)';
+    document.getElementById('gasForm').style.opacity='0.6';
+  }catch(e){
+    statusEl.textContent='✗ เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง';
+    statusEl.style.color='#B5502E';
+  }
+}
+
+/* ===================== PDF EXPORT — Beautiful Print Window ===================== */
+function exportPDF(){
+  var key = computeEnding();
+  var result = endings[key];
+  var today = new Date().toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+  var maxScore = 8;
+
+  // Trait dots
+  var traitBarsHTML = '';
+  Object.keys(TRAITS).forEach(function(k){
+    var filled = scores[k];
+    var dots = '';
+    for(var di=0;di<maxScore;di++){
+      dots += '<span style="display:inline-block;width:13px;height:13px;border-radius:50%;margin-right:3px;background:'+(di<filled?'#2E7D56':'#D0E8DA')+'"></span>';
+    }
+    traitBarsHTML += '<div style="display:grid;grid-template-columns:86px 1fr 32px;align-items:center;gap:8px;margin-bottom:9px;"><div style="font-size:9.5pt;color:#444;">'+TRAITS[k].name+'</div><div>'+dots+'</div><div style="font-size:9.5pt;color:#2E7D56;font-weight:600;text-align:right;">'+filled+'/'+maxScore+'</div></div>';
+  });
+
+  // Path recap
+  var pathHTML = '';
+  path.forEach(function(p,i){
+    var sub = p.choiceSub ? '<div style="font-size:9pt;color:#666;font-style:italic;line-height:1.5;">'+p.choiceSub+'</div>' : '';
+    pathHTML += '<div style="display:flex;gap:10px;margin-bottom:8px;">'
+      +'<div style="flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#1B3328;color:#EACB8B;font-size:8.5pt;display:flex;align-items:center;justify-content:center;font-weight:600;">'+(i+1)+'</div>'
+      +'<div style="flex:1;background:#F7FBF9;border:1px solid #C8E6D4;border-radius:7px;padding:9px 12px;">'
+      +'<div style="font-size:7.5pt;color:#999;text-transform:uppercase;margin-bottom:2px;">'+p.stepTitle+'</div>'
+      +'<div style="font-size:10pt;color:#0F2018;font-weight:500;line-height:1.5;">'+p.choiceLabel+'</div>'
+      +sub+'</div></div>';
+  });
+
+  // Pre/Post
+  var qLabels = ['รู้ชัดถึงคุณค่าในชีวิต','มั่นใจในทิศทางอาชีพ','อธิบายให้คนอื่นเข้าใจ','เปิดรับมุมมองใหม่'];
+  var prePostHTML = '';
+  if(preScores||postScores){
+    for(var qi=0;qi<qLabels.length;qi++){
+      var qp=(preScores&&preScores['q'+qi])||0;
+      var qq=(postScores&&postScores['q'+qi])||0;
+      var qd=qq-qp;
+      var qa=qd>0?'<b style="color:#2E7D56;">+'+qd+'</b>':qd<0?'<b style="color:#B5502E;">'+qd+'</b>':'=';
+      prePostHTML+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:9pt;"><div style="flex:1;color:#444;">'+qLabels[qi]+'</div><div style="width:18px;text-align:center;color:#888;">'+(qp||'—')+'</div><div style="width:20px;text-align:center;">'+qa+'</div><div style="width:18px;text-align:center;color:#1B5E3A;font-weight:600;">'+(qq||'—')+'</div></div>';
+    }
+  } else {
+    prePostHTML='<div style="font-size:9pt;color:#AAA;">ไม่มีข้อมูลแบบสำรวจ</div>';
+  }
+
+  // Next steps
+  var nsHTML = '';
+  result.nextsteps.forEach(function(ns){
+    nsHTML += '<div style="display:flex;gap:8px;margin-bottom:8px;"><div style="font-size:13pt;flex-shrink:0;">'+ns.icon+'</div><div><div style="font-size:9.5pt;font-weight:600;color:#1B3328;margin-bottom:2px;">'+ns.title+'</div><div style="font-size:9pt;color:#555;line-height:1.6;">'+ns.desc+'</div></div></div>';
+  });
+
+  // Careers
+  var careersHTML = '';
+  result.careers.forEach(function(c){
+    careersHTML += '<div style="display:flex;gap:7px;align-items:flex-start;margin-bottom:7px;"><span style="color:#6FA98C;flex-shrink:0;">&#9670;</span><span style="font-size:9.5pt;color:#1B3328;line-height:1.55;">'+c+'</span></div>';
+  });
+
+  function sec(txt){ return '<div style="font-size:7.5pt;letter-spacing:0.16em;text-transform:uppercase;color:#6FA98C;font-weight:600;border-bottom:1.5px solid #C8E6D4;padding-bottom:4px;margin:18px 0 11px;">'+txt+'</div>'; }
+
+  // Build full HTML string
+  var H = '';
+  H += '<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8">';
+  H += '<title>เส้นทางที่เลือกเอง — ผลการเดินทาง</title>';
+  H += '<link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@400;500;600;700&family=Mitr:wght@300;400;500;600&display=swap" rel="stylesheet">';
+  H += '<style>';
+  H += '*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}';
+  H += 'html,body{margin:0;padding:0;background:#E8E4DC;font-family:\'Mitr\',sans-serif;}';
+  H += 'h1,h2,h3{font-family:\'Taviraj\',serif;margin:0;}';
+  H += '@media screen{body{padding:16px 0 40px;}.page{width:210mm;margin:0 auto;box-shadow:0 8px 40px rgba(0,0,0,0.18);}.pbar{width:210mm;margin:0 auto 12px;display:flex;gap:10px;justify-content:flex-end;}.pb{background:#1B3328;color:#EFE9DD;border:none;border-radius:8px;padding:9px 20px;font-family:\'Mitr\',sans-serif;font-size:13px;cursor:pointer;}.pb:hover{background:#2E7D56;}.cb{background:transparent;color:#888;border:1px solid #CCC;border-radius:8px;padding:9px 16px;font-family:\'Mitr\',sans-serif;font-size:13px;cursor:pointer;}}';
+  H += '@media print{html,body{background:#fff!important;padding:0!important;}.page{width:100%!important;box-shadow:none!important;}.pbar{display:none!important;}}';
+  H += '.page{background:#fff;min-height:297mm;display:flex;flex-direction:column;}';
+  H += '.hd{background:linear-gradient(135deg,#0C1C12,#1B3328 50%,#255040);padding:26px 36px 22px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;position:relative;overflow:hidden;flex-shrink:0;}';
+  H += '.hd::before{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;border:44px solid rgba(212,162,76,.10);}';
+  H += '.hd-k{font-size:7.5pt;letter-spacing:.22em;text-transform:uppercase;color:#EACB8B;margin-bottom:5px;}';
+  H += '.hd-t{font-family:\'Taviraj\',serif;font-size:19pt;font-weight:700;color:#EFE9DD;line-height:1.2;margin-bottom:5px;}';
+  H += '.hd-s{font-size:8.5pt;color:rgba(239,233,221,.55);line-height:1.5;}';
+  H += '.hd-r{text-align:right;flex-shrink:0;position:relative;z-index:1;}';
+  H += '.pill{display:inline-block;background:rgba(212,162,76,.18);border:1px solid rgba(212,162,76,.45);color:#EACB8B;border-radius:100px;font-size:7.5pt;padding:3px 11px;letter-spacing:.08em;margin-bottom:7px;}';
+  H += '.rt{font-family:\'Taviraj\',serif;font-size:13.5pt;font-weight:600;color:#EFE9DD;line-height:1.3;max-width:155px;margin-left:auto;}';
+  H += '.rtag{font-size:7.5pt;color:rgba(239,233,221,.5);margin-top:4px;}';
+  H += '.body{display:grid;grid-template-columns:1fr 68mm;flex:1;}';
+  H += '.main{padding:22px 22px 22px 36px;}';
+  H += '.side{padding:22px 28px 22px 18px;background:#F5FAF7;border-left:1px solid #D8EDE4;}';
+  H += '.desc{font-size:10pt;color:#2D2D2D;line-height:1.85;margin-bottom:8px;}';
+  H += '.wo{background:#FFFAF0;border-left:3px solid #D4A24C;border-radius:0 8px 8px 0;padding:9px 13px;}';
+  H += '.wl{font-size:7.5pt;color:#A07010;font-weight:600;margin-bottom:2px;}';
+  H += '.wt{font-size:9.5pt;color:#5C3A00;line-height:1.7;}';
+  H += '.ch{background:#F0FBF5;border:1px solid #C0E4D0;border-radius:8px;padding:10px 13px;font-size:9.5pt;color:#1B4A2A;line-height:1.7;font-style:italic;}';
+  H += '.ft{border-top:1px solid #E4E4E4;padding:9px 36px;display:flex;justify-content:space-between;align-items:center;background:#F9F9F7;flex-shrink:0;}';
+  H += '.fn{font-size:7.5pt;color:#AAA;line-height:1.55;}';
+  H += '.fd{font-size:7.5pt;color:#BBB;text-align:right;}';
+  H += '</style></head><body>';
+  H += '<div class="pbar"><button class="cb" onclick="window.close()">&#x2715; ปิด</button><button class="pb" onclick="window.print()">&#128438; พิมพ์ / บันทึก PDF</button></div>';
+  H += '<div class="page">';
+
+  // Header
+  H += '<div class="hd"><div><div class="hd-k">ผลการเดินทาง &middot; เส้นทางที่เลือกเอง &middot; ม.6</div>';
+  H += '<div class="hd-t">รายงานผลการสำรวจ<br>เส้นทางชีวิต</div>';
+  H += '<div class="hd-s">โรงเรียนพูลเจริญวิทยาคม &middot; งานแนะแนว</div></div>';
+  H += '<div class="hd-r"><div class="pill">ผลลัพธ์ของคุณ</div><div class="rt">'+result.title+'</div><div class="rtag">'+result.tagline+'</div></div></div>';
+
+  // Body
+  H += '<div class="body"><div class="main">';
+  H += sec('ภาพรวมของเส้นทางคุณ');
+  result.desc.forEach(function(d){ H += '<p class="desc">'+d+'</p>'; });
+  H += sec('แนวโน้มในแต่ละด้าน');
+  H += traitBarsHTML;
+  H += sec('สิ่งที่ควรระวัง');
+  H += '<div class="wo"><div class="wl">&#9888; จุดที่ต้องสังเกตตัวเอง</div><div class="wt">'+result.watchout+'</div></div>';
+  H += sec('เส้นทางที่เดินผ่านมาทั้ง 8 จุด');
+  H += pathHTML;
+  H += '</div><div class="side">';
+  H += sec('อาชีพที่ไปด้วยกันได้ดี');
+  H += careersHTML;
+  H += sec('ขั้นต่อไปที่แนะนำ');
+  H += nsHTML;
+  H += sec('คำถามท้าทายตัวเอง');
+  H += '<div class="ch">"'+result.challenge+'"</div>';
+  H += sec('ผลแบบสำรวจก่อน &#x2192; หลัง');
+  H += '<div style="font-size:7.5pt;color:#AAA;margin-bottom:7px;">คะแนน 1-5 ต่อข้อ</div>';
+  H += prePostHTML;
+  H += '</div></div>';
+
+  // Footer
+  H += '<div class="ft"><div class="fn">ผลลัพธ์ใช้ประกอบการพูดคุยกับครูแนะแนวเท่านั้น<br>ไม่ใช่คำตัดสินสุดท้าย</div><div class="fd">พิมพ์วันที่<br>'+today+'</div></div>';
+  H += '</div></body></html>';
+
+  var win = window.open('','_blank','width=960,height=860,scrollbars=yes');
+  win.document.write(H);
+  win.document.close();
+}
+
+
+/* ===================== RESTART ===================== */
+function restart(){
+  scores={s:0,a:0,c:0,h:0};
+  path=[];
+  preScores=null;
+  postScores=null;
+  document.getElementById('progressWrap').style.display='none';
+  transitionTo(renderIntro);
+}
+
+/* ===================== INIT ===================== */
+renderIntro();
+</script>
+</body>
+</html>

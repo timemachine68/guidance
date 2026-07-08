@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ปีสุดท้ายของไอสไตน์</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,500;0,600;1,400&family=Mitr:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#FAF7F2;--cream2:#F3EDE3;--cream3:#E8DECE;
+  --ink:#2C2018;--mid:#6B5240;--lt:#A8835A;--pale:#CEBA9E;
+  --teal:#4A7C74;--teal-lt:#B8D5D0;--teal-pale:#E8F4F2;
+  --rose:#B85450;--rose-lt:#E8C4C2;--rose-pale:#FAF0EF;
+  --gold:#B07820;--gold-lt:#E8D090;--gold-pale:#FDF8EC;
+  --sky:#4872A0;--sky-lt:#B8CCE4;--sky-pale:#EEF3FA;
+  --sage:#5A7850;--sage-lt:#B8CEAD;--sage-pale:#EBF2E8;
+  --violet:#6858A0;--violet-lt:#C4BAE4;--violet-pale:#F0EEF8;
+  --r:10px;--rlg:16px;--rsm:6px;
+}
+html,body{height:100%;font-family:'Sarabun',sans-serif;background:var(--cream);color:var(--ink);overflow:hidden}
+.screen{display:none;width:100%;height:100vh;flex-direction:column;align-items:center;justify-content:center}
+.screen.active{display:flex}
+
+/* TITLE */
+#screen-title{background:var(--cream);padding:1.4rem;position:relative;overflow:hidden}
+.tdeco{position:absolute;font-size:6rem;opacity:.05;pointer-events:none;line-height:1}
+.title-card{
+  background:var(--cream2);border:1px solid var(--pale);border-radius:20px;
+  padding:1.7rem 2rem;max-width:460px;width:100%;text-align:center;position:relative;z-index:1
+}
+.eyebrow{display:inline-block;font-family:'Mitr',sans-serif;font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--lt);margin-bottom:.9rem}
+.title-card h1{font-family:'Mitr',sans-serif;font-size:1.75rem;font-weight:600;color:var(--ink);line-height:1.25;margin-bottom:.35rem}
+.title-card h1 span{color:var(--lt)}
+.title-sub{font-size:.87rem;color:var(--mid);line-height:1.7;margin-bottom:.2rem}
+.title-sch{font-size:.72rem;color:var(--lt);margin-bottom:1.5rem}
+.char-strip{display:flex;align-items:center;gap:.8rem;background:var(--cream);border:1px solid var(--pale);border-radius:var(--r);padding:.75rem .9rem;margin-bottom:1.3rem;text-align:left}
+.cav-big{width:46px;height:46px;border-radius:50%;background:var(--cream3);border:2px solid var(--pale);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.cname{font-family:'Mitr',sans-serif;font-size:.84rem;font-weight:600;color:var(--ink);margin-bottom:.16rem}
+.cdesc{font-size:.76rem;color:var(--mid);line-height:1.55}
+.char-row{display:flex;justify-content:center;gap:.5rem;margin-bottom:1.3rem;flex-wrap:wrap}
+.char-pill{display:flex;align-items:center;gap:.35rem;background:var(--cream);border:1px solid var(--pale);border-radius:20px;padding:4px 10px 4px 6px;font-size:.73rem;color:var(--mid)}
+.btn-start{display:block;width:100%;background:var(--ink);color:var(--cream);border:none;border-radius:var(--r);padding:.8rem;font-family:'Mitr',sans-serif;font-size:.93rem;font-weight:500;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:.4px}
+.btn-start:hover{background:var(--mid)}.btn-start:active{transform:scale(.98)}
+.hint-t{font-size:.71rem;color:var(--lt);margin-top:.5rem}
+
+/* GAME */
+#screen-game{background:var(--cream);flex-direction:column;padding:0;justify-content:flex-start;overflow:hidden}
+.pb-wrap{width:100%;height:3px;background:var(--cream3);flex-shrink:0}
+.pb-fill{height:3px;background:var(--lt);transition:width .5s ease}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.48rem .85rem;background:var(--cream);border-bottom:1px solid var(--cream3);flex-shrink:0}
+.topbar-ch{font-family:'Mitr',sans-serif;font-size:.75rem;font-weight:600;color:var(--mid);letter-spacing:.5px}
+.scores{display:flex;gap:.4rem}
+.spill{display:flex;align-items:center;gap:3px;font-size:.72rem;font-weight:500;padding:3px 8px;border-radius:20px}
+.spill.str{background:var(--teal-pale);color:var(--teal);border:1px solid var(--teal-lt)}
+.spill.hop{background:var(--gold-pale);color:var(--gold);border:1px solid var(--gold-lt)}
+.scene{flex:1;overflow-y:auto;padding:.75rem .82rem 2rem;display:flex;flex-direction:column;gap:.62rem;scroll-behavior:smooth}
+.scene::-webkit-scrollbar{width:3px}
+.scene::-webkit-scrollbar-thumb{background:var(--pale);border-radius:4px}
+
+/* HEADER CARD */
+.sc-header{display:flex;gap:0;background:var(--cream2);border:1px solid var(--pale);border-radius:var(--rlg);overflow:hidden}
+.sc-left{width:60px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding:.7rem .3rem;gap:.32rem;border-right:1px solid var(--cream3)}
+.sc-icon{width:40px;height:40px;border-radius:var(--rsm);display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+.sc-loc{font-family:'Mitr',sans-serif;font-size:7px;font-weight:500;color:var(--lt);text-align:center;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.4px;line-height:1.45}
+.sc-right{flex:1;min-width:0;padding:.75rem .85rem .8rem .5rem;display:flex;flex-direction:column;gap:.5rem}
+.sc-ch{font-family:'Mitr',sans-serif;font-size:8px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--lt)}
+.sc-title{font-family:'Mitr',sans-serif;font-size:.93rem;font-weight:600;color:var(--ink);line-height:1.3}
+.sc-sit{font-size:.81rem;color:var(--mid);font-style:italic;line-height:1.65;padding-left:.5rem;border-left:2px solid var(--pale)}
+.info-rib{background:var(--sky-pale);border-left:2px solid var(--sky-lt);border-radius:0 var(--rsm) var(--rsm) 0;padding:.4rem .58rem;font-size:.76rem;color:var(--sky);line-height:1.55}
+.hope-rib{background:var(--gold-pale);border-left:2px solid var(--gold-lt);border-radius:0 var(--rsm) var(--rsm) 0;padding:.4rem .58rem;font-size:.76rem;color:var(--gold);line-height:1.55}
+.sc-div{height:1px;background:var(--cream3)}
+
+/* DIALOGUES */
+.dl-block{display:flex;flex-direction:column;gap:.38rem}
+.brow{display:flex;align-items:flex-end;gap:.36rem}
+.brow.r{flex-direction:row-reverse}
+.bav{width:25px;height:25px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.88rem;border:1px solid var(--pale);background:var(--cream)}
+.bname{font-size:.62rem;color:var(--lt);font-weight:500;margin-bottom:1px;padding:0 3px}
+.bname.r{text-align:right}
+.bub{max-width:84%;padding:.38rem .65rem;border-radius:11px;font-size:.81rem;line-height:1.6}
+.bub.l   {background:var(--cream);border:1px solid var(--cream3);color:var(--ink);border-bottom-left-radius:3px}
+.bub.r   {background:var(--teal-pale);border:1px solid var(--teal-lt);color:var(--ink);border-bottom-right-radius:3px}
+.bub.bad {background:var(--rose-pale);border:1px solid var(--rose-lt);color:var(--rose);border-bottom-left-radius:3px}
+.bub.th  {background:var(--gold-pale);border:1px solid var(--gold-lt);color:var(--mid);border-radius:11px;font-style:italic}
+.bub.sad {background:var(--violet-pale);border:1px solid var(--violet-lt);color:var(--violet);border-bottom-left-radius:3px}
+.bub.str {background:var(--cream2);border:1px solid var(--pale);color:var(--mid);border-radius:11px;font-style:italic}
+
+/* ACTION CARD */
+.sc-action{background:var(--cream2);border:1px solid var(--pale);border-radius:var(--rlg);padding:.8rem .85rem .85rem;display:flex;flex-direction:column;gap:.48rem}
+.q-label{font-family:'Mitr',sans-serif;font-size:.82rem;font-weight:600;color:var(--ink)}
+.choices{display:flex;flex-direction:column;gap:.36rem}
+.cbtn{display:flex;align-items:flex-start;gap:.48rem;background:var(--cream);border:1px solid var(--cream3);border-radius:var(--r);padding:.5rem .68rem;font-family:'Sarabun',sans-serif;font-size:.8rem;color:var(--ink);cursor:pointer;text-align:left;line-height:1.55;transition:border-color .15s,background .15s,transform .1s}
+.cbtn:hover{border-color:var(--pale);background:var(--cream2)}
+.cbtn:active{transform:scale(.99)}
+.cbtn.cg{border-color:var(--teal);background:var(--teal-pale);color:var(--teal);pointer-events:none}
+.cbtn.cb{border-color:var(--rose);background:var(--rose-pale);color:var(--rose);pointer-events:none}
+.cbtn.co{border-color:var(--gold);background:var(--gold-pale);color:var(--gold);pointer-events:none}
+.cbtn.dis{opacity:.3;pointer-events:none}
+.cnum{width:20px;height:20px;border-radius:50%;background:var(--cream3);display:flex;align-items:center;justify-content:center;font-size:.64rem;font-weight:600;color:var(--mid);flex-shrink:0;margin-top:1px;transition:background .15s,color .15s}
+.cbtn.cg .cnum{background:var(--teal);color:#fff}
+.cbtn.cb .cnum{background:var(--rose);color:#fff}
+.cbtn.co .cnum{background:var(--gold);color:#fff}
+.fb-box{border-radius:var(--r);padding:.52rem .75rem;font-size:.8rem;line-height:1.65;display:none}
+.fb-box.good{background:var(--teal-pale);border-left:3px solid var(--teal);color:var(--teal)}
+.fb-box.bad {background:var(--rose-pale);border-left:3px solid var(--rose);color:var(--rose)}
+.fb-box.ok  {background:var(--gold-pale);border-left:3px solid var(--gold);color:var(--gold)}
+.fb-box.vis{display:block}
+.tip-box{background:var(--sage-pale);border:1px solid var(--sage-lt);border-radius:var(--r);padding:.5rem .75rem;font-size:.76rem;color:var(--sage);display:none;line-height:1.65}
+.tip-box.vis{display:block}
+.btn-next{display:none;width:100%;background:var(--ink);color:var(--cream);border:none;border-radius:var(--r);padding:.65rem;font-family:'Mitr',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;transition:background .2s,transform .1s;letter-spacing:.3px}
+.btn-next.vis{display:block}
+.btn-next:hover{background:var(--mid)}.btn-next:active{transform:scale(.98)}
+.sc-pad{height:1.5rem;flex-shrink:0}
+
+/* RESULT */
+#screen-result{background:var(--cream);padding:1.3rem;overflow-y:auto}
+.res-card{background:var(--cream2);border:1px solid var(--pale);border-radius:20px;padding:1.6rem 1.8rem;max-width:440px;width:100%;text-align:center}
+.res-emoji{font-size:2.5rem;margin-bottom:.32rem}
+.res-title{font-family:'Mitr',sans-serif;font-size:1.25rem;font-weight:600;color:var(--ink);margin-bottom:.22rem}
+.res-sub{font-size:.83rem;color:var(--mid);margin-bottom:1rem;line-height:1.7}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:.48rem;margin-bottom:.95rem}
+.sb{border-radius:var(--r);padding:.62rem}
+.sb .sl{font-size:.68rem;font-weight:600;margin-bottom:.13rem}
+.sb .sv{font-family:'Mitr',sans-serif;font-size:1.5rem;font-weight:600}
+.sb.c1{background:var(--teal-pale);border:1px solid var(--teal-lt)}
+.sb.c1 .sl,.sb.c1 .sv{color:var(--teal)}
+.sb.c2{background:var(--gold-pale);border:1px solid var(--gold-lt)}
+.sb.c2 .sl,.sb.c2 .sv{color:var(--gold)}
+.lv-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-family:'Mitr',sans-serif;font-size:.82rem;font-weight:500;margin-bottom:.9rem}
+.lv1{background:var(--teal-pale);color:var(--teal);border:1px solid var(--teal-lt)}
+.lv2{background:var(--gold-pale);color:var(--gold);border:1px solid var(--gold-lt)}
+.lv3{background:var(--cream3);color:var(--mid);border:1px solid var(--pale)}
+.les-list{text-align:left;list-style:none;display:flex;flex-direction:column;gap:.36rem;margin-bottom:1rem}
+.les-list li{display:flex;gap:.42rem;font-size:.78rem;color:var(--mid);line-height:1.55;align-items:flex-start}
+.ldot{width:17px;height:17px;border-radius:50%;background:var(--cream3);color:var(--lt);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:600;flex-shrink:0;margin-top:1px}
+.hope-banner{background:var(--gold-pale);border:1px solid var(--gold-lt);border-radius:var(--r);padding:.65rem .85rem;font-size:.82rem;color:var(--gold);line-height:1.65;margin-bottom:1rem;text-align:left}
+.btn-retry{display:block;width:100%;background:var(--ink);color:var(--cream);border:none;border-radius:var(--r);padding:.7rem;font-family:'Mitr',sans-serif;font-size:.87rem;font-weight:500;cursor:pointer;margin-bottom:.45rem;transition:background .2s}
+.btn-retry:hover{background:var(--mid)}
+.btn-dis{display:block;width:100%;background:transparent;color:var(--mid);border:1px solid var(--pale);border-radius:var(--r);padding:.58rem;font-family:'Mitr',sans-serif;font-size:.8rem;font-weight:500;cursor:pointer;transition:background .2s}
+.btn-dis:hover{background:var(--cream3)}
+
+/* bg tones */
+.bg-exam{background:var(--sky-pale)}
+.bg-moral{background:var(--violet-pale)}
+.bg-teacher{background:var(--rose-pale)}
+.bg-grade{background:var(--rose-pale)}
+.bg-family{background:var(--gold-pale)}
+.bg-conf{background:var(--cream3)}
+.bg-side{background:var(--sage-pale)}
+.bg-friend{background:var(--violet-pale)}
+
+@media(max-width:480px){
+  .title-card{padding:1.3rem 1.2rem}
+  .title-card h1{font-size:1.45rem}
+  .sc-left{width:50px}
+  .sc-icon{width:34px;height:34px;font-size:1.3rem}
+  .sc-right{padding:.65rem .7rem .7rem .42rem}
+  .bub{max-width:87%;font-size:.79rem}
+  .sc-action{padding:.7rem .75rem .75rem}
+  .cbtn{font-size:.79rem;padding:.46rem .62rem}
+}
+@media(min-width:768px){
+  .sc-left{width:76px}
+  .sc-icon{width:50px;height:50px;font-size:1.85rem}
+  .sc-loc{font-size:8px}
+}
+</style>
+</head>
+<body>
+
+<div id="screen-title" class="screen active">
+  <div class="tdeco" style="top:-1rem;left:-1rem">📚</div>
+  <div class="tdeco" style="bottom:-2rem;right:-1rem">🌅</div>
+  <div class="title-card">
+    <div class="eyebrow">Visual Novel · ม.6 · แนะแนว</div>
+    <h1>ปีสุดท้ายของ<br><span>ไอสไตน์</span></h1>
+    <p class="title-sub">ม.6 ไม่ได้ยากแค่เรื่องเรียน<br>แต่ยากที่การรักษาตัวเองให้อยู่รอด</p>
+    <p class="title-sch">วิชาแนะแนว · โรงเรียนพูลเจริญวิทยาคม</p>
+    <div class="char-strip">
+      <div class="cav-big">🧑‍🔬</div>
+      <div>
+        <div class="cname">ไอสไตน์ · ม.6/2</div>
+        <div class="cdesc">นักเรียนที่พยายามทำทุกอย่างให้ดี ท่ามกลางแรงกดดันจากเพื่อน ครู และครอบครัว ก่อนปิดฉากปีสุดท้ายของชีวิตมัธยม</div>
+      </div>
+    </div>
+    <div class="char-row">
+      <div class="char-pill">🔭 กาลิเลโอ</div>
+      <div class="char-pill">📐 ปิทากอรัส</div>
+      <div class="char-pill">🎨 ดาวินชี่</div>
+      <div class="char-pill">📢 ทรัมป์</div>
+    </div>
+    <button class="btn-start" onclick="startGame()">เปิดบท →</button>
+    <p class="hint-t">8 บทตอน · ประมาณ 30–40 นาที</p>
+  </div>
+</div>
+
+<div id="screen-game" class="screen">
+  <div class="pb-wrap"><div class="pb-fill" id="pb" style="width:0%"></div></div>
+  <div class="topbar">
+    <div class="topbar-ch" id="hudCh">บทที่ 1</div>
+    <div class="scores">
+      <div class="spill str">🌿 <span id="hudS">0</span></div>
+      <div class="spill hop">☀️ <span id="hudH">0</span></div>
+    </div>
+  </div>
+  <div class="scene" id="sceneArea"></div>
+</div>
+
+<div id="screen-result" class="screen">
+  <div class="res-card">
+    <div class="res-emoji" id="rEmoji"></div>
+    <div class="res-title" id="rTitle"></div>
+    <div class="res-sub" id="rSub"></div>
+    <div class="sg">
+      <div class="sb c1"><div class="sl">🌿 ความเข้มแข็ง</div><div class="sv" id="fS">0</div></div>
+      <div class="sb c2"><div class="sl">☀️ ความหวัง</div><div class="sv" id="fH">0</div></div>
+    </div>
+    <div class="lv-badge" id="lvBadge"></div>
+    <div class="hope-banner" id="hopeBanner"></div>
+    <ul class="les-list" id="lesList"></ul>
+    <button class="btn-retry" onclick="startGame()">อ่านใหม่อีกครั้ง</button>
+    <button class="btn-dis" onclick="openDiscuss()">💬 คำถามอภิปรายในห้องเรียน</button>
+  </div>
+</div>
+
+<script>
+let sv=0,hv=0,si=0;
+
+const scenes=[
+{id:1,bg:'bg-exam',em:'📝',loc:['ห้องเรียน','ก่อนสอบ quiz'],ch:'บทที่ 1',
+title:'กลุ่มแชทที่ไม่มีชื่อเรา',
+sit:'คืนก่อนสอบ quiz วิชาฟิสิกส์ ไอสไตน์เห็นกาลิเลโอ ปิทากอรัส และดาวินชี่คุยกันในกลุ่มไลน์ แต่ไม่ได้เพิ่มเราเข้าไป วันรุ่งขึ้นทั้งสามทำข้อสอบได้คะแนนดีผิดปกติ...',
+info:'การที่เพื่อนไม่แชร์ข้อมูลให้เรา อาจเกิดจากหลายสาเหตุ — ตั้งใจกีดกัน หรือแค่ลืม การสันนิษฐานก่อนรู้ข้อเท็จจริงอาจทำให้เสียความสัมพันธ์โดยไม่จำเป็น',
+dl:[
+  {av:'🔭',n:'กาลิเลโอ',s:'l',t:'(คุยกับปิทากอรัสเบาๆ) โชคดีนะที่เราช่วยกันเตรียม'},
+  {av:'📐',n:'ปิทากอรัส',s:'l',t:'ใช่เลย... (มองมาที่ไอสไตน์แล้วเงียบ)'},
+  {av:'🧑‍🔬',n:'ไอสไตน์ · ในใจ',s:'th',t:'ทำไมไม่บอกเราบ้าง... เราอยู่กลุ่มเดียวกันมาตลอด รู้สึกเจ็บและสับสน'},
+],
+q:'ไอสไตน์ควรทำอะไรกับความรู้สึกนี้?',
+cs:[
+  {t:'เดินหน้าต่อ ไม่พูดถึง ทำเป็นว่าไม่รู้เรื่อง',type:'ok',s:0,h:1},
+  {t:'ถามกาลิเลโอตรงๆ ในภายหลังว่า "เมื่อคืนมีกลุ่มช่วยกันอ่านหนังสือด้วยไหม? ทำไมไม่บอกเรา?"',type:'good',s:2,h:3},
+  {t:'โกรธและประกาศตัดเพื่อนทั้งสามในทันที',type:'bad',s:0,h:0},
+  {t:'ระบายความรู้สึกในโซเชียลว่าโดนเพื่อนทอดทิ้ง',type:'bad',s:0,h:0},
+],
+fb:{ok0:'การเก็บไว้คนเดียวอาจทำให้ค่อยๆ สะสมความเจ็บปวด การพูดคุยด้วยความสงบมักแก้ปัญหาได้ดีกว่า',good1:'✓ ดีมาก — การถามตรงๆ ด้วยน้ำเสียงที่ไม่ตำหนิเปิดโอกาสให้เพื่อนอธิบาย และทำให้เราได้คำตอบที่แท้จริง',bad2:'ความโกรธที่รวดเร็วอาจทำลายมิตรภาพที่สะสมมาหลายปีด้วยเหตุผลที่อาจเป็นแค่ความเข้าใจผิด',bad3:'การระบายในที่สาธารณะอาจทำให้เรื่องบานปลายและยิ่งโดดเดี่ยวมากขึ้น'},
+tip:'ความเจ็บปวดจากการถูกกีดกันเป็นเรื่องจริงและสมเหตุสมผล แต่การให้โอกาสเพื่อนได้อธิบายก่อนตัดสินคือสิ่งที่ทั้งเราและความสัมพันธ์สมควรได้รับ'},
+
+{id:2,bg:'bg-moral',em:'🔍',loc:['ห้องสอบ','ระหว่างสอบปลายภาค'],ch:'บทที่ 2',
+title:'เมื่อรู้ว่าเพื่อนโกง',
+sit:'ระหว่างสอบปลายภาค ไอสไตน์เหลือบเห็นกาลิเลโอแอบเปิดโน้ตที่ซ่อนอยู่ใต้โต๊ะ และกระซิบถามปิทากอรัสข้างๆ ไม่มีครูคุมสอบเห็น...',
+dl:[
+  {av:'🔭',n:'กาลิเลโอ',s:'bad',t:'(กระซิบ) ข้อ 5 คืออะไรวะ บอกทีได้ไหม'},
+  {av:'📐',n:'ปิทากอรัส',s:'bad',t:'(กระซิบกลับ) ...C นะ แต่ไม่แน่ใจ'},
+  {av:'🧑‍🔬',n:'ไอสไตน์ · ในใจ',s:'th',t:'เห็นชัดๆ เลย จะทำอะไรดี? ถ้าบอกครู เพื่อนจะเกลียด ถ้าไม่บอก ก็รู้สึกผิด...'},
+],
+q:'ไอสไตน์จะตัดสินใจอย่างไร?',
+cs:[
+  {t:'แกล้งทำเป็นไม่เห็น ทำข้อสอบของตัวเองต่อไป',type:'ok',s:0,h:1},
+  {t:'กระซิบเตือนกาลิเลโอเบาๆ ว่า "ครูอาจเห็นนะ ระวังด้วย"',type:'good',s:2,h:2},
+  {t:'แจ้งครูคุมสอบทันที',type:'ok',s:1,h:1},
+  {t:'หลังสอบเสร็จ คุยกับกาลิเลโอส่วนตัวว่ารู้สึกยังไงกับสิ่งที่เห็น',type:'good',s:2,h:3},
+],
+fb:{ok0:'การเงียบปลอดภัยในระยะสั้น แต่ความรู้สึกผิดอาจอยู่กับเรานาน และถ้ากาลิเลโอโดนจับ เราอาจรู้สึกแย่ที่ไม่ได้เตือน',good1:'✓ การเตือนเพื่อนเบาๆ แสดงถึงความห่วงใยและให้เขามีโอกาสหยุดด้วยตัวเอง โดยไม่ต้องนำไปสู่บทลงโทษทันที',ok2:'การแจ้งครูทันทีเป็นเรื่องที่ถูกต้องในหลักการ แต่ควรชั่งน้ำหนักผลกระทบระยะยาวต่อความสัมพันธ์ด้วย',good3:'✓ การรอคุยส่วนตัวหลังสอบเปิดพื้นที่ปลอดภัยให้ทั้งสองฝ่าย และอาจเปลี่ยนพฤติกรรมเพื่อนได้มากกว่าการจับผิดต่อหน้า'},
+tip:'ไม่มีคำตอบที่ "ถูก 100%" ในสถานการณ์นี้ แต่สิ่งที่สำคัญคือการตัดสินใจที่เราอยู่กับมันได้ในระยะยาว — ทั้งในฐานะเพื่อนและในฐานะคนที่มีคุณธรรม'},
+
+{id:3,bg:'bg-teacher',em:'🏫',loc:['ห้องเรียน','ระหว่างคาบ'],ch:'บทที่ 3',
+title:'เมื่อครูเปรียบเทียบต่อหน้าชั้น',
+sit:'ครูฟิสิกส์แจกคะแนนสอบ แล้วพูดต่อหน้าห้องทั้งหมด 40 คน ขณะที่ไอสไตน์ได้รับกระดาษคะแนนกลับมา...',
+dl:[
+  {av:'👩‍🏫',n:'ครูฟิสิกส์',s:'bad',t:'ไอสไตน์ได้ 52 คะแนน ดูกาลิเลโอสิ ได้ 88 ทำไมแกทำได้แค่นี้? ขยันบ้างสิ'},
+  {av:'🔭',n:'กาลิเลโอ',s:'str',t:'(ก้มหน้า ไม่รู้จะมองหน้าเพื่อนยังไง)'},
+  {av:'🧑‍🔬',n:'ไอสไตน์ · ในใจ',s:'th',t:'หน้าแดงมาก อยากหายไปจากห้องนี้เลย ทำไมต้องพูดต่อหน้าทุกคนด้วย...'},
+],
+q:'ในขณะนั้นและหลังจากนั้น ไอสไตน์ควรทำอะไร?',
+cs:[
+  {t:'ก้มหน้าเงียบ กลืนความรู้สึกเข้าไป รอให้คาบผ่านไป',type:'ok',s:0,h:1},
+  {t:'หลังคาบ ขอนัดคุยกับครูส่วนตัวเพื่อถามว่าจะพัฒนายังไง และแจ้งว่าการพูดแบบนั้นรู้สึกยังไง',type:'good',s:3,h:3},
+  {t:'ตอบโต้ทันทีในห้องว่า "ครูพูดแบบนี้ไม่ยุติธรรม"',type:'ok',s:1,h:1},
+  {t:'เล่าให้ครูแนะแนวหรือผู้ปกครองฟังว่าเกิดอะไรขึ้น',type:'good',s:2,h:2},
+],
+fb:{ok0:'การเก็บความรู้สึกไว้คนเดียวทำให้ปัญหาไม่ได้รับการแก้ไข และอาจสะสมกลายเป็นความเครียดเรื้อรัง',good1:'✓ ยอดเยี่ยม — การพูดคุยส่วนตัวกับครูอย่างสุภาพเป็นทั้งการดูแลตัวเองและการให้ครูได้รับรู้ผลกระทบจากคำพูด',ok2:'การตอบโต้ทันทีอาจสร้างความตึงเครียดเพิ่ม แต่ถ้าทำด้วยความสงบก็ไม่ใช่เรื่องผิด — ขึ้นอยู่กับวิธีการ',good3:'✓ การมีผู้ใหญ่ที่ไว้วางใจรับรู้เรื่องนี้ช่วยให้เราไม่ต้องแบกคนเดียว และอาจนำไปสู่การเปลี่ยนแปลงที่เป็นระบบได้'},
+tip:'การเปรียบเทียบนักเรียนต่อหน้าชั้นไม่ใช่วิธีสอนที่ดี และเราไม่จำเป็นต้องยอมรับความรู้สึกแย่นั้นเงียบๆ — บอกได้เสมอ'},
+
+{id:4,bg:'bg-grade',em:'📋',loc:['ห้องครู','หลังเลิกเรียน'],ch:'บทที่ 4',
+title:'คะแนนที่ไม่ยุติธรรม',
+sit:'งานกลุ่มวิชาชีววิทยา ไอสไตน์ทำส่วนใหญ่เกือบทั้งหมด แต่ครูให้คะแนนกลุ่มของดาวินชี่ (ที่ไม่ค่อยมีส่วนร่วม) สูงกว่า โดยไม่มีเกณฑ์ชัดเจน...',
+dl:[
+  {av:'🎨',n:'ดาวินชี่',s:'l',t:'เฮ้ กลุ่มเราได้ 85! โชคดีจริงๆ ฮ่าๆ'},
+  {av:'🧑‍🔬',n:'ไอสไตน์',s:'r',t:'(เงียบ) กลุ่มเราได้ 70... ทั้งที่ทำเกือบทุกอย่าง'},
+  {av:'🧑‍🔬',n:'ไอสไตน์ · ในใจ',s:'th',t:'ไม่ยุติธรรมเลย แต่ถ้าไปถามครู ครูจะมองว่าเราเอาแต่ร้องเรียนไหม?'},
+],
+q:'ไอสไตน์จะรับมือกับคะแนนที่รู้สึกว่าไม่ยุติธรรมอย่างไร?',
+cs:[
+  {t:'ยอมรับและก้าวหน้าต่อ คะแนนเดียวไม่ได้ตัดสินอนาคต',type:'ok',s:1,h:2},
+  {t:'ขอนัดพบครูเพื่อถามถึงเกณฑ์การให้คะแนน อย่างสุภาพและมีข้อมูลรองรับ',type:'good',s:3,h:3},
+  {t:'บ่นกับเพื่อนให้ทั่วว่าครูลำเอียง',type:'bad',s:0,h:0},
+  {t:'ถามครูตรงๆ ว่า "มีอะไรที่กลุ่มเราทำได้ดีกว่านี้ไหมครับ/ค่ะ?" เพื่อรับ feedback ที่เป็นประโยชน์',type:'good',s:2,h:3},
+],
+fb:{ok0:'การปล่อยผ่านบางครั้งก็ฉลาด แต่ถ้ารู้สึกว่าไม่ยุติธรรมจริงๆ การถามด้วยความสงบก็เป็นสิทธิ์ที่มี',good1:'✓ ดีมาก — การขอคำอธิบายเกณฑ์คือการเรียนรู้ ไม่ใช่การต่อสู้ และครูที่ดีจะชื่นชมนักเรียนที่ใส่ใจพัฒนาตัวเอง',bad2:'การระบายให้เพื่อนทั่วไปอาจทำให้บรรยากาศในห้องแย่ลงโดยไม่แก้ปัญหาที่ต้นเหตุ',good3:'✓ การถามเพื่อ feedback แทนการร้องเรียนเป็นวิธีที่ฉลาดและสุภาพ — และมักได้คำตอบที่มีประโยชน์กว่า'},
+tip:'การโต้แย้งคะแนนด้วยเหตุผลและความสุภาพไม่ใช่ความหยิ่ง แต่คือการรู้คุณค่าของตัวเอง นักเรียนทุกคนมีสิทธิ์รับ feedback ที่ชัดเจนและยุติธรรม'},
+
+{id:5,bg:'bg-family',em:'🏠',loc:['บ้าน','หลังประกาศ TCAS'],ch:'บทที่ 5',
+title:'ความคาดหวังที่หนักเกินไป',
+sit:'ผลคะแนน TGAT ออกมาแล้ว ไอสไตน์ได้คะแนนใกล้เคียงเป้า แต่ไม่ถึงคณะแพทย์ที่พ่อแม่หวัง คืนนั้นที่โต๊ะอาหาร...',
+dl:[
+  {av:'👨',n:'พ่อ',s:'bad',t:'ดูลูกเพื่อนบ้านสิ ได้ 90 กว่า เขาเรียนเพิ่มเติมมาตลอด แกทำอะไรบ้าง?'},
+  {av:'👩',n:'แม่',s:'bad',t:'ไม่เป็นไรหรอก แต่ถ้าคะแนนแค่นี้ หมอคงเป็นไปได้ยาก ไม่รู้จะให้เรียนอะไรดี'},
+  {av:'🧑‍🔬',n:'ไอสไตน์ · ในใจ',s:'th',t:'พยายามเต็มที่แล้ว แต่ก็ยังไม่พอ รู้สึกทั้งเหนื่อย โกรธ และรู้สึกผิดพร้อมกัน'},
+],
+q:'ไอสไตน์จะรับมือกับช่วงเวลานี้ที่บ้านอย่างไร?',
+cs:[
+  {t:'เงียบและกลับเข้าห้อง ไม่พูดคุยกับพ่อแม่เรื่องนี้',type:'ok',s:0,h:1},
+  {t:'พูดกับพ่อแม่อย่างใจเย็นว่า "หนู/ผมพยายามเต็มที่แล้ว และอยากให้ช่วยกันหาทางออกร่วมกัน ไม่ใช่เปรียบเทียบ"',type:'good',s:3,h:3},
+  {t:'ระเบิดอารมณ์ว่า "พ่อแม่ไม่เคยเข้าใจเลย"',type:'bad',s:0,h:0},
+  {t:'ขอนัดคุยกับครูแนะแนวเพื่อช่วยหาทางเลือกและพูดคุยกับพ่อแม่ร่วมกัน',type:'good',s:2,h:3},
+],
+fb:{ok0:'การถอยออกมาเพื่อสงบสติอารมณ์ก่อนเป็นเรื่องดี แต่ถ้าเงียบเฉยนาน ปัญหาก็จะไม่ได้รับการแก้ไข',good1:'✓ ยอดเยี่ยม — การพูดตรงๆ ด้วยความสงบแสดงให้เห็นว่าเราเป็นผู้ใหญ่ และเปิดโอกาสให้ครอบครัวได้ยินมุมมองของเรา',bad2:'ความโกรธสมเหตุสมผล แต่การระเบิดอารมณ์อาจปิดกั้นบทสนทนาที่จะเป็นประโยชน์กว่า',good3:'✓ ครูแนะแนวในฐานะตัวกลางช่วยให้พ่อแม่ได้ยินข้อมูลจากมุมที่เป็นกลาง และมักเปลี่ยนบทสนทนาได้จริง'},
+tip:'ความคาดหวังของพ่อแม่มักมาจากความรัก แม้จะรู้สึกเจ็บปวด การหาเวลาคุยอย่างตรงไปตรงมาด้วยข้อมูลและตัวเลือกจริงๆ คือก้าวที่สำคัญที่สุด'},
+
+{id:6,bg:'bg-conf',em:'💬',loc:['บ้าน','คืนก่อนสอบ TPAT'],ch:'บทที่ 6',
+title:'คำพูดที่ทิ้งรอยไว้',
+sit:'คืนก่อนสอบ TPAT แม่พูดขึ้นมาโดยไม่ตั้งใจ ระหว่างที่ไอสไตน์กำลังนั่งทบทวนหนังสืออยู่...',
+hope:'💛 บทนี้อาจสะท้อนสิ่งที่หลายคนเคยผ่านมา อ่านด้วยใจที่เปิดกว้างนะ',
+dl:[
+  {av:'👩',n:'แม่',s:'bad',t:'หนู/ผมมั่นใจเหรอว่าจะทำได้? ที่ผ่านมาก็ไม่ค่อยได้เรื่อง กลัวว่าจะเสียเวลาค่าสมัครเปล่าๆ'},
+  {av:'🧑‍🔬',n:'ไอสไตน์',s:'r',t:'(เงียบ หยิบดินสอวางลงบนโต๊ะ)'},
+  {av:'🧑‍🔬',n:'ไอสไตน์ · ในใจ',s:'th',t:'ก็รู้ว่าแม่เป็นห่วง แต่คำพูดมันทิ่มมากเลย คืนนี้จะอ่านหนังสือต่อได้ยังไง...'},
+],
+q:'ไอสไตน์จะดูแลตัวเองในคืนนี้อย่างไร?',
+cs:[
+  {t:'กลับเข้าห้อง ปิดประตู เปิดเพลงฟัง แล้วพยายามอ่านต่อ',type:'ok',s:1,h:1},
+  {t:'โทรหาหรือส่งข้อความหาเพื่อนสนิทที่ไว้ใจได้ บอกว่ารู้สึกยังไง ขอให้ช่วยให้กำลังใจก่อนสอบ',type:'good',s:2,h:3},
+  {t:'เขียนบันทึกสิ่งที่รู้สึก แล้วเขียนต่อว่าตัวเองทำมาได้ขนาดไหนแล้ว เพื่อเตือนตัวเองถึงความพยายามที่ผ่านมา',type:'good',s:3,h:3},
+  {t:'หยุดอ่านหนังสือ นอนพักผ่อน เพราะสภาพจิตใจตอนนี้ไม่พร้อม',type:'good',s:2,h:2},
+],
+fb:{ok0:'การจัดการความรู้สึกคนเดียวไม่ผิด แต่การมีคนรับฟังช่วยให้หัวโล่งและนอนหลับได้ดีกว่า',good1:'✓ ดีมาก — การขอกำลังใจจากคนที่ไว้ใจได้ก่อนสอบเป็นสิ่งที่ฉลาดและดูแลตัวเองได้ดี',good2:'✓ การเขียนบันทึกช่วยจัดระเบียบความรู้สึก และการเตือนตัวเองถึงความพยายามที่ผ่านมาช่วยสร้างแรงใจได้จริง',good3:'✓ บางครั้งการพักผ่อนคือการเตรียมตัวที่ดีที่สุด ร่างกายและจิตใจที่พักเพียงพอสำคัญกว่าการอ่านอีกชั่วโมง'},
+tip:'คำพูดที่ทำร้ายจิตใจก่อนสอบเป็นเรื่องจริงที่เจ็บปวด แต่ความสามารถของเราไม่ได้ถูกกำหนดโดยคำพูดของคนอื่น — แม้แต่คนที่เรารัก'},
+
+{id:7,bg:'bg-side',em:'⚖️',loc:['ลานโรงเรียน','ช่วงพัก'],ch:'บทที่ 7',
+title:'ถูกบังคับให้เลือกข้าง',
+sit:'ปิทากอรัสและดาวินชี่ทะเลาะกันเรื่องโปรเจกต์กลุ่ม ทั้งคู่ต่างมาหาไอสไตน์และกดดันให้เลือกข้าง...',
+dl:[
+  {av:'📐',n:'ปิทากอรัส',s:'bad',t:'ไอสไตน์ แกต้องช่วยบอกว่าฉันถูกนะ ดาวินชี่มันขี้เกียจ ไม่ทำงานเลย'},
+  {av:'🎨',n:'ดาวินชี่',s:'bad',t:'(ทีหลัง) แกก็รู้นะว่าปิทากอรัสมันชอบควบคุมทุกอย่าง ช่วยบอกมันทีได้ไหม'},
+  {av:'🧑‍🔬',n:'ไอสไตน์ · ในใจ',s:'th',t:'ทั้งคู่ก็เพื่อนเรา แต่ถ้าเลือกข้างไหนก็จะเสียอีกข้าง จะทำยังไงดี...'},
+],
+q:'ไอสไตน์จะรับมือกับการถูกดึงให้เลือกข้างอย่างไร?',
+cs:[
+  {t:'เลือกข้างปิทากอรัสเพราะรู้สึกว่าถูกต้องกว่า',type:'ok',s:0,h:1},
+  {t:'บอกทั้งคู่ตรงๆ ว่า "ไม่เลือกข้างใดข้างหนึ่ง แต่ถ้าอยากแก้ปัญหา ลองนัดคุยกันสามคนดีกว่าไหม?"',type:'good',s:3,h:3},
+  {t:'หลีกเลี่ยงทั้งคู่ไปเลย ไม่ยุ่งเรื่องของคนอื่น',type:'ok',s:0,h:1},
+  {t:'ฟังทั้งสองฝ่ายก่อน แล้วช่วยสรุปว่าแต่ละคนต้องการอะไรจริงๆ โดยไม่ตัดสิน',type:'good',s:2,h:3},
+],
+fb:{ok0:'การเลือกข้างอาจทำให้ปัญหาลุกลามมากขึ้น และเราอาจสูญเสียเพื่อนหนึ่งคนโดยไม่จำเป็น',good1:'✓ ยอดเยี่ยม — การปฏิเสธการเลือกข้างอย่างชัดเจนและเสนอทางออกเป็นสิ่งที่ฉลาดที่สุด และแสดงให้เห็นว่าเราไม่ใช่เครื่องมือของใคร',ok2:'การหลีกเลี่ยงปลอดภัยชั่วคราว แต่ความขัดแย้งก็ยังอยู่ และทั้งคู่อาจรู้สึกว่าเราทอดทิ้ง',good3:'✓ ดีมาก — การเป็นคนฟังที่ดีโดยไม่ตัดสินเป็นทักษะที่มีค่า และมักช่วยให้คู่ขัดแย้งเห็นมุมมองของกันและกันได้เองในที่สุด'},
+tip:'การถูกบังคับให้เลือกข้างคือการถูกใช้ — เราไม่จำเป็นต้องยอมรับบทบาทนั้น การเป็นสะพานแทนที่จะเป็นอาวุธคือทางเลือกที่ดีกว่าเสมอ'},
+
+{id:8,bg:'bg-friend',em:'🤝',loc:['ห้องน้ำโรงเรียน','เช้าวันสอบ TCAS'],ch:'บทที่ 8',
+title:'เพื่อนที่กำลังจม',
+sit:'เช้าวันสอบ TCAS รอบที่ 1 ไอสไตน์เจอทรัมป์นั่งคนเดียวในห้องน้ำ ตาแดง มือสั่น บอกว่า "ไม่ไหวแล้ว อยากหนีไปเลย ไม่อยากสอบ ไม่อยากเจอใคร"...',
+hope:'💛 บทนี้สำคัญมาก — เพื่อนที่กำลังเผชิญกับความเครียดสูงมากต้องการคนรับฟัง ไม่ใช่คำแนะนำ',
+dl:[
+  {av:'📢',n:'ทรัมป์',s:'sad',t:'(เสียงสั่น) ฉันอ่านหนังสือมาตลอดเลย แต่เข้าห้องสอบไม่ได้ มันหนักมาก ไม่รู้จะทำยังไงต่อ'},
+  {av:'📢',n:'ทรัมป์',s:'sad',t:'บางทีรู้สึกว่า... ถ้าหายไปจากที่นี่ได้คงดี'},
+  {av:'🧑‍🔬',n:'ไอสไตน์ · ในใจ',s:'th',t:'ทรัมป์พูดแบบนี้ทำให้กังวลมาก แต่กลัวว่าถ้าถามตรงๆ จะยิ่งทำให้แย่ลง ต้องทำอะไรดี?'},
+],
+q:'ไอสไตน์จะช่วยทรัมป์ในตอนนี้อย่างไร?',
+cs:[
+  {t:'บอกว่า "สู้ๆ นะ สอบให้ผ่านนะ" แล้วรีบออกไปก่อน',type:'bad',s:0,h:0},
+  {t:'นั่งลงข้างๆ พูดว่า "ฉันอยู่ตรงนี้นะ ไม่ต้องรีบ บอกได้เลยว่ารู้สึกยังไง" แล้วรับฟังโดยไม่ขัด',type:'good',s:2,h:3},
+  {t:'ถามตรงๆ ว่า "ที่บอกว่าอยากหายไป หมายความว่าอะไร? มีความคิดอยากทำร้ายตัวเองไหม?" แล้วรับฟังคำตอบ',type:'good',s:3,h:3},
+  {t:'โทรหาครูแนะแนวหรือพ่อแม่ทรัมป์ทันที เพื่อให้ผู้ใหญ่มาช่วยดูแล',type:'good',s:3,h:2},
+],
+fb:{bad0:'การให้กำลังใจแบบเร่งรีบอาจทำให้ทรัมป์รู้สึกว่าถูกปัดทิ้งในขณะที่เจ็บปวดที่สุด',good1:'✓ ดีมาก — การนั่งอยู่เคียงข้างและรับฟังโดยไม่ตัดสินคือสิ่งที่คนเครียดสูงต้องการที่สุด อย่าเร่งให้เขาสบายใจ แค่อยู่กับเขา',good2:'✓ กล้ามาก — การถามตรงๆ เกี่ยวกับความคิดทำร้ายตัวเองไม่ได้ทำให้สถานการณ์แย่ลง แต่ช่วยให้เราประเมินได้ว่าต้องขอความช่วยเหลือระดับไหน',good3:'✓ ถูกต้อง — เมื่อเพื่อนแสดงอาการน่าเป็นห่วงระดับนี้ การแจ้งผู้ใหญ่ไม่ใช่การทรยศ แต่คือการรักเพื่อนอย่างแท้จริง'},
+tip:'ถ้าเพื่อนพูดถึงการ "หายไป" หรือ "ไม่อยากมีชีวิตอยู่" ให้รับเรื่องนี้อย่างจริงจังเสมอ อยู่เคียงข้าง ถามตรงๆ และแจ้งผู้ใหญ่ที่ไว้ใจได้ทันที สายด่วนสุขภาพจิต: 1323'},
+];
+
+const lessons=[
+  'การถูกกีดกันจากเพื่อนเจ็บปวดได้ — แต่การถามตรงๆ ดีกว่าการสันนิษฐาน',
+  'ไม่มีคำตอบที่ถูก 100% สำหรับทุกสถานการณ์ — แต่เราเลือกสิ่งที่อยู่กับมันได้ในระยะยาว',
+  'เราไม่จำเป็นต้องยอมรับการถูกเปรียบเทียบเงียบๆ — บอกได้ และมีสิทธิ์รับ feedback ที่ยุติธรรม',
+  'การโต้แย้งคะแนนด้วยความสุภาพไม่ใช่ความหยิ่ง แต่คือการรู้คุณค่าของตัวเอง',
+  'ความคาดหวังของครอบครัวมาจากความรัก แต่เราก็มีสิทธิ์บอกว่ามันหนักเกินไป',
+  'คำพูดที่ทำร้ายจิตใจก่อนสอบไม่ได้กำหนดผลลัพธ์ — การดูแลตัวเองคืนนั้นสำคัญที่สุด',
+  'เราไม่ต้องเลือกข้างเสมอ — การเป็นสะพานดีกว่าการเป็นอาวุธ',
+  'เพื่อนที่น่าเป็นห่วงต้องการคนรับฟัง ไม่ใช่คำแนะนำ — อยู่เคียงข้าง ถามตรงๆ และแจ้งผู้ใหญ่',
+];
+
+const hopeMessages=[
+  'ปีสุดท้ายของมัธยมหนักมากสำหรับทุกคน แต่ทุกสิ่งที่คุณเผชิญมาตลอด 8 บทนี้ — คุณไม่ได้เผชิญคนเดียว',
+  'ปีสุดท้ายของมัธยมไม่ได้วัดว่าใครแข็งแกร่งที่สุด แต่วัดว่าใครรู้จักขอความช่วยเหลือเมื่อต้องการ',
+  'ยังมีเส้นทางอีกมากที่รออยู่ข้างหน้า และคุณมีเวลาทั้งชีวิตในการค้นหามัน',
+];
+
+function renderScene(idx){
+  const s=scenes[idx];
+  const area=document.getElementById('sceneArea');
+  area.innerHTML='';
+  document.getElementById('hudCh').textContent=s.ch;
+  document.getElementById('pb').style.width=`${(idx/scenes.length)*100}%`;
+
+  const dlHtml=s.dl.map(d=>{
+    const isR=d.s==='r';
+    return `<div>
+      <div class="bname${isR?' r':''}">${d.n}</div>
+      <div class="brow${isR?' r':''}">
+        <div class="bav">${d.av}</div>
+        <div class="bub ${bc(d.s)}">${d.t}</div>
+      </div></div>`;
+  }).join('');
+
+  const infoHtml=s.info?`<div class="info-rib">ℹ ${s.info}</div>`:'';
+  const hopeRib=s.hope?`<div class="hope-rib">${s.hope}</div>`:'';
+  const locHtml=s.loc.join('<br>');
+
+  const hdr=document.createElement('div');
+  hdr.className='sc-header';
+  hdr.innerHTML=`
+    <div class="sc-left">
+      <div class="sc-icon ${s.bg}">${s.em}</div>
+      <div class="sc-loc">${locHtml}</div>
+    </div>
+    <div class="sc-right">
+      <div class="sc-ch">${s.ch}</div>
+      <div class="sc-title">${s.title}</div>
+      <div class="sc-sit">${s.sit}</div>
+      ${infoHtml}${hopeRib}
+      <div class="sc-div"></div>
+      <div class="dl-block">${dlHtml}</div>
+    </div>`;
+  area.appendChild(hdr);
+
+  const chHtml=s.cs.map((c,ci)=>
+    `<button class="cbtn" onclick="choose(${idx},${ci})" id="c-${idx}-${ci}">
+      <div class="cnum">${ci+1}</div><span>${c.t}</span>
+    </button>`).join('');
+
+  const act=document.createElement('div');
+  act.className='sc-action';
+  act.innerHTML=`
+    <div class="q-label">${s.q}</div>
+    <div class="choices">${chHtml}</div>
+    <div class="fb-box" id="fb-${idx}"></div>
+    <div class="tip-box" id="tp-${idx}">${s.tip}</div>`;
+  area.appendChild(act);
+
+  const nxt=document.createElement('button');
+  nxt.className='btn-next';
+  nxt.id=`nx-${idx}`;
+  nxt.textContent=idx<scenes.length-1?'บทถัดไป →':'ปิดฉากปีสุดท้าย — ดูผลลัพธ์';
+  nxt.onclick=()=>nextScene(idx);
+  area.appendChild(nxt);
+
+  const pad=document.createElement('div');pad.className='sc-pad';area.appendChild(pad);
+}
+
+function bc(s){return{bad:'bad',r:'r',th:'th',sad:'sad',str:'str',l:'l'}[s]||'l';}
+
+function choose(sIdx,cIdx){
+  const s=scenes[sIdx],c=s.cs[cIdx];
+  const map={good:'cg',bad:'cb',ok:'co'};
+  s.cs.forEach((_,ci)=>{document.getElementById(`c-${sIdx}-${ci}`).classList.add(ci===cIdx?map[c.type]:'dis');});
+  sv+=c.s;hv+=c.h;
+  document.getElementById('hudS').textContent=sv;
+  document.getElementById('hudH').textContent=hv;
+  const fb=document.getElementById(`fb-${sIdx}`);
+  const keys=[`${c.type}${cIdx}`,c.type];
+  let txt='';
+  for(const k of keys){if(s.fb[k]){txt=s.fb[k];break;}}
+  if(txt){fb.textContent=txt;fb.className=`fb-box ${c.type} vis`;}
+  document.getElementById(`tp-${sIdx}`).classList.add('vis');
+  const nxt=document.getElementById(`nx-${sIdx}`);
+  nxt.classList.add('vis');
+  setTimeout(()=>{const a=document.getElementById('sceneArea');a.scrollTo({top:a.scrollHeight,behavior:'smooth'});},120);
+}
+
+function nextScene(idx){
+  if(idx<scenes.length-1){si=idx+1;renderScene(si);document.getElementById('sceneArea').scrollTo({top:0,behavior:'smooth'});}
+  else showResult();
+}
+
+function showResult(){
+  document.getElementById('pb').style.width='100%';
+  const total=sv+hv;
+  document.getElementById('fS').textContent=sv;
+  document.getElementById('fH').textContent=hv;
+  let emoji,title,sub,lv,hopeIdx;
+  if(total>=32){
+    emoji='🌅';title='ไอสไตน์ที่ผ่านมาได้ด้วยตัวเอง';
+    sub='คุณเดินผ่านทุกบทด้วยความเข้มแข็งและความหวัง\nปีสุดท้ายนี้หนัก แต่คุณรับมือได้';lv='lv1';hopeIdx=0;
+  } else if(total>=18){
+    emoji='🌿';title='ไอสไตน์ที่กำลังเติบโต';
+    sub='คุณเลือกได้ดีในหลายจุด และยังมีพื้นที่เรียนรู้เพิ่ม\nทุกสถานการณ์ที่ผ่านมาคือบทเรียนที่มีค่า';lv='lv2';hopeIdx=1;
+  } else {
+    emoji='🌱';title='ไอสไตน์ที่ยังต้องการกำลังใจ';
+    sub='ม.6 ยากสำหรับทุกคน และเป็นเรื่องปกติที่จะลังเล\nลองกลับไปอ่านใหม่ และจำไว้ว่าคุณไม่ได้อยู่คนเดียว';lv='lv3';hopeIdx=2;
+  }
+  document.getElementById('rEmoji').textContent=emoji;
+  document.getElementById('rTitle').textContent=title;
+  document.getElementById('rSub').textContent=sub;
+  const b=document.getElementById('lvBadge');b.textContent=title;b.className=`lv-badge ${lv}`;
+  document.getElementById('hopeBanner').textContent='💛 '+hopeMessages[hopeIdx];
+  document.getElementById('lesList').innerHTML=lessons.map((l,i)=>`<li><div class="ldot">${i+1}</div><span>${l}</span></li>`).join('');
+  switchScreen('result');
+}
+
+function switchScreen(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(`screen-${n}`).classList.add('active');}
+
+function startGame(){
+  sv=0;hv=0;si=0;
+  document.getElementById('hudS').textContent=0;
+  document.getElementById('hudH').textContent=0;
+  switchScreen('game');renderScene(0);
+}
+
+function openDiscuss(){
+  alert('💬 คำถามอภิปรายในห้องเรียน\n\n1. บทที่ 1 — เมื่อเพื่อนไม่บอกเรา ระหว่าง "โกรธเงียบ" กับ "ถามตรงๆ" อะไรยากกว่ากัน และทำไม?\n\n2. บทที่ 2 — ถ้าเห็นเพื่อนโกงสอบ มีคำตอบที่ "ถูกต้อง" ไหม? หรือมันขึ้นอยู่กับบริบท?\n\n3. บทที่ 3-4 — เคยถูกครูเปรียบเทียบหรือรู้สึกไม่ได้รับความยุติธรรมไหม? ทำอะไรกับมันบ้าง?\n\n4. บทที่ 5-6 — ความคาดหวังของครอบครัวช่วยหรือกดเราได้ทั้งคู่ ขีดเส้นแบ่งอยู่ตรงไหน?\n\n5. บทที่ 7 — เคยถูกบังคับให้เลือกข้างไหม? รู้สึกยังไงและทำอะไรไป?\n\n6. บทที่ 8 — ถ้าเพื่อนบอกว่า "ไม่ไหวแล้ว อยากหายไป" เราจะรับมือยังไง? มีใครเคยเจอสถานการณ์แบบนี้บ้าง?\n\nสายด่วนสุขภาพจิต: 1323 (24 ชั่วโมง)');
+}
+</script>
+</body>
+</html>

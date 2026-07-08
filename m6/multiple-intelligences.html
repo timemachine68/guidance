@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>พหุปัญญา 8 ด้าน — บทเรียนแนะแนว ม.6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Thai+2:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --cream:#FFFDF8;--ink:#43474F;--ink-soft:#7B8089;--line:#EFE7DC;
+    --shadow:0 12px 34px rgba(120,110,150,.14);--radius:22px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;font-family:'Sarabun',sans-serif;color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(640px 460px at 90% -6%, #FCE6EE 0%, transparent 60%),
+      radial-gradient(600px 460px at -8% 2%, #E7F5E6 0%, transparent 58%),
+      radial-gradient(700px 520px at 50% 103%, #E3F2FB 0%, transparent 60%),
+      radial-gradient(560px 420px at 6% 64%, #F6E9F8 0%, transparent 56%),
+      var(--cream);
+    background-attachment:fixed;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 22px;}
+  h1,h2,h3,.display{font-family:'Baloo Thai 2',sans-serif;font-weight:700;line-height:1.25;}
+  .eyebrow{font-family:'Baloo Thai 2',sans-serif;font-weight:600;font-size:.86rem;letter-spacing:1px;color:#9A4FAE;}
+
+  header.hero{padding:58px 0 26px;text-align:center;}
+  .hero .eyebrow{display:inline-block;background:#fff;border-radius:999px;padding:6px 18px;box-shadow:var(--shadow);}
+  .htitle{font-family:'Baloo Thai 2';font-weight:800;font-size:clamp(2.4rem,8vw,4.2rem);margin:16px 0 2px;display:flex;align-items:center;justify-content:center;gap:.2em;flex-wrap:wrap;}
+  .htitle .w{background:linear-gradient(120deg,#C77DD6,#5BB6E0 55%,#54C0A0);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .htitle .eight{font-size:1.35em;color:#EE7BA6;}
+  .htitle .dan{color:#F2935C;}
+  .hero h1{font-size:1.5rem;margin:6px 0 12px;color:var(--ink);font-weight:600;}
+  .hero p.lead{font-size:1.1rem;color:var(--ink-soft);max-width:52ch;margin:0 auto 24px;}
+  .cta{font-family:'Baloo Thai 2';font-weight:600;border:0;border-radius:999px;padding:14px 30px;font-size:1.05rem;cursor:pointer;color:#fff;
+    background:linear-gradient(120deg,#C77DD6,#EE7BA6);box-shadow:0 10px 24px rgba(199,125,214,.4);transition:.18s;}
+  .cta:hover{transform:translateY(-2px);}
+
+  section{padding:46px 0;}
+  .sec-head{text-align:center;max-width:64ch;margin:0 auto 30px;}
+  .sec-head h2{font-size:1.9rem;margin:8px 0;}
+  .sec-head p{color:var(--ink-soft);margin:0;}
+  .sec-num{font-family:'Baloo Thai 2';font-weight:600;font-size:.82rem;color:#fff;background:#C77DD6;border-radius:999px;padding:4px 16px;display:inline-block;}
+  .everyone{max-width:60ch;margin:0 auto 26px;background:#fff;border-radius:18px;box-shadow:0 6px 18px rgba(120,110,150,.08);padding:16px 22px;text-align:center;font-size:.96rem;}
+  .everyone b{color:#9A4FAE;}
+
+  .grid8{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  @media(max-width:880px){.grid8{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:480px){.grid8{grid-template-columns:1fr;}}
+  .mcard{border-radius:18px;padding:18px;cursor:pointer;transition:.18s;box-shadow:0 8px 22px rgba(120,110,150,.08);}
+  .mcard:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+  .mcard .hd{display:flex;align-items:center;gap:10px;}
+  .mnum{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Baloo Thai 2';font-weight:800;font-size:1.2rem;flex:0 0 38px;}
+  .mcard h3{margin:0;font-size:1.02rem;line-height:1.2;}
+  .mcard .en{font-size:.72rem;color:var(--ink-soft);font-family:'Baloo Thai 2';}
+  .mcard .ic{font-size:1.5rem;margin-left:auto;}
+  .mcard .def{font-size:.86rem;color:var(--ink-soft);margin:12px 0 0;}
+  .mcard .detail{display:none;margin-top:12px;border-top:1px dashed rgba(0,0,0,.08);padding-top:12px;}
+  .mcard.open .detail{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(-4px);}to{opacity:1;}}
+  .detail .ch{font-family:'Baloo Thai 2';font-weight:600;font-size:.82rem;margin-bottom:7px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{font-size:.76rem;padding:4px 10px;border-radius:999px;background:#fff;}
+  .more{font-family:'Baloo Thai 2';font-weight:500;font-size:.82rem;margin-top:10px;}
+  .more::after{content:" ▾"} .mcard.open .more::after{content:" ▴";}
+
+  /* survey */
+  .quizbox{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);}
+  .qhead{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;gap:14px;flex-wrap:wrap;}
+  .prog{flex:1;min-width:160px;}
+  .ptrack{height:12px;background:#F0ECF6;border-radius:8px;overflow:hidden;}
+  .pfill{height:100%;width:0;background:linear-gradient(90deg,#C77DD6,#54C0A0);border-radius:8px;transition:width .3s;}
+  .pnum{font-family:'Baloo Thai 2';font-weight:600;font-size:.9rem;color:var(--ink-soft);white-space:nowrap;}
+  .qlist{padding:4px 16px 12px;}
+  .qrow{padding:14px 4px;border-bottom:1px solid #F4EFE7;}
+  .qrow:last-child{border-bottom:0;}
+  .qtext{font-size:1rem;margin-bottom:10px;font-weight:500;}
+  .qtext .nq{color:var(--ink-soft);font-family:'Baloo Thai 2';margin-right:6px;}
+  .scale{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .sbtn{font-family:'Sarabun';border:1.5px solid var(--line);background:#FCFAF6;border-radius:12px;padding:9px 6px;cursor:pointer;font-size:.92rem;color:var(--ink);transition:.14s;text-align:center;}
+  .sbtn:hover{border-color:#C77DD6;}
+  .sbtn.on{color:#fff;border-color:transparent;}
+  .sbtn.on.v0{background:#C7B6D6;}.sbtn.on.v1{background:#8FA9D6;}.sbtn.on.v2{background:#7CC36A;}
+  .qfoot{padding:18px 20px 22px;text-align:center;}
+  .seeres{font-family:'Baloo Thai 2';font-weight:600;border:0;border-radius:999px;padding:14px 34px;font-size:1.05rem;cursor:pointer;color:#fff;background:linear-gradient(120deg,#5BB6E0,#9B8BD4);box-shadow:0 10px 24px rgba(91,182,224,.36);transition:.18s;}
+  .seeres:disabled{background:#D7D2DD;box-shadow:none;cursor:not-allowed;}
+  .seeres:not(:disabled):hover{transform:translateY(-2px);}
+  .qnote{font-size:.85rem;color:var(--ink-soft);margin-top:10px;}
+
+  /* result */
+  .result{display:none;} .result.show{display:block;animation:fade .35s ease;}
+  .rcard{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 24px;}
+  .rcard h3.t{text-align:center;font-size:1.3rem;margin:0 0 4px;}
+  .rcard .sub{text-align:center;color:var(--ink-soft);font-size:.92rem;margin-bottom:8px;}
+  .radarwrap{display:flex;justify-content:center;}
+  .radarwrap svg{width:min(340px,86vw);height:auto;}
+  .tops{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:6px 0 4px;}
+  .topbadge{font-family:'Baloo Thai 2';font-weight:600;font-size:.9rem;color:#fff;border-radius:999px;padding:7px 16px;}
+
+  .bars{max-width:560px;margin:18px auto 0;}
+  .brow{display:grid;grid-template-columns:130px 1fr 30px;align-items:center;gap:10px;margin:8px 0;font-size:.88rem;}
+  .brow .bl{display:flex;align-items:center;gap:7px;font-weight:500;}
+  .brow .bd{width:20px;height:20px;border-radius:6px;color:#fff;font-family:'Baloo Thai 2';font-weight:700;font-size:.72rem;display:flex;align-items:center;justify-content:center;flex:0 0 20px;}
+  .btrack{background:#F1ECF6;border-radius:7px;height:13px;overflow:hidden;}
+  .bfill{height:100%;border-radius:7px;width:0;transition:width .6s ease;}
+  .bpct{font-family:'Baloo Thai 2';font-weight:600;text-align:right;color:var(--ink-soft);}
+
+  .topcard{border-radius:var(--radius);padding:24px 26px;margin-top:18px;box-shadow:var(--shadow);}
+  .topcard h3{font-size:1.35rem;margin:0 0 2px;display:flex;align-items:center;gap:12px;}
+  .topcard .career-h{font-family:'Baloo Thai 2';font-weight:600;margin:16px 0 8px;font-size:.98rem;}
+  .interp{margin-top:18px;background:#fff;border-radius:16px;padding:16px 20px;font-size:.94rem;box-shadow:0 6px 18px rgba(120,110,150,.08);}
+  .interp b{color:#9A4FAE;}
+  .reset{display:block;margin:22px auto 0;font-family:'Baloo Thai 2';font-weight:600;background:#fff;border:2px solid #C77DD6;color:#9A4FAE;border-radius:999px;padding:11px 26px;cursor:pointer;font-size:.95rem;}
+
+  .tips{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+  @media(max-width:820px){.tips{grid-template-columns:repeat(2,1fr);}}
+  .tip{background:#fff;border-radius:18px;padding:18px 16px;text-align:center;box-shadow:0 6px 18px rgba(120,110,150,.08);}
+  .tip .ic{font-size:1.6rem;} .tip p{margin:8px 0 0;font-size:.9rem;font-weight:500;}
+  .quote{text-align:center;font-family:'Baloo Thai 2';font-weight:600;font-size:1.35rem;margin:30px auto 0;max-width:34ch;color:#9A4FAE;line-height:1.45;}
+  .quote span{background:linear-gradient(transparent 60%,#FBD3E4 60%);}
+
+  footer{text-align:center;padding:34px 0;color:var(--ink-soft);font-size:.88rem;}
+  footer b{font-family:'Baloo Thai 2';color:var(--ink);}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto;}}
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:12px;left:12px;z-index:99999;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#1E1B4B;font-family:'Prompt',system-ui,sans-serif;font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;box-shadow:0 6px 18px -6px rgba(30,27,75,.35);text-decoration:none;">← หน้าหลัก</a>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">บทเรียนแนะแนว · ม.6 · ค้นหาศักยภาพ</span>
+    <div class="htitle"><span class="w">พหุปัญญา</span><span class="eight">8</span><span class="dan">ด้าน</span></div>
+    <h1>ค้นพบศักยภาพที่ซ่อนอยู่ในตัวคุณ</h1>
+    <p class="lead">ทฤษฎีพหุปัญญาของ โฮเวิร์ด การ์ดเนอร์ บอกว่าคนเราฉลาดได้หลายแบบ ไม่ใช่แค่เรียนเก่ง ทุกคนมีปัญญาทั้ง 8 ด้านในสัดส่วนต่างกัน ลองสำรวจดูว่า "ด้านเด่น" ของคุณคืออะไร</p>
+    <button class="cta" onclick="document.getElementById('quiz').scrollIntoView({behavior:'smooth'})">เริ่มสำรวจตัวเอง →</button>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">ส่วนที่ 1</span>
+      <h2>ปัญญาทั้ง 8 ด้าน</h2>
+      <p>แตะการ์ดเพื่อดูความหมายและอาชีพที่เชื่อมโยงของแต่ละด้าน</p>
+    </div>
+    <div class="everyone">🌈 <b>ไม่มีใครเก่งทุกด้าน แต่ทุกคนมีจุดเด่นที่แตกต่าง</b> — ปัญญาทั้ง 8 ด้านนี้อยู่ในตัวเราทุกคน เพียงแต่บางด้านโดดเด่นกว่า การรู้จักด้านเด่นช่วยให้เลือกเส้นทางที่ใช่ได้ง่ายขึ้น</div>
+    <div class="grid8" id="grid8"></div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">ส่วนที่ 2</span>
+      <h2>แบบสำรวจพหุปัญญา 32 ข้อ</h2>
+      <p>อ่านแต่ละข้อแล้วเลือกว่าตรงกับเราแค่ไหน ตอบตามความจริง ไม่มีถูกผิด</p>
+    </div>
+    <div class="quizbox">
+      <div class="qhead">
+        <div class="prog"><div class="ptrack"><div class="pfill" id="pfill"></div></div></div>
+        <div class="pnum" id="pnum">ตอบแล้ว 0 / 32</div>
+      </div>
+      <div class="qlist" id="qlist"></div>
+      <div class="qfoot">
+        <button class="seeres" id="seeres" disabled>ดูโปรไฟล์ปัญญาของฉัน</button>
+        <div class="qnote" id="qnote">ตอบให้ครบทั้ง 32 ข้อก่อนนะ</div>
+      </div>
+    </div>
+
+    <div class="result" id="result">
+      <div class="rcard">
+        <h3 class="t">โปรไฟล์ปัญญาของคุณ</h3>
+        <div class="sub">รูปร่างนี้คือ "ลายเซ็นปัญญา" เฉพาะตัวของคุณ — แต่ละคนไม่เหมือนกัน</div>
+        <div class="radarwrap" id="radar"></div>
+        <div class="tops" id="tops"></div>
+        <div class="bars" id="bars"></div>
+      </div>
+      <div class="topcard" id="topcard"></div>
+      <div class="interp">
+        💡 <b>อ่านผลยังไง:</b> ด้านที่คะแนนสูงคือจุดแข็งที่ควรพัฒนาต่อ ส่วนด้านที่ต่ำไม่ได้แปลว่าไม่เก่ง แค่ยังไม่ถูกฝึก ผลนี้ช่วยให้รู้จักตัวเองและเลือกเส้นทางที่ใช่ ลองนำไปคุยกับครูแนะแนวเพื่อต่อยอดสู่การเรียนและอาชีพได้
+      </div>
+      <button class="reset" id="reset">↻ ทำแบบสำรวจใหม่</button>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">ส่วนที่ 3</span>
+      <h2>เคล็ดลับค้นหาตัวตน</h2>
+      <p>รู้จุดเด่นแล้ว ลองนำไปต่อยอดและพัฒนาให้เต็มศักยภาพ</p>
+    </div>
+    <div class="tips">
+      <div class="tip"><div class="ic">🚀</div><p>ลองทำสิ่งใหม่ ๆ อยู่เสมอ</p></div>
+      <div class="tip"><div class="ic">😊</div><p>สังเกตว่าทำอะไรแล้วมีความสุข</p></div>
+      <div class="tip"><div class="ic">👂</div><p>ถามคนรอบข้างว่าเราเก่งเรื่องอะไร</p></div>
+      <div class="tip"><div class="ic">🎯</div><p>ฝึกฝนสิ่งที่ชอบอย่างต่อเนื่อง</p></div>
+      <div class="tip"><div class="ic">💪</div><p>เชื่อมั่นในตัวเองและไม่ย่อท้อ</p></div>
+    </div>
+    <div class="quote">"คุณคือ <span>เวอร์ชันที่ดีที่สุด</span><br/>ในแบบของคุณเอง"</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <b>บทเรียนแนะแนว · พหุปัญญา 8 ด้าน</b><br/>
+    อ้างอิงทฤษฎีพหุปัญญา (Multiple Intelligences) ของ โฮเวิร์ด การ์ดเนอร์ (Howard Gardner)
+  </div>
+</footer>
+
+<script>
+const D = {"mi":{"1":{"name":"Linguistic","th":"ด้านภาษา","short":"ภาษา","color":"#C77DD6","bg":"#F6E9F8","deep":"#9A4FAE","ic":"📖","def":"ความสามารถในการใช้ภาษา การพูด การฟัง การอ่าน การเขียน และการสื่อสาร","careers":["นักเขียน","นักข่าว","ครู/อาจารย์ภาษา","นักแปล/ล่าม","พิธีกร/ผู้ประกาศข่าว","ทนายความ","นักประชาสัมพันธ์","บรรณาธิการ","นักโฆษณา/ครีเอทีฟ","นักพูด/วิทยากร"]},"2":{"name":"Logical-Mathematical","th":"ด้านตรรกะและคณิตศาสตร์","short":"ตรรกะ","color":"#6FBF73","bg":"#E7F5E6","deep":"#3E8A45","ic":"🔢","def":"ความสามารถในการคิดวิเคราะห์ ใช้เหตุผล การคำนวณ และแก้ปัญหาอย่างเป็นระบบ","careers":["วิศวกร","นักวิทยาศาสตร์","นักคณิตศาสตร์","นักวิเคราะห์ข้อมูล","นักบัญชี","นักการเงิน/นักลงทุน","โปรแกรมเมอร์","นักสถิติ","นักวิเคราะห์ระบบ","นักวิจัย"]},"3":{"name":"Visual-Spatial","th":"ด้านมิติสัมพันธ์","short":"มิติสัมพันธ์","color":"#5BB6E0","bg":"#E3F2FB","deep":"#2E81AE","ic":"🎨","def":"ความสามารถในการคิดเป็นภาพ จินตนาการ และมองเห็นภาพรวม","careers":["สถาปนิก","นักออกแบบกราฟิก","นักออกแบบตกแต่งภายใน","นักวาดภาพประกอบ","นักออกแบบผลิตภัณฑ์","นักทำแอนิเมชัน","ช่างภาพ","นักภูมิสารสนเทศ (GIS)","นักวางแผนผังเมือง","นักออกแบบแฟชั่น"]},"4":{"name":"Bodily-Kinesthetic","th":"ด้านร่างกายและการเคลื่อนไหว","short":"ร่างกาย","color":"#F2935C","bg":"#FDEBDD","deep":"#C26426","ic":"⚽","def":"ความสามารถในการใช้ร่างกาย เคลื่อนไหวได้คล่องแคล่ว และประสานสัมพันธ์ได้ดี","careers":["นักกีฬาอาชีพ","ครูพลศึกษา","นักเต้น/นักแสดง","นักกายภาพบำบัด","ผู้ออกกำลังกาย/เทรนเนอร์","เชฟ","ช่างฝีมือ/ช่างเทคนิค","พนักงานดับเพลิง","นักผจญภัย/ไกด์นำเที่ยว","ทหาร/ตำรวจ"]},"5":{"name":"Musical","th":"ด้านดนตรี","short":"ดนตรี","color":"#EE7BA6","bg":"#FCE6EE","deep":"#C24B79","ic":"🎵","def":"ความสามารถในการรับรู้จังหวะ ทำนอง เสียงดนตรี และการแสดงออกทางดนตรี","careers":["นักดนตรี","นักร้อง","ครูสอนดนตรี","โปรดิวเซอร์เพลง","นักแต่งเพลง","วิศวกรเสียง","นักดนตรีบำบัด","ดีเจ","ผู้กำกับวงดนตรี","พิธีกรรายการดนตรี"]},"6":{"name":"Interpersonal","th":"ด้านมนุษยสัมพันธ์","short":"มนุษยสัมพันธ์","color":"#F0B84A","bg":"#FDF2D7","deep":"#BD8A12","ic":"🤝","def":"ความสามารถในการเข้าใจผู้อื่น สื่อสารและทำงานร่วมกับคนอื่น มีความเห็นอกเห็นใจ","careers":["ครู/อาจารย์","นักจิตวิทยา","นักแนะแนว/ที่ปรึกษา","นักสังคมสงเคราะห์","นักทรัพยากรบุคคล (HR)","นักการตลาด","เจ้าหน้าที่ประชาสัมพันธ์","ผู้จัดการโครงการ","นักการทูต","ผู้ประสานงาน"]},"7":{"name":"Intrapersonal","th":"ด้านการเข้าใจตนเอง","short":"เข้าใจตนเอง","color":"#9B8BD4","bg":"#ECE8F8","deep":"#6B5BB0","ic":"🧠","def":"ความสามารถในการรู้จักตนเอง เข้าใจอารมณ์ ความคิด และเป้าหมายของตน","careers":["นักจิตวิทยา","ที่ปรึกษาชีวิต (Life Coach)","นักบำบัด/นักบำบัดจิต","นักเขียน/นักคิด","นักวิจัย","พระ/นักบวช","นักปรัชญา","ผู้ประกอบการ","นักวางแผนชีวิต","นักพัฒนาตนเอง"]},"8":{"name":"Naturalistic","th":"ด้านธรรมชาติวิทยา","short":"ธรรมชาติ","color":"#54C0A0","bg":"#E1F5EE","deep":"#2E8A6F","ic":"🌿","def":"ความสามารถในการเข้าใจธรรมชาติ สิ่งแวดล้อม สิ่งมีชีวิต และความสัมพันธ์ในธรรมชาติ","careers":["นักชีววิทยา","นักนิเวศวิทยา","สัตวแพทย์","นักวิทยาศาสตร์สิ่งแวดล้อม","เกษตรกร/นักเกษตรศาสตร์","นักอนุรักษ์ธรรมชาติ","เจ้าหน้าที่อุทยาน","นักวิจัยพืช/สัตว์","นักประมง","นักจัดการสิ่งแวดล้อม"]}},"items":[{"t":"1","x":"ฉันชอบอ่านหนังสือ เขียน หรือเล่าเรื่อง"},{"t":"2","x":"ฉันชอบแก้โจทย์ปัญหาและคิดอย่างมีเหตุผล"},{"t":"3","x":"ฉันคิดเป็นภาพและจินตนาการได้ดี"},{"t":"4","x":"ฉันเรียนรู้ได้ดีเมื่อได้ลงมือทำหรือเคลื่อนไหว"},{"t":"5","x":"ฉันชอบฟัง ร้อง หรือเล่นดนตรี"},{"t":"6","x":"ฉันเข้าใจความรู้สึกของคนรอบข้างได้ง่าย"},{"t":"7","x":"ฉันรู้จักจุดเด่นจุดด้อยของตัวเองดี"},{"t":"8","x":"ฉันสนใจธรรมชาติ พืช สัตว์ หรือสิ่งแวดล้อม"},{"t":"1","x":"ฉันอธิบายสิ่งต่าง ๆ ด้วยคำพูดได้ชัดเจน"},{"t":"2","x":"ฉันชอบตัวเลข การคำนวณ หรือการวิเคราะห์"},{"t":"3","x":"ฉันชอบวาดรูป ออกแบบ หรือดูแผนที่"},{"t":"4","x":"ฉันชอบกีฬา การเต้น หรือกิจกรรมที่ใช้ร่างกาย"},{"t":"5","x":"ฉันจับจังหวะและทำนองได้ไว"},{"t":"6","x":"ฉันชอบทำงานเป็นทีมและร่วมมือกับผู้อื่น"},{"t":"7","x":"ฉันชอบทบทวนความคิดและความรู้สึกของตัวเอง"},{"t":"8","x":"ฉันชอบอยู่กลางแจ้งและสังเกตสิ่งรอบตัว"},{"t":"1","x":"ฉันชอบเล่นคำ สำนวน หรือเรียนภาษาใหม่ ๆ"},{"t":"2","x":"ฉันมองหารูปแบบและความเชื่อมโยงของสิ่งต่าง ๆ"},{"t":"3","x":"ฉันมองเห็นภาพรวมและจัดวางพื้นที่ได้เก่ง"},{"t":"4","x":"ฉันใช้มือทำสิ่งต่าง ๆ ได้คล่องแคล่ว"},{"t":"5","x":"ฉันมักมีเสียงเพลงอยู่ในหัวเสมอ"},{"t":"6","x":"ฉันเป็นคนที่เพื่อนมักมาปรึกษา"},{"t":"7","x":"ฉันตั้งเป้าหมายชีวิตและรู้ว่าตัวเองต้องการอะไร"},{"t":"8","x":"ฉันแยกแยะและจัดหมวดหมู่สิ่งมีชีวิตได้ดี"},{"t":"1","x":"ฉันจำสิ่งที่อ่านหรือได้ยินเป็นคำพูดได้ดี"},{"t":"2","x":"ฉันชอบจัดสิ่งต่าง ๆ ให้เป็นระบบเป็นขั้นตอน"},{"t":"3","x":"ฉันจำสถานที่และทิศทางได้แม่นยำ"},{"t":"4","x":"ฉันมีการประสานงานของร่างกายที่ดี"},{"t":"5","x":"ฉันแยกแยะเสียงและโน้ตได้ดี"},{"t":"6","x":"ฉันสื่อสารและสร้างความสัมพันธ์กับคนได้ดี"},{"t":"7","x":"ฉันเข้าใจอารมณ์ของตัวเองและจัดการมันได้"},{"t":"8","x":"ฉันใส่ใจการดูแลธรรมชาติและสิ่งแวดล้อม"}],"order":["1","2","3","4","5","6","7","8"]};
+const MI = D.mi, ITEMS = D.items, ORDER = D.order;
+
+/* type cards */
+const grid=document.getElementById('grid8');
+ORDER.forEach(k=>{
+  const m=MI[k];
+  const c=document.createElement('div');
+  c.className='mcard'; c.id='mc-'+k; c.style.background=m.bg; c.style.color=m.deep;
+  const careers=m.careers.map(x=>`<span class="chip" style="color:${m.deep}">${x}</span>`).join('');
+  c.innerHTML=`
+    <div class="hd"><div class="mnum" style="background:${m.color}">${k}</div>
+      <div><h3 style="color:${m.deep}">${m.th}</h3><div class="en">${m.name}</div></div>
+      <div class="ic">${m.ic}</div></div>
+    <p class="def" style="color:${m.deep}">${m.def}</p>
+    <div class="more">ดูอาชีพที่เชื่อมโยง</div>
+    <div class="detail"><div class="ch" style="color:${m.deep}">อาชีพที่เชื่อมโยง</div><div class="chips">${careers}</div></div>`;
+  c.querySelector('.more').onclick=e=>{e.stopPropagation();c.classList.toggle('open');};
+  c.onclick=()=>c.classList.toggle('open');
+  grid.appendChild(c);
+});
+
+/* survey */
+const qlist=document.getElementById('qlist');
+const answers=new Array(ITEMS.length).fill(null);
+const labels=['ไม่ใช่เรา','บางครั้ง','ใช่เลย'];
+ITEMS.forEach((it,i)=>{
+  const row=document.createElement('div'); row.className='qrow';
+  row.innerHTML=`<div class="qtext"><span class="nq">${i+1}.</span>${it.x}</div>
+    <div class="scale">${labels.map((l,v)=>`<button class="sbtn v${v}" data-i="${i}" data-v="${v}">${l}</button>`).join('')}</div>`;
+  qlist.appendChild(row);
+});
+qlist.querySelectorAll('.sbtn').forEach(b=>b.onclick=()=>{
+  const i=+b.dataset.i; answers[i]=+b.dataset.v;
+  b.parentElement.querySelectorAll('.sbtn').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); updateProg();
+});
+function updateProg(){
+  const done=answers.filter(a=>a!==null).length;
+  document.getElementById('pnum').textContent='ตอบแล้ว '+done+' / '+ITEMS.length;
+  document.getElementById('pfill').style.width=(done/ITEMS.length*100)+'%';
+  document.getElementById('seeres').disabled=done<ITEMS.length;
+  document.getElementById('qnote').textContent=done<ITEMS.length?('เหลืออีก '+(ITEMS.length-done)+' ข้อ'):'ครบแล้ว! กดดูผลได้เลย';
+}
+
+/* radar builder */
+function radarSVG(scores,max){
+  const cx=160,cy=158,R=108,N=8;
+  const ang=i=>(-90+i*45)*Math.PI/180;
+  const pt=(i,r)=>[cx+r*Math.cos(ang(i)),cy+r*Math.sin(ang(i))];
+  let s='<svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">';
+  [0.25,0.5,0.75,1].forEach(f=>{
+    const p=[...Array(N)].map((_,i)=>pt(i,R*f).join(',')).join(' ');
+    s+=`<polygon points="${p}" fill="none" stroke="#ECE3F0" stroke-width="1"/>`;
+  });
+  for(let i=0;i<N;i++){const[x,y]=pt(i,R);s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#ECE3F0" stroke-width="1"/>`;}
+  const dp=ORDER.map((k,i)=>pt(i,R*scores[k]/max).join(',')).join(' ');
+  s+=`<polygon points="${dp}" fill="#C9B6E6" fill-opacity="0.4" stroke="#9B8BD4" stroke-width="2.5"/>`;
+  ORDER.forEach((k,i)=>{const[x,y]=pt(i,R*scores[k]/max);s+=`<circle cx="${x}" cy="${y}" r="5" fill="${MI[k].color}"/>`;});
+  ORDER.forEach((k,i)=>{const[x,y]=pt(i,R+24);s+=`<circle cx="${x}" cy="${y}" r="12" fill="${MI[k].color}"/><text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-family="Baloo Thai 2,sans-serif" font-weight="700" font-size="13" fill="#fff">${k}</text>`;});
+  s+='</svg>'; return s;
+}
+
+document.getElementById('seeres').onclick=()=>{
+  const score={}; ORDER.forEach(k=>score[k]=0);
+  ITEMS.forEach((it,i)=>score[it.t]+=(answers[i]||0));
+  const max=8;
+  const ranked=ORDER.slice().sort((a,b)=>score[b]-score[a]||ORDER.indexOf(a)-ORDER.indexOf(b));
+  const top3=ranked.slice(0,3);
+  document.getElementById('radar').innerHTML=radarSVG(score,max);
+  document.getElementById('tops').innerHTML='<span style="align-self:center;color:#7B8089;font-family:Baloo Thai 2;font-size:.88rem;">จุดเด่น 3 อันดับ:</span>'+
+    top3.map(k=>`<span class="topbadge" style="background:${MI[k].color}">${k}. ${MI[k].th.replace('ด้าน','')}</span>`).join('');
+  document.getElementById('bars').innerHTML=ORDER.map(k=>{
+    const isTop=top3.includes(k);
+    return `<div class="brow" style="${isTop?'':'opacity:.5'}">
+      <span class="bl"><span class="bd" style="background:${MI[k].color}">${k}</span>${MI[k].th.replace('ด้าน','')}</span>
+      <span class="btrack"><span class="bfill" data-k="${k}" style="background:${MI[k].color}"></span></span>
+      <span class="bpct">${score[k]}</span></div>`;
+  }).join('');
+  requestAnimationFrame(()=>document.querySelectorAll('#bars .bfill').forEach(f=>{f.style.width=Math.round(score[f.dataset.k]/max*100)+'%';}));
+  const m=MI[top3[0]];
+  const tc=document.getElementById('topcard');
+  tc.style.background=m.bg; tc.style.color=m.deep;
+  tc.innerHTML=`<h3 style="color:${m.deep}"><span class="mnum" style="background:${m.color};width:44px;height:44px;font-size:1.3rem;border-radius:13px;">${top3[0]}</span> จุดเด่นของคุณคือ ${m.th}</h3>
+    <p style="margin:12px 0 0;color:${m.deep}">${m.def}</p>
+    <div class="career-h" style="color:${m.deep}">อาชีพที่เชื่อมโยงกับ${m.th}</div>
+    <div class="chips">${m.careers.map(x=>`<span class="chip" style="color:${m.deep}">${x}</span>`).join('')}</div>`;
+  document.getElementById('result').classList.add('show');
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+};
+
+document.getElementById('reset').onclick=()=>{
+  answers.fill(null);
+  qlist.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('result').classList.remove('show');
+  updateProg();
+  document.getElementById('quiz').scrollIntoView({behavior:'smooth'});
+};
+updateProg();
+</script>
+</body>
+</html>
