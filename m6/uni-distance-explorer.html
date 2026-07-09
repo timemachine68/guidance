@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>จากพูลเจริญ ถึง... ที่ไหนก็ได้</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+
+:root{
+  --orange:#FF6B35;--orange-dark:#E8551F;--orange-light:#FF8C5A;
+  --cream:#FFF8F0;--cream-mid:#FFE4D0;--cream-border:#FFD4B8;
+  --text-main:#2D1A0E;--text-sub:#7A4520;--text-muted:#C4845A;
+  --white:#FFFFFF;
+  --shadow-sm:0 1px 4px rgba(255,107,53,.10);
+  --shadow-md:0 4px 16px rgba(255,107,53,.16);
+  --r:12px;
+}
+
+body{font-family:'Sarabun',sans-serif;background:var(--cream);color:var(--text-main);min-height:100vh;overflow-x:hidden;}
+
+/* ── HEADER ── */
+header{background:var(--orange);position:sticky;top:0;z-index:1000;box-shadow:0 2px 12px rgba(232,85,31,.28);}
+.hdr{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.logo-icon{width:38px;height:38px;background:rgba(255,255,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.logo-title{color:#fff;font-size:15px;font-weight:800;line-height:1.1;}
+.logo-sub{color:rgba(255,255,255,.85);font-size:11px;font-weight:500;}
+.search-wrap{flex:1;min-width:160px;position:relative;}
+.search-wrap input{width:100%;padding:8px 12px 8px 36px;border-radius:999px;border:none;background:rgba(255,255,255,.22);color:#fff;font-family:'Sarabun',sans-serif;font-size:14px;outline:none;}
+.search-wrap input::placeholder{color:rgba(255,255,255,.7);}
+.search-wrap input:focus{background:rgba(255,255,255,.32);}
+.s-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;}
+.hdr-pills{display:flex;gap:8px;flex-shrink:0;}
+.pill{background:rgba(255,255,255,.18);color:#fff;border-radius:999px;padding:4px 11px;font-size:11px;font-weight:600;white-space:nowrap;}
+
+/* ── TABS ── */
+.tabs-bar{background:var(--white);border-bottom:1.5px solid var(--cream-border);position:sticky;top:59px;z-index:900;}
+.tabs-inner{max-width:1200px;margin:0 auto;padding:0 16px;display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs-inner::-webkit-scrollbar{display:none;}
+.tab-btn{padding:11px 16px;border:none;background:none;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;color:var(--text-muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:color .18s,border-color .18s;flex-shrink:0;}
+.tab-btn:hover{color:var(--orange);}
+.tab-btn.active{color:var(--orange);border-bottom-color:var(--orange);}
+
+/* ── ORIGIN BADGE ── */
+.origin-wrap{max-width:1200px;margin:12px auto 0;padding:0 16px;}
+.origin-badge{display:inline-flex;align-items:center;gap:6px;background:var(--orange);color:#fff;border-radius:999px;padding:5px 14px;font-size:12px;font-weight:700;}
+
+/* ── FILTER + SORT ── */
+.filter-bar{max-width:1200px;margin:10px auto 0;padding:0 16px;display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
+.filter-lbl{font-size:12px;font-weight:700;color:var(--text-sub);}
+.filter-btn{padding:5px 13px;border-radius:999px;border:1.5px solid var(--cream-border);background:var(--white);font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;color:var(--text-sub);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.filter-btn:hover{border-color:var(--orange-light);color:var(--orange);}
+.filter-btn.active{background:var(--orange);color:#fff;border-color:var(--orange);}
+.sort-row{max-width:1200px;margin:8px auto 0;padding:0 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.sort-lbl{font-size:12px;color:var(--text-muted);font-weight:500;}
+.sort-select{padding:5px 10px;border-radius:8px;border:1.5px solid var(--cream-border);background:var(--white);font-family:'Sarabun',sans-serif;font-size:12px;color:var(--text-sub);font-weight:700;cursor:pointer;outline:none;}
+.result-count{margin-left:auto;font-size:12px;color:var(--text-muted);font-weight:500;}
+
+/* ── MAIN ── */
+.main{max-width:1200px;margin:0 auto;padding:0 16px 48px;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* ── CARDS GRID ── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:14px;}
+.uni-card{background:var(--white);border-radius:var(--r);border:1.5px solid var(--cream-border);overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+.uni-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
+.card-hdr{padding:13px 14px 9px;display:flex;align-items:flex-start;gap:9px;}
+.card-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;background:var(--cream-mid);}
+.card-title{flex:1;min-width:0;}
+.card-name{font-size:13px;font-weight:700;color:var(--text-main);line-height:1.3;word-break:break-word;}
+.card-abbr{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.badge{font-size:10px;font-weight:700;padding:3px 7px;border-radius:999px;flex-shrink:0;white-space:nowrap;}
+.b-state{background:#DBEAFE;color:#1E40AF;}
+.b-private{background:#FCE7F3;color:#9D174D;}
+.b-province{background:#D1FAE5;color:#065F46;}
+.card-divider{height:1px;background:var(--cream-border);margin:0 14px;}
+.card-stats{display:grid;grid-template-columns:repeat(3,1fr);padding:9px 14px;gap:6px;}
+.s-item{text-align:center;}
+.s-val{font-size:15px;font-weight:800;color:var(--orange);line-height:1.2;}
+.s-lbl{font-size:10px;color:var(--text-muted);font-weight:500;margin-top:1px;}
+.card-trans{padding:7px 14px 11px;display:flex;gap:5px;flex-wrap:wrap;}
+.ttag{font-size:10px;padding:3px 8px;border-radius:999px;font-weight:700;}
+.t-metro{background:#FEF3C7;color:#92400E;}
+.t-bus{background:#EDE9FE;color:#5B21B6;}
+.t-car{background:#DCFCE7;color:#166534;}
+.t-train{background:#FEE2E2;color:#991B1B;}
+
+/* ── MAP ── */
+.map-section{margin-top:14px;}
+.map-box{border-radius:var(--r);overflow:hidden;border:1.5px solid var(--cream-border);box-shadow:var(--shadow-sm);}
+#map{height:460px;width:100%;}
+.map-legend{background:var(--white);border:1.5px solid var(--cream-border);border-radius:var(--r);padding:12px 14px;margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+.leg-title{font-size:12px;font-weight:700;color:var(--text-sub);}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-sub);font-weight:500;}
+.leg-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+
+/* ── TABLE ── */
+.table-section{margin-top:14px;}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r);border:1.5px solid var(--cream-border);}
+table{width:100%;border-collapse:collapse;background:var(--white);min-width:560px;}
+thead{background:var(--orange);}
+th{padding:11px 13px;text-align:left;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--cream-border);transition:background .1s;cursor:pointer;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--cream);}
+td{padding:10px 13px;font-size:12px;color:var(--text-main);vertical-align:middle;}
+.td-name{font-weight:700;max-width:200px;}
+.td-km{font-weight:800;color:var(--orange);}
+.td-time{color:var(--text-sub);font-weight:600;}
+.td-cost{color:#166534;font-weight:700;}
+.rank-no{width:24px;height:24px;border-radius:50%;background:var(--cream-mid);color:var(--orange-dark);font-weight:800;font-size:11px;display:inline-flex;align-items:center;justify-content:center;}
+.rk1{background:#FFD700;color:#7A4520;}
+.rk2{background:#C0C0C0;color:#444;}
+.rk3{background:#CD7F32;color:#fff;}
+.table-hint{font-size:11px;color:var(--text-muted);padding:8px 14px;text-align:center;background:var(--cream);border-radius:0 0 var(--r) var(--r);}
+
+/* ── CHARTS ── */
+.chart-section{margin-top:14px;display:flex;flex-direction:column;gap:14px;}
+.chart-box{background:var(--white);border-radius:var(--r);border:1.5px solid var(--cream-border);padding:18px;}
+.chart-title{font-size:14px;font-weight:700;color:var(--text-main);margin-bottom:14px;}
+.chart-wrap{position:relative;width:100%;overflow-x:auto;}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(45,26,14,.5);z-index:2000;align-items:flex-end;justify-content:center;padding:0;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(45,26,14,.2);}
+.modal-hdr{background:var(--orange);padding:18px 20px 14px;border-radius:20px 20px 0 0;display:flex;align-items:flex-start;gap:12px;position:sticky;top:0;}
+.m-icon{font-size:28px;line-height:1;flex-shrink:0;}
+.m-title{flex:1;min-width:0;}
+.m-name{font-size:16px;font-weight:800;color:#fff;line-height:1.2;word-break:break-word;}
+.m-abbr{font-size:12px;color:rgba(255,255,255,.82);margin-top:3px;}
+.m-close{background:rgba(255,255,255,.22);border:none;width:28px;height:28px;border-radius:50%;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.modal-body{padding:18px 20px 24px;}
+.m-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.m-stat{background:var(--cream);border-radius:10px;padding:11px 8px;text-align:center;border:1px solid var(--cream-border);}
+.m-stat-val{font-size:18px;font-weight:800;color:var(--orange);}
+.m-stat-lbl{font-size:10px;color:var(--text-muted);font-weight:500;margin-top:2px;}
+.m-sec-title{font-size:12px;font-weight:700;color:var(--text-sub);margin-bottom:8px;}
+.trans-opts{display:flex;flex-direction:column;gap:7px;margin-bottom:16px;}
+.trans-row{display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:10px;padding:9px 13px;border:1px solid var(--cream-border);}
+.tr-icon{font-size:19px;flex-shrink:0;}
+.tr-info{flex:1;min-width:0;}
+.tr-name{font-size:12px;font-weight:700;color:var(--text-main);}
+.tr-detail{font-size:11px;color:var(--text-muted);margin-top:1px;}
+.tr-cost{font-size:13px;font-weight:800;color:#166534;white-space:nowrap;}
+.m-map-btn{width:100%;padding:12px;background:var(--orange);color:#fff;border:none;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;}
+.m-map-btn:hover{background:var(--orange-dark);}
+.m-drag{width:36px;height:4px;background:var(--cream-border);border-radius:2px;margin:0 auto 14px;}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:50px 20px;color:var(--text-muted);}
+.empty-icon{font-size:44px;margin-bottom:10px;}
+.empty-text{font-size:14px;font-weight:600;}
+
+/* ═══════════════════════════════
+   RESPONSIVE BREAKPOINTS
+═══════════════════════════════ */
+
+/* Tablet 768px */
+@media(max-width:768px){
+  .hdr{padding:9px 14px;gap:10px;}
+  .hdr-pills .pill:last-child{display:none;}
+  .cards-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+  #map{height:380px;}
+  .chart-wrap canvas{min-width:520px;}
+}
+
+/* Mobile 480px */
+@media(max-width:480px){
+  .hdr{padding:8px 12px;gap:8px;}
+  .hdr-pills{display:none;}
+  .logo-sub{display:none;}
+  .logo-title{font-size:13px;}
+  .search-wrap input{font-size:13px;}
+
+  .tabs-bar{top:54px;}
+  .tab-btn{padding:10px 12px;font-size:12px;}
+
+  .origin-wrap{padding:0 12px;}
+  .filter-bar{padding:0 12px;gap:5px;}
+  .filter-lbl{display:none;}
+  .filter-btn{font-size:11px;padding:4px 10px;}
+  .sort-row{padding:0 12px;}
+  .main{padding:0 12px 48px;}
+
+  .cards-grid{grid-template-columns:1fr;gap:10px;}
+  .card-name{font-size:13px;}
+
+  #map{height:300px;}
+  .map-legend{gap:8px;padding:10px 12px;}
+  .leg-title{width:100%;margin-bottom:2px;}
+
+  table{min-width:480px;}
+  th{font-size:11px;padding:9px 10px;}
+  td{font-size:11px;padding:8px 10px;}
+  .td-name{max-width:140px;}
+  .table-hint{display:block;}
+
+  .chart-wrap canvas{min-width:480px;}
+
+  /* Modal full-sheet on mobile */
+  .modal-overlay{align-items:flex-end;padding:0;}
+  .modal{border-radius:20px 20px 0 0;max-height:88vh;}
+  .m-stats{gap:6px;}
+  .m-stat-val{font-size:16px;}
+  .modal-body{padding:14px 16px 32px;}
+}
+
+/* Very small 360px */
+@media(max-width:360px){
+  .tab-btn{padding:9px 10px;font-size:11px;}
+  .card-icon{width:36px;height:36px;font-size:18px;}
+  .s-val{font-size:14px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <div class="logo">
+      <div class="logo-icon">🗺️</div>
+      <div>
+        <div class="logo-title">จากพูลเจริญ ถึง...</div>
+        <div class="logo-sub">เปรียบเทียบระยะทางมหาวิทยาลัย</div>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <span class="s-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="ค้นหามหาวิทยาลัย..." oninput="filterUnis()" autocomplete="off">
+    </div>
+    <div class="hdr-pills">
+      <div class="pill" id="totalCount">44 แห่ง</div>
+      <div class="pill">📍 สมุทรปราการ</div>
+    </div>
+  </div>
+</header>
+
+<div class="tabs-bar">
+  <div class="tabs-inner">
+    <button class="tab-btn active" onclick="switchTab('cards',this)">🎓 การ์ด</button>
+    <button class="tab-btn" onclick="switchTab('map',this)">🗺️ แผนที่</button>
+    <button class="tab-btn" onclick="switchTab('table',this)">📊 ตาราง</button>
+    <button class="tab-btn" onclick="switchTab('chart',this)">📈 กราฟ</button>
+  </div>
+</div>
+
+<div class="origin-wrap">
+  <div class="origin-badge">📌 จุดเริ่มต้น: โรงเรียนพูลเจริญวิทยาคม, สมุทรปราการ</div>
+</div>
+
+<div class="filter-bar">
+  <span class="filter-lbl">กรอง:</span>
+  <button class="filter-btn active" onclick="setFilter('all',this)">ทั้งหมด</button>
+  <button class="filter-btn" onclick="setFilter('state',this)">🏛️ รัฐ</button>
+  <button class="filter-btn" onclick="setFilter('private',this)">🏢 เอกชน</button>
+  <button class="filter-btn" onclick="setFilter('province',this)">🌏 ต่างจังหวัด</button>
+</div>
+<div class="sort-row">
+  <span class="sort-lbl">เรียงตาม:</span>
+  <select class="sort-select" id="sortSelect" onchange="renderCards()">
+    <option value="distance">ระยะทาง (ใกล้→ไกล)</option>
+    <option value="time">เวลาเดินทาง</option>
+    <option value="cost">ค่าใช้จ่าย</option>
+    <option value="name">ชื่อ ก-ฮ</option>
+  </select>
+  <span class="result-count" id="resultCount"></span>
+</div>
+
+<div class="main">
+
+  <div id="tab-cards" class="tab-panel active">
+    <div class="cards-grid" id="cardsGrid"></div>
+    <div class="empty" id="emptyState" style="display:none;">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-text">ไม่พบมหาวิทยาลัยที่ค้นหา</div>
+    </div>
+  </div>
+
+  <div id="tab-map" class="tab-panel">
+    <div class="map-section">
+      <div class="map-box"><div id="map"></div></div>
+      <div class="map-legend">
+        <span class="leg-title">สัญลักษณ์:</span>
+        <div class="leg-item"><div class="leg-dot" style="background:#FF6B35"></div>พูลเจริญ</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#2563EB"></div>มหาวิทยาลัยรัฐ</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#DB2777"></div>เอกชน</div>
+        <div class="leg-item"><div class="leg-dot" style="background:#16A34A"></div>ต่างจังหวัด</div>
+        <div style="margin-left:auto;font-size:11px;color:var(--text-muted)">👆 แตะหมุดเพื่อดูข้อมูล</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-table" class="tab-panel">
+    <div class="table-section">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>มหาวิทยาลัย</th><th>ประเภท</th>
+              <th>ระยะ</th><th>รถยนต์</th><th>ค่าเดินทาง</th><th>จังหวัด</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+        <div class="table-hint">← เลื่อนซ้ายขวาเพื่อดูข้อมูลเพิ่มเติม</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-chart" class="tab-panel">
+    <div class="chart-section">
+      <div class="chart-box">
+        <div class="chart-title">📏 เปรียบเทียบระยะทาง (กม.) — แสดง 25 แห่งแรก</div>
+        <div class="chart-wrap"><canvas id="distanceChart"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">⏱️ เวลาเดินทางโดยรถยนต์ (นาที) — แสดง 25 แห่งแรก</div>
+        <div class="chart-wrap"><canvas id="timeChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOuter(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-hdr" id="modalHdr">
+      <div class="m-icon" id="mIcon"></div>
+      <div class="m-title">
+        <div class="m-name" id="mName"></div>
+        <div class="m-abbr" id="mAbbr"></div>
+      </div>
+      <button class="m-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="m-drag"></div>
+      <div class="m-stats">
+        <div class="m-stat"><div class="m-stat-val" id="mKm"></div><div class="m-stat-lbl">กิโลเมตร</div></div>
+        <div class="m-stat"><div class="m-stat-val" id="mTime"></div><div class="m-stat-lbl">เวลา (รถ)</div></div>
+        <div class="m-stat"><div class="m-stat-val" id="mCost"></div><div class="m-stat-lbl">เริ่มต้น (บาท)</div></div>
+      </div>
+      <div class="m-sec-title">🚌 ตัวเลือกการเดินทาง</div>
+      <div class="trans-opts" id="mTrans"></div>
+      <button class="m-map-btn" id="mGmaps">🗺️ ดูเส้นทางใน Google Maps</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCHOOL={lat:13.6142,lng:100.6052,name:'โรงเรียนพูลเจริญวิทยาคม'};
+
+const UNIS=[
+  // ── STATE BKK ──
+  {id:1,name:'จุฬาลงกรณ์มหาวิทยาลัย',abbr:'จุฬาฯ (CU)',icon:'🏛️',type:'state',province:'กรุงเทพฯ',km:28,carMin:40,transport:[{i:'🚇',n:'BTS+MRT',d:'สีลม → สวนหลวง',c:45},{i:'🚌',n:'รถประจำทาง',d:'~70 นาที',c:20},{i:'🚗',n:'รถยนต์',d:'~40 นาที (ไม่ติด)',c:80}],lat:13.7400,lng:100.5299},
+  {id:2,name:'มหาวิทยาลัยธรรมศาสตร์',abbr:'ธรรมศาสตร์ (TU)',icon:'⚖️',type:'state',province:'กรุงเทพฯ',km:35,carMin:55,transport:[{i:'🚇',n:'MRT+รถ',d:'สายสีน้ำเงิน → ท่าพระ',c:50},{i:'🚌',n:'รถประจำทาง',d:'~80 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~55 นาที',c:90}],lat:13.7553,lng:100.4927},
+  {id:3,name:'มหาวิทยาลัยมหิดล',abbr:'มหิดล (MU)',icon:'🏥',type:'state',province:'นครปฐม',km:45,carMin:55,transport:[{i:'🚌',n:'รถตู้สาย',d:'อ้อมน้อย-อ้อมใหญ่',c:40},{i:'🚗',n:'รถยนต์',d:'~55 นาที ทางพระราม 2',c:100}],lat:13.7955,lng:100.3220},
+  {id:4,name:'มหาวิทยาลัยเกษตรศาสตร์',abbr:'เกษตร (KU)',icon:'🌾',type:'state',province:'กรุงเทพฯ',km:30,carMin:45,transport:[{i:'🚇',n:'BTS สายสีเขียว',d:'ถึงสถานีเกษตร',c:44},{i:'🚌',n:'รถประจำทาง',d:'~65 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~45 นาที ทางลาดกระบัง',c:75}],lat:13.8488,lng:100.5695},
+  {id:5,name:'มหาวิทยาลัยศิลปากร',abbr:'ศิลปากร (SU)',icon:'🎨',type:'state',province:'นครปฐม',km:60,carMin:70,transport:[{i:'🚂',n:'รถไฟ',d:'หัวลำโพง → นครปฐม',c:15},{i:'🚗',n:'รถยนต์',d:'~70 นาที ทางพระราม 2',c:120}],lat:13.8200,lng:100.0467},
+  {id:6,name:'มหาวิทยาลัยศรีนครินทรวิโรฒ',abbr:'มศว (SWU)',icon:'📚',type:'state',province:'กรุงเทพฯ',km:22,carMin:35,transport:[{i:'🚇',n:'MRT',d:'สถานีศรีนครินทร์',c:35},{i:'🚌',n:'รถประจำทาง',d:'~50 นาที',c:18},{i:'🚗',n:'รถยนต์',d:'~35 นาที',c:60}],lat:13.7285,lng:100.7755},
+  {id:7,name:'มหาวิทยาลัยรามคำแหง',abbr:'รามคำแหง (RU)',icon:'📖',type:'state',province:'กรุงเทพฯ',km:20,carMin:30,transport:[{i:'🚇',n:'Airport Rail Link',d:'ลาดกระบัง → มักกะสัน แล้วต่อรถ',c:35},{i:'🚌',n:'รถประจำทาง',d:'~55 นาที',c:18},{i:'🚗',n:'รถยนต์',d:'~30 นาที',c:55}],lat:13.7310,lng:100.6733},
+  {id:8,name:'สจล. วิทยาเขตลาดกระบัง',abbr:'KMITL',icon:'⚙️',type:'state',province:'กรุงเทพฯ',km:14,carMin:20,transport:[{i:'🚂',n:'Airport Rail Link',d:'สถานีลาดกระบัง (ใกล้มาก!)',c:15},{i:'🚌',n:'รถประจำทาง',d:'~35 นาที',c:15},{i:'🚗',n:'รถยนต์',d:'~20 นาที',c:35}],lat:13.7280,lng:100.7783},
+  {id:9,name:'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี',abbr:'KMUTT',icon:'🔬',type:'state',province:'กรุงเทพฯ',km:38,carMin:50,transport:[{i:'🚌',n:'รถประจำทาง',d:'~80 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~50 นาที ทางพระราม 2',c:85}],lat:13.6513,lng:100.4933},
+  {id:10,name:'มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ',abbr:'KMUTNB',icon:'🏗️',type:'state',province:'กรุงเทพฯ',km:42,carMin:55,transport:[{i:'🚇',n:'MRT',d:'สายสีน้ำเงิน → บางซื่อ',c:45},{i:'🚌',n:'รถประจำทาง',d:'~90 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~55 นาที',c:90}],lat:13.8040,lng:100.5330},
+  {id:11,name:'มหาวิทยาลัยบูรพา',abbr:'มบ. (BUU)',icon:'🌊',type:'state',province:'ชลบุรี',km:85,carMin:90,transport:[{i:'🚌',n:'รถทัวร์',d:'เอกมัย → ชลบุรี ~1.5 ชม.',c:70},{i:'🚗',n:'รถยนต์',d:'~90 นาที มอเตอร์เวย์',c:160}],lat:13.2830,lng:100.9265},
+  {id:30,name:'มหาวิทยาลัยราชภัฏสวนสุนันทา',abbr:'สวนสุนันทา (SSRU)',icon:'👸',type:'state',province:'กรุงเทพฯ',km:40,carMin:52,transport:[{i:'🚇',n:'MRT สายสีม่วง',d:'ถึงสถานีใกล้เคียง',c:40},{i:'🚌',n:'รถประจำทาง',d:'~80 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~52 นาที',c:88}],lat:13.7780,lng:100.4886},
+  {id:33,name:'มหาวิทยาลัยเทคโนโลยีราชมงคลกรุงเทพ',abbr:'ราชมงคลกรุงเทพ (RMUTK)',icon:'🔩',type:'state',province:'กรุงเทพฯ',km:32,carMin:45,transport:[{i:'🚇',n:'MRT',d:'สายสีน้ำเงิน → หัวลำโพง',c:38},{i:'🚌',n:'รถประจำทาง',d:'~70 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~45 นาที ทางพระราม 4',c:75}],lat:13.7234,lng:100.5134},
+  {id:34,name:'มหาวิทยาลัยเทคโนโลยีราชมงคลธัญบุรี',abbr:'ราชมงคลธัญบุรี (RMUTT)',icon:'⚗️',type:'state',province:'ปทุมธานี',km:52,carMin:60,transport:[{i:'🚂',n:'รถไฟฟ้าสายสีแดง',d:'บางซื่อ → รังสิต แล้วต่อรถ',c:40},{i:'🚌',n:'รถประจำทาง',d:'~100 นาที',c:25},{i:'🚗',n:'รถยนต์',d:'~60 นาที ทางวิภาวดี',c:110}],lat:14.0706,lng:100.7382},
+  {id:39,name:'มหาวิทยาลัยสวนดุสิต',abbr:'สวนดุสิต (SDU)',icon:'🌷',type:'state',province:'กรุงเทพฯ',km:38,carMin:50,transport:[{i:'🚇',n:'MRT',d:'สายสีม่วง → ถนนราชพฤกษ์',c:38},{i:'🚌',n:'รถประจำทาง',d:'~75 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~50 นาที',c:85}],lat:13.7637,lng:100.5015},
+  {id:41,name:'มหาวิทยาลัยราชภัฏบ้านสมเด็จเจ้าพระยา',abbr:'บ้านสมเด็จ (BSRU)',icon:'🏯',type:'state',province:'กรุงเทพฯ',km:36,carMin:48,transport:[{i:'🚇',n:'MRT+รถ',d:'สายสีน้ำเงิน → อิสรภาพ แล้วต่อรถ',c:40},{i:'🚌',n:'รถประจำทาง',d:'~75 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~48 นาที ทางพระราม 2',c:80}],lat:13.7260,lng:100.4888},
+  {id:42,name:'มหาวิทยาลัยราชภัฏพระนคร',abbr:'พระนคร (PNRU)',icon:'🏰',type:'state',province:'กรุงเทพฯ',km:44,carMin:55,transport:[{i:'🚌',n:'รถประจำทาง',d:'~90 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~55 นาที ทางรามอินทรา',c:90}],lat:13.8684,lng:100.5944},
+  {id:43,name:'มหาวิทยาลัยราชภัฏจันทรเกษม',abbr:'จันทรเกษม (CRU)',icon:'🌙',type:'state',province:'กรุงเทพฯ',km:34,carMin:48,transport:[{i:'🚇',n:'MRT',d:'สายสีส้ม → มีนบุรี แล้วต่อรถ',c:40},{i:'🚌',n:'รถประจำทาง',d:'~80 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~48 นาที ทางพระราม 9',c:80}],lat:13.8052,lng:100.6195},
+
+  // ── เกษตร ศรีราชา ──
+  {id:44,name:'มหาวิทยาลัยเกษตรศาสตร์ วิทยาเขตศรีราชา',abbr:'เกษตร ศรีราชา (KUSRC)',icon:'🌊🌾',type:'state',province:'ชลบุรี',km:78,carMin:80,transport:[{i:'🚌',n:'รถทัวร์',d:'เอกมัย → ศรีราชา ~1.5 ชม.',c:65},{i:'🚗',n:'รถยนต์',d:'~80 นาที มอเตอร์เวย์',c:140}],lat:13.1476,lng:100.9319},
+
+  // ── PRIVATE BKK ──
+  {id:12,name:'มหาวิทยาลัยกรุงเทพ',abbr:'ม.กรุงเทพ (BU)',icon:'🏙️',type:'private',province:'กรุงเทพฯ',km:48,carMin:60,transport:[{i:'🚌',n:'รถประจำทาง',d:'~90 นาที',c:25},{i:'🚗',n:'รถยนต์',d:'~60 นาที ทางวิภาวดี',c:100}],lat:13.8151,lng:100.5641},
+  {id:13,name:'มหาวิทยาลัยรังสิต',abbr:'ม.รังสิต (RSU)',icon:'🔭',type:'private',province:'ปทุมธานี',km:55,carMin:65,transport:[{i:'🚌',n:'รถประจำทาง',d:'~100 นาที',c:28},{i:'🚗',n:'รถยนต์',d:'~65 นาที ทางวิภาวดี',c:110}],lat:14.0685,lng:100.6082},
+  {id:14,name:'มหาวิทยาลัยอัสสัมชัญ',abbr:'ABAC',icon:'✝️',type:'private',province:'สมุทรปราการ',km:8,carMin:15,transport:[{i:'🚌',n:'รถสองแถว/รถประจำทาง',d:'~25 นาที',c:15},{i:'🚗',n:'รถยนต์',d:'~15 นาที (ใกล้มาก!)',c:25}],lat:13.6122,lng:100.8381},
+  {id:15,name:'มหาวิทยาลัยเซนต์จอห์น',abbr:'SJU',icon:'🎯',type:'private',province:'กรุงเทพฯ',km:26,carMin:38,transport:[{i:'🚌',n:'รถประจำทาง',d:'~60 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~38 นาที',c:65}],lat:13.7527,lng:100.6373},
+  {id:16,name:'มหาวิทยาลัยหอการค้าไทย',abbr:'UTCC',icon:'💼',type:'private',province:'กรุงเทพฯ',km:34,carMin:48,transport:[{i:'🚇',n:'MRT',d:'สายสีน้ำเงิน → ลาดพร้าว แล้วต่อรถ',c:40},{i:'🚌',n:'รถประจำทาง',d:'~70 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~48 นาที',c:80}],lat:13.8030,lng:100.5545},
+  {id:17,name:'มหาวิทยาลัยสยาม',abbr:'มสยาม',icon:'🏫',type:'private',province:'กรุงเทพฯ',km:40,carMin:52,transport:[{i:'🚌',n:'รถประจำทาง',d:'~75 นาที',c:22},{i:'🚗',n:'รถยนต์',d:'~52 นาที ทางพระราม 2',c:90}],lat:13.7233,lng:100.4682},
+  {id:18,name:'มหาวิทยาลัยเกษมบัณฑิต',abbr:'เกษมบัณฑิต (KBU)',icon:'🎓',type:'private',province:'กรุงเทพฯ',km:18,carMin:28,transport:[{i:'🚌',n:'รถประจำทาง',d:'~45 นาที',c:18},{i:'🚗',n:'รถยนต์',d:'~28 นาที',c:50}],lat:13.7597,lng:100.7185},
+  {id:19,name:'มหาวิทยาลัยอีสเทิร์นเอเชีย',abbr:'EAU',icon:'🌐',type:'private',province:'ปทุมธานี',km:48,carMin:58,transport:[{i:'🚌',n:'รถประจำทาง',d:'~85 นาที',c:28},{i:'🚗',n:'รถยนต์',d:'~58 นาที',c:100}],lat:13.9960,lng:100.6086},
+  {id:20,name:'มหาวิทยาลัยนอร์ทกรุงเทพ',abbr:'NBU',icon:'🏢',type:'private',province:'กรุงเทพฯ',km:50,carMin:62,transport:[{i:'🚌',n:'รถประจำทาง',d:'~90 นาที',c:28},{i:'🚗',n:'รถยนต์',d:'~62 นาที',c:105}],lat:13.8843,lng:100.5905},
+  {id:35,name:'สถาบันเทคโนโลยีไทย-ญี่ปุ่น',abbr:'TNI',icon:'🇯🇵',type:'private',province:'กรุงเทพฯ',km:24,carMin:36,transport:[{i:'🚌',n:'รถประจำทาง',d:'~60 นาที สายพระโขนง',c:18},{i:'🚗',n:'รถยนต์',d:'~36 นาที ทางพระราม 9',c:60}],lat:13.7313,lng:100.6570},
+  {id:36,name:'มหาวิทยาลัยเกษมบัณฑิต วิทยาเขตพัฒนาการ',abbr:'เกษมบัณฑิต พัฒนาการ',icon:'🎓',type:'private',province:'กรุงเทพฯ',km:16,carMin:25,transport:[{i:'🚌',n:'รถประจำทาง',d:'~40 นาที สายพัฒนาการ',c:15},{i:'🚗',n:'รถยนต์',d:'~25 นาที ทางพัฒนาการ',c:45}],lat:13.7346,lng:100.6950},
+  {id:37,name:'มหาวิทยาลัยรัตนบัณฑิต',abbr:'รัตนบัณฑิต (RBAC)',icon:'💎',type:'private',province:'กรุงเทพฯ',km:35,carMin:48,transport:[{i:'🚌',n:'รถประจำทาง',d:'~75 นาที',c:20},{i:'🚗',n:'รถยนต์',d:'~48 นาที ทางลาดพร้าว',c:80}],lat:13.7975,lng:100.6381},
+  {id:40,name:'มหาวิทยาลัยธุรกิจบัณฑิตย์',abbr:'ธุรกิจบัณฑิตย์ (DPU)',icon:'📊',type:'private',province:'กรุงเทพฯ',km:46,carMin:58,transport:[{i:'🚌',n:'รถประจำทาง',d:'~90 นาที',c:25},{i:'🚗',n:'รถยนต์',d:'~58 นาที ทางวิภาวดี',c:98}],lat:13.8653,lng:100.5718},
+
+  // ── PROVINCE ──
+  {id:21,name:'มหาวิทยาลัยเชียงใหม่',abbr:'มช. (CMU)',icon:'🏔️',type:'province',province:'เชียงใหม่',km:700,carMin:480,transport:[{i:'✈️',n:'เครื่องบิน',d:'สุวรรณภูมิ ~1 ชม.',c:900},{i:'🚌',n:'รถทัวร์',d:'หมอชิต → เชียงใหม่ ~9 ชม.',c:350},{i:'🚂',n:'รถไฟ',d:'หัวลำโพง ~12 ชม.',c:200}],lat:18.8025,lng:98.9527},
+  {id:22,name:'มหาวิทยาลัยขอนแก่น',abbr:'มข. (KKU)',icon:'🌿',type:'province',province:'ขอนแก่น',km:450,carMin:300,transport:[{i:'✈️',n:'เครื่องบิน',d:'สุวรรณภูมิ ~1 ชม.',c:800},{i:'🚌',n:'รถทัวร์',d:'หมอชิต → ขอนแก่น ~6 ชม.',c:250},{i:'🚗',n:'รถยนต์',d:'~5 ชม. มอเตอร์เวย์',c:500}],lat:16.4747,lng:102.8260},
+  {id:23,name:'มหาวิทยาลัยสงขลานครินทร์',abbr:'ม.อ. (PSU)',icon:'🌴',type:'province',province:'สงขลา',km:950,carMin:660,transport:[{i:'✈️',n:'เครื่องบิน',d:'สุวรรณภูมิ → หาดใหญ่ ~1.5 ชม.',c:1200},{i:'🚂',n:'รถไฟ',d:'หัวลำโพง → หาดใหญ่ ~16 ชม.',c:350}],lat:7.0065,lng:100.5018},
+  {id:24,name:'มหาวิทยาลัยนเรศวร',abbr:'มน. (NU)',icon:'⚔️',type:'province',province:'พิษณุโลก',km:380,carMin:270,transport:[{i:'🚌',n:'รถทัวร์',d:'หมอชิต → พิษณุโลก ~4.5 ชม.',c:200},{i:'🚗',n:'รถยนต์',d:'~4.5 ชม. ทางพหลโยธิน',c:400}],lat:16.7445,lng:100.1928},
+  {id:25,name:'มหาวิทยาลัยอุบลราชธานี',abbr:'มอ. (UBU)',icon:'🏞️',type:'province',province:'อุบลราชธานี',km:580,carMin:400,transport:[{i:'✈️',n:'เครื่องบิน',d:'สุวรรณภูมิ ~1 ชม.',c:900},{i:'🚌',n:'รถทัวร์',d:'หมอชิต → อุบลฯ ~8 ชม.',c:300}],lat:15.1150,lng:104.9020},
+  {id:26,name:'มหาวิทยาลัยเทคโนโลยีสุรนารี',abbr:'มทส. (SUT)',icon:'🔧',type:'province',province:'นครราชสีมา',km:260,carMin:180,transport:[{i:'🚌',n:'รถทัวร์',d:'หมอชิต → โคราช ~3.5 ชม.',c:150},{i:'🚗',n:'รถยนต์',d:'~3 ชม. มอเตอร์เวย์',c:280}],lat:14.8779,lng:102.0189},
+  {id:27,name:'มหาวิทยาลัยวลัยลักษณ์',abbr:'มวล. (WU)',icon:'🌺',type:'province',province:'นครศรีธรรมราช',km:780,carMin:540,transport:[{i:'✈️',n:'เครื่องบิน',d:'สุวรรณภูมิ → นครศรีฯ ~1.5 ชม.',c:1000},{i:'🚌',n:'รถทัวร์',d:'หมอชิต ~10 ชม.',c:350}],lat:8.6426,lng:99.8942},
+  {id:28,name:'มหาวิทยาลัยแม่โจ้',abbr:'มจ. (MJU)',icon:'🌱',type:'province',province:'เชียงใหม่',km:710,carMin:490,transport:[{i:'✈️',n:'เครื่องบิน',d:'สุวรรณภูมิ → เชียงใหม่ + รถ 30 น.',c:1000},{i:'🚌',n:'รถทัวร์',d:'หมอชิต → แม่โจ้ ~9.5 ชม.',c:380}],lat:18.8830,lng:99.0002},
+  {id:29,name:'มหาวิทยาลัยมหาสารคาม',abbr:'มมส. (MSU)',icon:'📝',type:'province',province:'มหาสารคาม',km:470,carMin:330,transport:[{i:'🚌',n:'รถทัวร์',d:'หมอชิต → มหาสารคาม ~6.5 ชม.',c:260},{i:'🚗',n:'รถยนต์',d:'~5.5 ชม.',c:480}],lat:16.1867,lng:103.3000},
+  {id:31,name:'มหาวิทยาลัยแม่ฟ้าหลวง',abbr:'มฟล. (MFU)',icon:'🌸',type:'province',province:'เชียงราย',km:820,carMin:570,transport:[{i:'✈️',n:'เครื่องบิน',d:'สุวรรณภูมิ → เชียงราย ~1.5 ชม.',c:1100},{i:'🚌',n:'รถทัวร์',d:'หมอชิต → เชียงราย ~11 ชม.',c:400},{i:'🚂',n:'รถไฟ+ต่อรถ',d:'ถึงเชียงใหม่ + รถ 3 ชม.',c:250}],lat:20.0422,lng:99.8986},
+  {id:32,name:'มหาวิทยาลัยพะเยา',abbr:'มพ. (UP)',icon:'🏕️',type:'province',province:'พะเยา',km:760,carMin:530,transport:[{i:'✈️',n:'เครื่องบิน',d:'สุวรรณภูมิ → เชียงใหม่ + รถ 2 ชม.',c:1100},{i:'🚌',n:'รถทัวร์',d:'หมอชิต → พะเยา ~10 ชม.',c:380},{i:'🚗',n:'รถยนต์',d:'~8.5 ชม. ทางพหลโยธิน',c:750}],lat:19.0278,lng:99.8948},
+  {id:38,name:'สจล. วิทยาเขตชุมพร',abbr:'KMITL ชุมพร',icon:'🐟',type:'province',province:'ชุมพร',km:490,carMin:330,transport:[{i:'🚂',n:'รถไฟ',d:'หัวลำโพง → ชุมพร ~7 ชม.',c:130},{i:'🚌',n:'รถทัวร์',d:'สายใต้ → ชุมพร ~6.5 ชม.',c:250},{i:'🚗',n:'รถยนต์',d:'~5.5 ชม. ทางเพชรเกษม',c:480}],lat:10.4930,lng:99.1800},
+];
+
+let currentFilter='all';
+let leafMap=null,distChart=null,timeChart=null;
+
+function getFiltered(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  let list=UNIS.filter(u=>{
+    const mt=currentFilter==='all'||u.type===currentFilter;
+    const ms=!q||u.name.toLowerCase().includes(q)||u.abbr.toLowerCase().includes(q)||u.province.toLowerCase().includes(q);
+    return mt&&ms;
+  });
+  const s=document.getElementById('sortSelect').value;
+  list.sort((a,b)=>{
+    if(s==='distance')return a.km-b.km;
+    if(s==='time')return a.carMin-b.carMin;
+    if(s==='cost')return minCost(a)-minCost(b);
+    if(s==='name')return a.name.localeCompare(b.name,'th');
+    return 0;
+  });
+  return list;
+}
+
+function minCost(u){return Math.min(...u.transport.map(t=>t.c));}
+function badgeCls(t){return t==='state'?'b-state':t==='private'?'b-private':'b-province';}
+function badgeLbl(t){return t==='state'?'🏛️ รัฐ':t==='private'?'🏢 เอกชน':'🌏 ต่างจังหวัด';}
+function fmtTime(m){return m<60?m+' น.':Math.floor(m/60)+' ชม.'+(m%60?' '+(m%60)+' น.':'');}
+function tcls(n){
+  if(n.includes('BTS')||n.includes('MRT')||n.includes('เครื่องบิน'))return 't-metro';
+  if(n.includes('รถไฟ')||n.includes('Rail'))return 't-train';
+  if(n.includes('รถยนต์'))return 't-car';
+  return 't-bus';
+}
+
+function renderCards(){
+  const list=getFiltered();
+  const grid=document.getElementById('cardsGrid');
+  const empty=document.getElementById('emptyState');
+  document.getElementById('resultCount').textContent='พบ '+list.length+' แห่ง';
+  document.getElementById('totalCount').textContent=list.length+' แห่ง';
+  if(!list.length){grid.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  grid.innerHTML=list.map(u=>`
+    <div class="uni-card" onclick="openModal(${u.id})" role="button" aria-label="${u.name}">
+      <div class="card-hdr">
+        <div class="card-icon">${u.icon}</div>
+        <div class="card-title">
+          <div class="card-name">${u.name}</div>
+          <div class="card-abbr">${u.abbr} · ${u.province}</div>
+        </div>
+        <div class="badge ${badgeCls(u.type)}">${badgeLbl(u.type)}</div>
+      </div>
+      <div class="card-divider"></div>
+      <div class="card-stats">
+        <div class="s-item"><div class="s-val">${u.km}</div><div class="s-lbl">กิโลเมตร</div></div>
+        <div class="s-item"><div class="s-val">${fmtTime(u.carMin)}</div><div class="s-lbl">รถยนต์</div></div>
+        <div class="s-item"><div class="s-val">${minCost(u)}฿</div><div class="s-lbl">เริ่มต้น</div></div>
+      </div>
+      <div class="card-trans">
+        ${u.transport.map(t=>`<span class="ttag ${tcls(t.n)}">${t.i} ${t.n.split('+')[0].split('/')[0]}</span>`).join('')}
+      </div>
+    </div>`).join('');
+  renderTable(list);
+}
+
+function renderTable(list){
+  if(!list)list=getFiltered();
+  document.getElementById('tableBody').innerHTML=list.map((u,i)=>`
+    <tr onclick="openModal(${u.id})">
+      <td><span class="rank-no ${i===0?'rk1':i===1?'rk2':i===2?'rk3':''}">${i+1}</span></td>
+      <td class="td-name">${u.icon} ${u.name}</td>
+      <td><span class="badge ${badgeCls(u.type)}" style="font-size:10px;padding:2px 7px;">${badgeLbl(u.type)}</span></td>
+      <td class="td-km">${u.km} กม.</td>
+      <td class="td-time">${fmtTime(u.carMin)}</td>
+      <td class="td-cost">${minCost(u)} ฿</td>
+      <td style="font-size:11px;color:var(--text-muted)">${u.province}</td>
+    </tr>`).join('');
+}
+
+function renderCharts(){
+  const list=getFiltered().slice(0,25);
+  const labels=list.map(u=>u.abbr.split('(')[0].trim().substring(0,12));
+  const colors=list.map(u=>u.type==='state'?'#2563EB':u.type==='private'?'#DB2777':'#16A34A');
+  const isMobile=window.innerWidth<=480;
+  const barH=isMobile?320:400;
+
+  if(distChart)distChart.destroy();
+  if(timeChart)timeChart.destroy();
+
+  const baseOpts={
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>[list[i[0].dataIndex].name]}}},
+    scales:{
+      x:{ticks:{font:{family:'Sarabun',size:isMobile?9:11},maxRotation:55,minRotation:45}},
+      y:{ticks:{font:{family:'Sarabun',size:isMobile?10:12}}}
+    }
+  };
+
+  document.getElementById('distanceChart').parentElement.style.height=barH+'px';
+  document.getElementById('timeChart').parentElement.style.height=barH+'px';
+
+  distChart=new Chart(document.getElementById('distanceChart').getContext('2d'),{
+    type:'bar',data:{labels,datasets:[{data:list.map(u=>u.km),backgroundColor:colors,borderRadius:4,borderSkipped:false}]},
+    options:{...baseOpts,scales:{...baseOpts.scales,y:{...baseOpts.scales.y,title:{display:true,text:'กม.',font:{family:'Sarabun',size:11}}}}}
+  });
+  timeChart=new Chart(document.getElementById('timeChart').getContext('2d'),{
+    type:'bar',data:{labels,datasets:[{data:list.map(u=>u.carMin),backgroundColor:colors.map(c=>c+'BB'),borderRadius:4,borderSkipped:false}]},
+    options:{...baseOpts,plugins:{...baseOpts.plugins,tooltip:{callbacks:{title:i=>[list[i[0].dataIndex].name],label:i=>{const m=i.raw;return m<60?m+' นาที':Math.floor(m/60)+' ชม. '+(m%60||'')}}}},scales:{...baseOpts.scales,y:{...baseOpts.scales.y,title:{display:true,text:'นาที',font:{family:'Sarabun',size:11}}}}}
+  });
+}
+
+function initMap(){
+  leafMap=L.map('map').setView([13.8,100.6],7);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors',maxZoom:18}).addTo(leafMap);
+  const mk=(color,size)=>L.divIcon({html:`<div style="background:${color};width:${size}px;height:${size}px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.3);"></div>`,iconSize:[size,size],iconAnchor:[size/2,size/2]});
+  L.marker([SCHOOL.lat,SCHOOL.lng],{icon:mk('#FF6B35',16)}).addTo(leafMap).bindPopup(`<b style="font-family:Sarabun">📌 ${SCHOOL.name}</b><br><small>จุดเริ่มต้น</small>`);
+  UNIS.forEach(u=>{
+    const color=u.type==='state'?'#2563EB':u.type==='private'?'#DB2777':'#16A34A';
+    L.marker([u.lat,u.lng],{icon:mk(color,11)}).addTo(leafMap).bindPopup(`
+      <div style="font-family:Sarabun;min-width:170px;">
+        <b style="font-size:13px">${u.icon} ${u.name}</b><br>
+        <span style="color:#7A4520;font-size:11px">${u.province}</span>
+        <hr style="margin:5px 0;border-color:#FFD4B8">
+        <span style="color:#FF6B35;font-weight:700">📏 ${u.km} กม.</span> &nbsp;
+        <span style="font-size:11px;color:#555">⏱️ ${fmtTime(u.carMin)}</span><br>
+        <span style="color:#166534;font-weight:700">💰 เริ่ม ${minCost(u)} บาท</span>
+      </div>`);
+  });
+}
+
+function openModal(id){
+  const u=UNIS.find(x=>x.id===id);if(!u)return;
+  document.getElementById('mIcon').textContent=u.icon;
+  document.getElementById('mName').textContent=u.name;
+  document.getElementById('mAbbr').textContent=u.abbr+' · '+u.province+' · '+badgeLbl(u.type);
+  document.getElementById('mKm').textContent=u.km;
+  document.getElementById('mTime').textContent=fmtTime(u.carMin);
+  document.getElementById('mCost').textContent=minCost(u);
+  document.getElementById('mTrans').innerHTML=u.transport.map(t=>`
+    <div class="trans-row">
+      <div class="tr-icon">${t.i}</div>
+      <div class="tr-info"><div class="tr-name">${t.n}</div><div class="tr-detail">${t.d}</div></div>
+      <div class="tr-cost">${t.c} ฿</div>
+    </div>`).join('');
+  document.getElementById('mGmaps').onclick=()=>window.open(`https://www.google.com/maps/dir/${SCHOOL.lat},${SCHOOL.lng}/${u.lat},${u.lng}`,'_blank');
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function closeModalOuter(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='map'){if(!leafMap)setTimeout(initMap,80);else setTimeout(()=>leafMap.invalidateSize(),80);}
+  if(name==='chart')setTimeout(renderCharts,80);
+  if(name==='table')renderTable();
+}
+
+function setFilter(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+function filterUnis(){renderCards();}
+
+// keyboard close
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+renderCards();
+</script>
+</body>
+</html>
