@@ -65,6 +65,10 @@ window.ACTIVITIES = [
     title: "รู้จักมหาวิทยาลัยไทย",
     desc: "ทำความรู้จักมหาวิทยาลัยในประเทศไทย" },
 
+   { grade: 6, category: "TCAS", file: "tcas-reading-lesson.html",
+    title: "อ่านประกาศ TCAS ให้เป็น",
+    desc: "อ่านประกาศ TCAS ให้เป็นก่อนสมัครจริง" },
+
    { grade: 6, category: "TCAS", file: "tcas70_lesson.html",
   title: "รู้จัก TCAS70",
   desc: "ทำความเข้าใจระบบ TCAS แบบละเอียด" },
