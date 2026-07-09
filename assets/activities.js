@@ -73,6 +73,10 @@ window.ACTIVITIES = [
     title: "จากพูลเจริญถึง....",
     desc: "การเดินทางจากพูลเจริญถึงมหาวิทยาลัยต่างๆ" },
 
+   { grade: 6, category: "TCAS", file: "tgat-prep-app.html",
+    title: "ทำข้อสอบเวลาจริง",
+    desc: "ฝึกทำข้อสอบแบบจับเวลาเสมือนจริง" },
+
    { grade: 6, category: "TCAS", file: "tcas70_lesson.html",
   title: "รู้จัก TCAS70",
   desc: "ทำความเข้าใจระบบ TCAS แบบละเอียด" },
