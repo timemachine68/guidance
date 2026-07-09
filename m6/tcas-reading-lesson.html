@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>อ่านประกาศ TCAS ให้เป็น — บทเรียนแนะแนว ม.6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #FBF7EF;
+    --paper-2: #FFFFFF;
+    --ink: #243042;
+    --ink-soft: #586277;
+    --line: #E6DFD2;
+    --teal: #1F7A8C;
+    --teal-deep: #155563;
+    --hl-yellow: #FFE17A;
+    --hl-pink: #FFB3C6;
+    --hl-green: #B8E6B0;
+    --hl-blue: #A9D6EB;
+    --hl-purple: #D6C2F0;
+    --hl-orange: #FFD0A1;
+    --shadow: 0 10px 30px rgba(36,48,66,.10);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: 'Sarabun', sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(900px 500px at 80% -10%, #FFF6E6 0%, transparent 60%),
+      radial-gradient(700px 500px at -10% 20%, #ECF7F8 0%, transparent 55%),
+      var(--paper);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 22px; }
+
+  h1, h2, h3, .display { font-family: 'Mitr', sans-serif; font-weight: 500; letter-spacing: .2px; }
+
+  .eyebrow {
+    font-family: 'Mitr', sans-serif;
+    font-size: .82rem; font-weight: 500;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--teal);
+  }
+
+  /* ---------- HERO ---------- */
+  header.hero { padding: 64px 0 30px; }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 36px; align-items: center; }
+  .hero h1 { font-size: 2.5rem; line-height: 1.25; margin: 12px 0 16px; }
+  .hero h1 .mark {
+    background: linear-gradient(transparent 58%, var(--hl-yellow) 58%);
+    padding: 0 4px;
+  }
+  .hero p.lead { font-size: 1.12rem; color: var(--ink-soft); margin: 0 0 22px; max-width: 46ch; }
+  .meta-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    font-size: .85rem; background: var(--paper-2); border: 1px solid var(--line);
+    padding: 6px 13px; border-radius: 999px; color: var(--ink-soft);
+  }
+
+  /* faux document card in hero */
+  .doc-card {
+    background: var(--paper-2); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 22px; transform: rotate(-1.4deg); position: relative;
+  }
+  .doc-card::before {
+    content: "ประกาศ"; position: absolute; top: -13px; left: 20px;
+    background: var(--teal); color: #fff; font-family: 'Mitr',sans-serif;
+    font-size: .75rem; padding: 3px 12px; border-radius: 999px; letter-spacing: 1px;
+  }
+  .doc-line { height: 9px; border-radius: 5px; background: #EEE7DA; margin: 9px 0; }
+  .doc-line.s { width: 55%; }
+  .doc-line.m { width: 80%; }
+  .doc-line.hl-y { background: var(--hl-yellow); }
+  .doc-line.hl-p { background: var(--hl-pink); }
+  .doc-line.hl-g { background: var(--hl-green); }
+  .doc-title { font-family:'Mitr',sans-serif; font-size:.95rem; text-align:center; color:var(--ink); margin-bottom:14px; }
+
+  /* ---------- OBJECTIVES STRIP ---------- */
+  .objectives {
+    margin: 18px 0 10px; background: var(--ink); color: #F4EEE2;
+    border-radius: var(--radius); padding: 24px 26px;
+  }
+  .objectives h3 { color:#fff; margin: 0 0 14px; font-size: 1.05rem; }
+  .obj-grid { display:grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .obj { font-size: .96rem; }
+  .obj .n { font-family:'Mitr',sans-serif; color: var(--hl-yellow); font-size:1.4rem; display:block; }
+  @media(max-width:760px){ .obj-grid{ grid-template-columns:1fr; } }
+
+  /* ---------- SECTION SHELL ---------- */
+  section { padding: 46px 0; }
+  .sec-head { margin-bottom: 26px; }
+  .sec-head h2 { font-size: 1.7rem; margin: 6px 0 6px; }
+  .sec-head p { color: var(--ink-soft); margin: 0; max-width: 60ch; }
+  .sec-num {
+    font-family:'Mitr',sans-serif; font-size:.8rem; color:var(--teal);
+    border:1px solid var(--teal); border-radius:999px; padding:2px 12px; display:inline-block;
+  }
+
+  /* ---------- ROUNDS ---------- */
+  .rounds { display:grid; grid-template-columns: repeat(2,1fr); gap:16px; }
+  @media(max-width:760px){ .rounds{ grid-template-columns:1fr; } }
+  .round {
+    background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px; cursor:pointer; transition:.18s; position:relative; overflow:hidden;
+  }
+  .round:hover { transform:translateY(-3px); box-shadow:var(--shadow); }
+  .round .tag {
+    font-family:'Mitr',sans-serif; font-size:.78rem; padding:3px 11px; border-radius:999px; color:var(--ink);
+  }
+  .round h3 { margin:12px 0 4px; font-size:1.18rem; }
+  .round .sub { color:var(--ink-soft); font-size:.92rem; margin:0 0 12px; }
+  .round .detail { font-size:.92rem; color:var(--ink-soft); border-top:1px dashed var(--line); padding-top:12px; display:none; }
+  .round.open .detail { display:block; animation:fade .25s ease; }
+  .round .more { font-family:'Mitr',sans-serif; font-size:.82rem; color:var(--teal); margin-top:10px; }
+  .round.open .more::after { content:" ▲"; }
+  .round .more::after { content:" ▼"; }
+  .round.r1 { border-top:4px solid var(--hl-pink); }
+  .round.r2 { border-top:4px solid var(--hl-green); }
+  .round.r3 { border-top:4px solid var(--hl-blue); }
+  .round.r4 { border-top:4px solid var(--hl-orange); }
+  .r1 .tag{ background:var(--hl-pink);} .r2 .tag{ background:var(--hl-green);}
+  .r3 .tag{ background:var(--hl-blue);} .r4 .tag{ background:var(--hl-orange);}
+  @keyframes fade{ from{opacity:0; transform:translateY(-4px);} to{opacity:1;} }
+
+  .callout {
+    margin-top:18px; background:#ECF7F8; border:1px solid #CDE7EA; border-left:5px solid var(--teal);
+    border-radius:12px; padding:14px 16px; font-size:.96rem;
+  }
+  .callout b { color:var(--teal-deep); }
+
+  /* ---------- HIGHLIGHTER DOC (signature) ---------- */
+  .decoder { display:grid; grid-template-columns: 1.05fr .95fr; gap:24px; align-items:start; }
+  @media(max-width:820px){ .decoder{ grid-template-columns:1fr; } }
+  .sheet {
+    background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:26px 24px; position:relative;
+  }
+  .sheet .corner { position:absolute; top:14px; right:16px; font-size:.72rem; color:#B9B0A0; font-family:'Mitr',sans-serif; }
+  .sheet h4 { font-family:'Mitr',sans-serif; text-align:center; font-size:1rem; margin:0 0 4px; }
+  .sheet .who { text-align:center; color:var(--ink-soft); font-size:.84rem; margin-bottom:18px; }
+  .clause { padding:7px 8px; border-radius:8px; margin:3px 0; cursor:pointer; transition:.15s; font-size:.95rem; }
+  .clause:hover { background:#F3EEE3; }
+  .clause.active { font-weight:600; }
+  .clause[data-k="1"].active{ background:var(--hl-yellow);} 
+  .clause[data-k="2"].active{ background:var(--hl-pink);}
+  .clause[data-k="3"].active{ background:var(--hl-green);}
+  .clause[data-k="4"].active{ background:var(--hl-blue);}
+  .clause[data-k="5"].active{ background:var(--hl-purple);}
+  .clause[data-k="6"].active{ background:var(--hl-orange);}
+
+  .legend { display:flex; flex-direction:column; gap:10px; }
+  .key {
+    display:flex; gap:13px; align-items:flex-start; background:var(--paper-2);
+    border:1px solid var(--line); border-radius:12px; padding:13px 15px; cursor:pointer; transition:.15s;
+  }
+  .key:hover { transform:translateX(3px); }
+  .key.lit { box-shadow:var(--shadow); }
+  .swatch { width:26px; height:26px; border-radius:7px; flex:0 0 26px; margin-top:2px; }
+  .key h5 { font-family:'Mitr',sans-serif; margin:0 0 2px; font-size:.96rem; }
+  .key p { margin:0; font-size:.86rem; color:var(--ink-soft); }
+  .k1 .swatch{background:var(--hl-yellow);} .k2 .swatch{background:var(--hl-pink);}
+  .k3 .swatch{background:var(--hl-green);} .k4 .swatch{background:var(--hl-blue);}
+  .k5 .swatch{background:var(--hl-purple);} .k6 .swatch{background:var(--hl-orange);}
+
+  /* ---------- COMPARE ---------- */
+  .toggle { display:inline-flex; background:var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:4px; margin-bottom:18px; }
+  .toggle button {
+    font-family:'Mitr',sans-serif; border:0; background:transparent; padding:8px 18px; border-radius:999px;
+    cursor:pointer; color:var(--ink-soft); font-size:.92rem; transition:.18s;
+  }
+  .toggle button.on { background:var(--teal); color:#fff; }
+
+  .ctable { width:100%; border-collapse:collapse; background:var(--paper-2); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); }
+  .ctable th, .ctable td { padding:13px 15px; text-align:left; border-bottom:1px solid var(--line); font-size:.95rem; vertical-align:top; }
+  .ctable thead th { font-family:'Mitr',sans-serif; font-weight:500; background:var(--ink); color:#fff; }
+  .ctable thead th:first-child { background:var(--teal-deep); }
+  .ctable tbody td:first-child { font-weight:600; color:var(--ink); background:#FAF5EC; width:30%; }
+  .ctable tr:last-child td { border-bottom:0; }
+  .badge { font-size:.78rem; padding:2px 9px; border-radius:999px; font-family:'Mitr',sans-serif; }
+  .b-pink{ background:var(--hl-pink);} .b-blue{ background:var(--hl-blue);}
+  .hidecol { display:none; }
+  .local-note { font-size:.84rem; color:var(--teal-deep); display:block; margin-top:4px; }
+
+  /* ---------- QUIZ ---------- */
+  .quiz { background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px; }
+  .q { margin-bottom:22px; padding-bottom:22px; border-bottom:1px dashed var(--line); }
+  .q:last-of-type { border-bottom:0; margin-bottom:10px; }
+  .q .scenario { font-size:.86rem; color:var(--teal-deep); background:#ECF7F8; border-radius:8px; padding:6px 11px; display:inline-block; margin-bottom:8px; }
+  .q h4 { font-family:'Sarabun',sans-serif; font-weight:600; font-size:1.05rem; margin:4px 0 14px; }
+  .opt {
+    display:block; width:100%; text-align:left; background:var(--paper); border:1.5px solid var(--line);
+    border-radius:12px; padding:12px 15px; margin:8px 0; cursor:pointer; font-family:'Sarabun',sans-serif;
+    font-size:.97rem; color:var(--ink); transition:.15s;
+  }
+  .opt:hover:not(:disabled) { border-color:var(--teal); }
+  .opt.correct { background:#E5F6E5; border-color:#7CC47C; }
+  .opt.wrong { background:#FBE7E7; border-color:#E59A9A; }
+  .opt:disabled { cursor:default; }
+  .feedback { font-size:.9rem; margin-top:10px; padding:10px 13px; border-radius:10px; display:none; }
+  .feedback.show { display:block; }
+  .feedback.ok { background:#E5F6E5; color:#226022; }
+  .feedback.no { background:#FBE7E7; color:#8A2D2D; }
+
+  .scorebar { margin-top:6px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .scorebox {
+    font-family:'Mitr',sans-serif; background:var(--ink); color:#fff; border-radius:12px;
+    padding:12px 20px; font-size:1.05rem;
+  }
+  .scorebox b { color:var(--hl-yellow); }
+  .btn {
+    font-family:'Mitr',sans-serif; background:var(--teal); color:#fff; border:0; border-radius:999px;
+    padding:11px 22px; cursor:pointer; font-size:.95rem; transition:.18s;
+  }
+  .btn:hover { background:var(--teal-deep); }
+  .btn.ghost { background:transparent; color:var(--teal); border:1.5px solid var(--teal); }
+
+  /* ---------- WEIGHT READER ---------- */
+  .wtypes { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  @media(max-width:720px){ .wtypes{ grid-template-columns:1fr; } }
+  .wtype { background:var(--paper-2); border:1px solid var(--line); border-radius:12px; padding:16px 18px; }
+  .wt-tag { font-family:'Mitr',sans-serif; font-size:.78rem; padding:3px 12px; border-radius:999px; color:var(--ink); display:inline-block; }
+  .wtype h5 { font-family:'Mitr',sans-serif; margin:10px 0 4px; font-size:1rem; }
+  .wtype p { margin:0; font-size:.86rem; color:var(--ink-soft); }
+
+  .wpick { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+  .wpick button {
+    font-family:'Mitr',sans-serif; border:1px solid var(--line); background:var(--paper-2);
+    padding:9px 16px; border-radius:999px; cursor:pointer; font-size:.9rem; color:var(--ink-soft); transition:.18s;
+  }
+  .wpick button.on { background:var(--teal); color:#fff; border-color:var(--teal); }
+
+  .wcard { background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:24px; }
+  .wcard h3 { margin:0 0 2px; font-size:1.2rem; }
+  .wcard .stream { color:var(--ink-soft); font-size:.9rem; margin:0 0 18px; }
+  .wbar { display:flex; height:44px; border-radius:10px; overflow:hidden; margin-bottom:20px; border:1px solid var(--line); }
+  .wseg { display:flex; align-items:center; justify-content:center; font-family:'Mitr',sans-serif; font-size:.82rem; color:var(--ink); white-space:nowrap; overflow:hidden; transition:flex-basis .5s ease; }
+  .wlist { display:grid; gap:11px; }
+  .wrow { display:grid; grid-template-columns:170px 1fr 50px; align-items:center; gap:12px; font-size:.93rem; }
+  .wrow .lab { display:flex; align-items:center; gap:9px; }
+  .wrow .dot { width:14px; height:14px; border-radius:4px; flex:0 0 14px; }
+  .wtrack { background:#F0EADF; border-radius:6px; height:12px; overflow:hidden; }
+  .wfill { height:100%; border-radius:6px; transition:width .5s ease; }
+  .wrow .pct { text-align:right; font-family:'Mitr',sans-serif; }
+  .wtake { margin-top:18px; background:#FAF5EC; border-left:5px solid var(--teal); border-radius:10px; padding:12px 15px; font-size:.93rem; }
+  .wtake b { color:var(--teal-deep); }
+  @media(max-width:560px){ .wrow{ grid-template-columns:120px 1fr 44px; font-size:.85rem; } }
+
+  /* ---------- CHECKLIST ---------- */
+  .check-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+  @media(max-width:680px){ .check-grid{ grid-template-columns:1fr; } }
+  .citem {
+    display:flex; gap:12px; align-items:flex-start; background:var(--paper-2); border:1px solid var(--line);
+    border-radius:12px; padding:14px 16px; cursor:pointer; transition:.15s;
+  }
+  .citem:hover { box-shadow:var(--shadow); }
+  .box { width:24px; height:24px; border:2px solid var(--teal); border-radius:7px; flex:0 0 24px; margin-top:2px; position:relative; transition:.15s; }
+  .citem.done .box { background:var(--teal); }
+  .citem.done .box::after { content:"✓"; color:#fff; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:700; }
+  .citem.done .ctext { text-decoration:line-through; color:var(--ink-soft); }
+  .ctext { font-size:.96rem; }
+  .ctext small { display:block; color:var(--ink-soft); font-size:.82rem; }
+
+  footer { background:var(--ink); color:#CDD3DE; padding:30px 0; margin-top:40px; }
+  footer .wrap { display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; align-items:center; }
+  footer b { color:#fff; font-family:'Mitr',sans-serif; }
+
+  @media(max-width:760px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .doc-card{ transform:none; }
+    .hero h1{ font-size:2rem; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    * { animation:none !important; transition:none !important; scroll-behavior:auto; }
+  }
+</style>
+</head>
+<body>
+<a href="index.html" style="position:fixed;top:12px;left:12px;z-index:99999;display:inline-flex;align-items:center;gap:6px;background:#fff;color:#1E1B4B;font-family:'Prompt',system-ui,sans-serif;font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;box-shadow:0 6px 18px -6px rgba(30,27,75,.35);text-decoration:none;">← หน้าหลัก</a>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">บทเรียนแนะแนว · ม.6 · TCAS 69</span>
+      <h1>อ่านประกาศ TCAS <span class="mark">ให้เป็น</span><br/>ก่อนจะสมัครจริง</h1>
+      <p class="lead">ประกาศรับสมัครยาวเป็นสิบหน้า ภาษาราชการอ่านยาก แต่จริง ๆ มีแค่ไม่กี่จุดที่ต้องดู บทเรียนนี้สอนให้ "หยิบปากกาไฮไลต์" จับใจความสำคัญเป็น โดยใช้ประกาศจริง 2 ฉบับมาเทียบกัน</p>
+      <div class="meta-pills">
+        <span class="pill">⏱️ ใช้เวลา ~40 นาที</span>
+        <span class="pill">📄 ประกาศจริง 2 ฉบับ</span>
+        <span class="pill">✏️ มีแบบฝึก + เช็กลิสต์</span>
+      </div>
+    </div>
+    <div class="doc-card" aria-hidden="true">
+      <div class="doc-title">ประกาศ มหาวิทยาลัย___<br/>การรับสมัคร TCAS รอบ __</div>
+      <div class="doc-line m"></div>
+      <div class="doc-line hl-y s"></div>
+      <div class="doc-line"></div>
+      <div class="doc-line hl-p m"></div>
+      <div class="doc-line s"></div>
+      <div class="doc-line hl-g"></div>
+      <div class="doc-line m"></div>
+      <div class="doc-line s"></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="objectives">
+      <h3>จบบทเรียนนี้ นักเรียนจะ…</h3>
+      <div class="obj-grid">
+        <div class="obj"><span class="n">01</span> รู้ว่า TCAS มี 4 รอบ แต่ละรอบใช้เกณฑ์ต่างกันอย่างไร</div>
+        <div class="obj"><span class="n">02</span> อ่านประกาศเป็น จับ 6 จุดสำคัญได้ภายในไม่กี่นาที</div>
+        <div class="obj"><span class="n">03</span> เทียบประกาศ 2 ฉบับ แล้วตัดสินใจได้ว่าตัวเองสมัครรอบไหนได้</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ SECTION 1: ROUNDS ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">ส่วนที่ 1</span>
+      <h2>TCAS มี 4 รอบ — แต่ละรอบไม่เหมือนกัน</h2>
+      <p>"รอบ" ไม่ใช่แค่ลำดับเวลา แต่บอก <b>วิธีคัดเลือก</b> ที่ต่างกัน ดังนั้นสิ่งแรกที่ต้องดูในประกาศคือ มันคือรอบอะไร แล้วใช้อะไรเป็นเกณฑ์ — แตะการ์ดเพื่อดูรายละเอียด</p>
+    </div>
+
+    <div class="rounds">
+      <div class="round r1" tabindex="0">
+        <span class="tag">รอบ 1</span>
+        <h3>Portfolio (แฟ้มสะสมผลงาน)</h3>
+        <p class="sub">วัดที่ผลงานและความสามารถ ไม่ต้องใช้คะแนนสอบกลาง</p>
+        <div class="detail">
+          ใช้ <b>แฟ้มสะสมผลงาน + เกรด/เปอร์เซ็นไทล์</b> มักมีสอบสัมภาษณ์ เหมาะกับคนที่มีผลงาน รางวัล หรือความถนัดชัดเจน บางที่เป็นโครงการพิเศษ/โควตาตามพื้นที่ → <b>ตัวอย่าง: เพชรตะวันออก ม.บูรพา</b>
+        </div>
+        <div class="more">ดูเพิ่ม</div>
+      </div>
+
+      <div class="round r2" tabindex="0">
+        <span class="tag">รอบ 2</span>
+        <h3>Quota (โควตา)</h3>
+        <p class="sub">รับเฉพาะกลุ่ม เช่น พื้นที่ จังหวัด หรือโครงการ</p>
+        <div class="detail">
+          กันที่นั่งให้นักเรียนกลุ่มเฉพาะ เช่น เด็กในเขตพื้นที่บริการ โควตาจังหวัด หรือความสามารถพิเศษ มักใช้คะแนนสอบกลาง (TGAT/TPAT/A-Level) ร่วมกับเกณฑ์ของโครงการ
+        </div>
+        <div class="more">ดูเพิ่ม</div>
+      </div>
+
+      <div class="round r3" tabindex="0">
+        <span class="tag">รอบ 3</span>
+        <h3>Admission</h3>
+        <p class="sub">สมัครรวมศูนย์ผ่าน mytcas เลือกได้สูงสุด 10 อันดับ</p>
+        <div class="detail">
+          ใช้ <b>คะแนนสอบกลาง</b> เป็นหลัก (TGAT/TPAT/A-Level) ตามองค์ประกอบและน้ำหนักที่แต่ละสาขากำหนด สมัครพร้อมกันทั้งประเทศ เลือกได้ถึง 10 อันดับแบบเรียงลำดับ ส่วนใหญ่ <b>ไม่มีสัมภาษณ์</b> → <b>ตัวอย่าง: จุฬาฯ รอบ 3</b>
+        </div>
+        <div class="more">ดูเพิ่ม</div>
+      </div>
+
+      <div class="round r4" tabindex="0">
+        <span class="tag">รอบ 4</span>
+        <h3>Direct Admission (รับตรงอิสระ)</h3>
+        <p class="sub">มหาวิทยาลัยเปิดรับเองรอบสุดท้าย</p>
+        <div class="detail">
+          รอบเก็บตก มหาวิทยาลัยกำหนดเกณฑ์เอง อาจใช้คะแนนสอบ เกรด หรือสัมภาษณ์ ที่นั่งเหลือไม่มาก แต่เป็นโอกาสสำหรับคนที่ยังไม่มีที่เรียน
+        </div>
+        <div class="more">ดูเพิ่ม</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      💡 <b>กฎทอง:</b> ก่อนอ่านประกาศใด ๆ ให้ถามตัวเองว่า "นี่รอบอะไร และใช้อะไรเป็นเกณฑ์?" ถ้าตอบได้ ครึ่งหนึ่งของประกาศก็เข้าใจแล้ว
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION 2: DECODER ============ -->
+<section style="background:linear-gradient(#FFFDF8, #FBF7EF);">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">ส่วนที่ 2</span>
+      <h2>ผ่าประกาศ: 6 จุดที่ต้องไฮไลต์เสมอ</h2>
+      <p>ประกาศจะยาวแค่ไหน ก็วนอยู่ที่ 6 เรื่องนี้ ลองแตะที่สีปากกาด้านขวา แล้วดูว่ามันไปไฮไลต์ตรงไหนในเอกสารด้านซ้าย</p>
+    </div>
+
+    <div class="decoder">
+      <div class="sheet">
+        <span class="corner">— สำเนา —</span>
+        <h4>ประกาศมหาวิทยาลัย___</h4>
+        <div class="who">การรับสมัครคัดเลือกเข้าศึกษา ระดับปริญญาตรี</div>
+
+        <div class="clause" data-k="1">1. คุณสมบัติผู้สมัคร: GPAX 5 ภาคเรียน ≥ 3.00 และมีค่าเปอร์เซ็นไทล์ ≥ 85 / อยู่ในเขตพื้นที่ที่กำหนด</div>
+        <div class="clause" data-k="2">2. คณะ สาขาวิชา และจำนวนรับ: เภสัชศาสตร์ รับ 5 คน · พยาบาลศาสตร์ รับ 37 คน · ฯลฯ</div>
+        <div class="clause" data-k="3">3. องค์ประกอบและเกณฑ์การคัดเลือก: พิจารณาจากเปอร์เซ็นไทล์ / คะแนน TGAT TPAT A-Level ตามน้ำหนัก แล้วสอบสัมภาษณ์</div>
+        <div class="clause" data-k="4">4. ปฏิทิน: รับสมัคร 18 พ.ย.–11 ธ.ค. · ประกาศสิทธิ์สัมภาษณ์ 20 ม.ค. · ยืนยันสิทธิ์ 6–7 ก.พ.</div>
+        <div class="clause" data-k="5">5. ค่าธรรมเนียมการสมัคร: 500 บาท ชำระผ่านธนาคาร/เคาน์เตอร์เซอร์วิส/QR (ไม่คืนเงินทุกกรณี)</div>
+        <div class="clause" data-k="6">6. เอกสารที่ต้องเตรียม: ใบ ปพ. (5 ภาคเรียน) · ใบรับรองเปอร์เซ็นไทล์ · บัตรประชาชน · ใบเปลี่ยนชื่อ (ถ้ามี)</div>
+      </div>
+
+      <div class="legend">
+        <div class="key k1 lit" data-k="1">
+          <span class="swatch"></span>
+          <div><h5>1 · คุณสมบัติ</h5><p>เกรด เปอร์เซ็นไทล์ อายุ เพศ พื้นที่ — ถ้าไม่ผ่านข้อนี้ ที่เหลือไม่ต้องอ่านต่อ</p></div>
+        </div>
+        <div class="key k2" data-k="2">
+          <span class="swatch"></span>
+          <div><h5>2 · คณะ/สาขา/จำนวนรับ</h5><p>รับกี่คน ยิ่งน้อยยิ่งแข่งสูง ดูว่ามีสาขาที่เราอยากเข้าไหม</p></div>
+        </div>
+        <div class="key k3" data-k="3">
+          <span class="swatch"></span>
+          <div><h5>3 · เกณฑ์การคัดเลือก</h5><p>ใช้อะไรตัดสิน คะแนนอะไร น้ำหนักกี่ % มีสัมภาษณ์ไหม — หัวใจของประกาศ</p></div>
+        </div>
+        <div class="key k4" data-k="4">
+          <span class="swatch"></span>
+          <div><h5>4 · ปฏิทิน/วันสำคัญ</h5><p>วันสมัคร วันประกาศผล วันยืนยันสิทธิ์ — พลาดวันเดียวคือหมดสิทธิ์</p></div>
+        </div>
+        <div class="key k5" data-k="5">
+          <span class="swatch"></span>
+          <div><h5>5 · ค่าสมัคร + วิธีจ่าย</h5><p>กี่บาท จ่ายช่องทางไหน ภายในเมื่อไหร่ ส่วนใหญ่ไม่คืนเงิน</p></div>
+        </div>
+        <div class="key k6" data-k="6">
+          <span class="swatch"></span>
+          <div><h5>6 · เอกสารที่ต้องใช้</h5><p>เตรียมล่วงหน้า โดยเฉพาะใบรับรองเปอร์เซ็นไทล์ที่ต้องขอจากโรงเรียน</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION 3: COMPARE ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">ส่วนที่ 3</span>
+      <h2>เทียบของจริง: เพชรตะวันออก vs จุฬาฯ รอบ 3</h2>
+      <p>ประกาศสองฉบับนี้คือคนละโลกกัน ฉบับหนึ่งวัดที่ "ผลการเรียน + พื้นที่" อีกฉบับวัดที่ "คะแนนสอบ" — เทียบทีละบรรทัดแล้วจะเห็นชัด</p>
+    </div>
+
+    <div class="toggle" role="tablist">
+      <button class="on" data-view="both">เทียบคู่</button>
+      <button data-view="buu">เฉพาะ เพชรตะวันออก</button>
+      <button data-view="cu">เฉพาะ จุฬาฯ รอบ 3</button>
+    </div>
+
+    <table class="ctable">
+      <thead>
+        <tr>
+          <th>หัวข้อ</th>
+          <th class="col-buu">เพชรตะวันออก (ม.บูรพา) <span class="badge b-pink">รอบ 1</span></th>
+          <th class="col-cu">จุฬาฯ <span class="badge b-blue">รอบ 3 Admission</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ประเภทการคัดเลือก</td>
+          <td class="col-buu">Portfolio / โควตาภาคตะวันออก รับเองโดยมหาวิทยาลัย</td>
+          <td class="col-cu">Admission สมัครรวมศูนย์ผ่านระบบ mytcas ของ ทปอ.</td>
+        </tr>
+        <tr>
+          <td>เกรดขั้นต่ำ (GPAX 5 ภาคเรียน)</td>
+          <td class="col-buu">≥ 3.00 (บางสาขาสูงกว่า เช่น เภสัชฯ 3.50, ครุฯ บางวิชา 3.40–3.50)</td>
+          <td class="col-cu">แล้วแต่คณะ เช่น วิศวะ 2.00 · อักษรฯ 2.75 · สถาปัตย์ฯ 3.00</td>
+        </tr>
+        <tr>
+          <td>ใช้ค่าเปอร์เซ็นไทล์ไหม</td>
+          <td class="col-buu"><b>ใช้</b> — ต้องมีเปอร์เซ็นไทล์ ≥ 85 และจัดอันดับจากสูงไปต่ำ</td>
+          <td class="col-cu">ไม่ใช้</td>
+        </tr>
+        <tr>
+          <td>ใช้คะแนนสอบกลาง</td>
+          <td class="col-buu">ไม่ใช้ TGAT/TPAT/A-Level เลย</td>
+          <td class="col-cu"><b>ใช้เป็นหลัก</b> — TGAT/TPAT/A-Level ตามน้ำหนักของแต่ละสาขา</td>
+        </tr>
+        <tr>
+          <td>เงื่อนไขพื้นที่</td>
+          <td class="col-buu">ต้องเรียน/มีภูมิลำเนาใน 12 จังหวัดภาคตะวันออก<span class="local-note">★ สมุทรปราการอยู่ใน 12 จังหวัดนี้ → นักเรียนของเราสมัครได้</span></td>
+          <td class="col-cu">รับทั่วประเทศ ไม่จำกัดพื้นที่</td>
+        </tr>
+        <tr>
+          <td>เลือกสมัครได้กี่อันดับ</td>
+          <td class="col-buu">1 อันดับเท่านั้น</td>
+          <td class="col-cu">สูงสุด 10 อันดับ แบบเรียงลำดับความชอบ</td>
+        </tr>
+        <tr>
+          <td>มีสอบสัมภาษณ์ไหม</td>
+          <td class="col-buu">มี (24–25 ม.ค. 2569)</td>
+          <td class="col-cu">ไม่มีการสอบสัมภาษณ์</td>
+        </tr>
+        <tr>
+          <td>ค่าสมัคร</td>
+          <td class="col-buu">500 บาท</td>
+          <td class="col-cu">เป็นไปตามที่ ทปอ. กำหนด</td>
+        </tr>
+        <tr>
+          <td>ช่วงรับสมัคร</td>
+          <td class="col-buu">18 พ.ย. – 11 ธ.ค. 2568</td>
+          <td class="col-cu">6 – 12 พ.ค. 2569</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      🔎 <b>หัวใจของรอบ 3 อยู่ที่ "น้ำหนักคะแนน":</b> ในตารางท้ายประกาศจุฬาฯ แต่ละสาขาบอกว่าใช้วิชาอะไรกี่ % รวมกันให้ครบ 100% นี่คือทักษะที่ยากที่สุดของการอ่านประกาศรอบ 3 — เรามาฝึกอ่านกันในส่วนถัดไป
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION 4: WEIGHT READER ============ -->
+<section style="background:linear-gradient(#FFFDF8, #FBF7EF);">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">ส่วนที่ 4</span>
+      <h2>อ่านตารางน้ำหนักคะแนน (รอบ 3)</h2>
+      <p>รอบ 3 ไม่ได้ใช้แค่ "สอบอะไร" แต่ใช้ "สอบวิชานั้นกี่เปอร์เซ็นต์" ตารางท้ายประกาศจึงสำคัญมาก ก่อนอ่านต้องรู้จักคะแนน 3 กลุ่มนี้ก่อน</p>
+    </div>
+
+    <div class="wtypes">
+      <div class="wtype">
+        <span class="wt-tag" style="background:var(--hl-blue)">TGAT</span>
+        <h5>ความถนัดทั่วไป</h5>
+        <p>การสื่อสารภาษาอังกฤษ การคิดเชิงตรรกะ สมรรถนะการทำงาน เกือบทุกสาขาใช้</p>
+      </div>
+      <div class="wtype">
+        <span class="wt-tag" style="background:var(--hl-purple)">TPAT</span>
+        <h5>ความถนัดเฉพาะด้าน</h5>
+        <p>TPAT1 กสพท · TPAT2 ศิลป์ · TPAT3 วิทย์–เทคโน–วิศวะ · TPAT4 สถาปัตย์ · TPAT5 ครู</p>
+      </div>
+      <div class="wtype">
+        <span class="wt-tag" style="background:var(--hl-yellow)">A-Level</span>
+        <h5>วิชาการรายวิชา</h5>
+        <p>คณิต1/2 · ฟิสิกส์ · เคมี · ชีวะ · ไทย · สังคม · อังกฤษ · ภาษาที่สาม ฯลฯ</p>
+      </div>
+    </div>
+
+    <p style="margin:22px 0 14px; color:var(--ink-soft);">เลือกสาขาเพื่อดูว่าแต่ละวิชาถ่วงน้ำหนักกี่ % — สังเกตว่าสายต่างกัน น้ำหนักก็ต่างกันมาก</p>
+    <div class="wpick" id="wpick"></div>
+    <div class="wcard" id="wcard"></div>
+
+    <div class="callout" style="margin-top:20px;">
+      ⚠️ <b>กับดักที่ต้องระวัง — เกณฑ์ขั้นต่ำรายวิชา:</b> หลายสาขาไม่ได้ดูแค่คะแนนรวม แต่กำหนด "ขั้นต่ำ" ของบางวิชาด้วย ถ้าวิชานั้นต่ำกว่าที่กำหนด จะถูกตัดสิทธิ์ทันที <b>แม้คะแนนรวมจะสูงก็ตาม</b> เพราะฉะนั้นอย่าทิ้งวิชาที่สาขาระบุเกณฑ์ขั้นต่ำไว้
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION 5: QUIZ ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">ส่วนที่ 5</span>
+      <h2>ลองอ่านเอง: แบบฝึก 9 ข้อ</h2>
+      <p>แต่ละข้อคือสถานการณ์จริงของนักเรียน ม.6 ลองใช้ทักษะที่เพิ่งเรียนตัดสินใจดู</p>
+    </div>
+
+    <div class="quiz" id="quiz">
+      <!-- questions injected by JS -->
+    </div>
+
+    <div class="scorebar" style="margin-top:22px;">
+      <div class="scorebox">คะแนน: <b id="score">0</b> / 9</div>
+      <button class="btn ghost" id="resetQuiz">เริ่มทำใหม่</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTION 6: CHECKLIST ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">ส่วนที่ 6</span>
+      <h2>เช็กลิสต์ก่อนกดสมัครทุกครั้ง</h2>
+      <p>เปิดประกาศแล้วไล่ตามนี้ทีละข้อ ครบแล้วค่อยสมัคร — แตะเพื่อติ๊ก</p>
+    </div>
+
+    <div class="check-grid" id="checklist">
+      <div class="citem"><span class="box"></span><span class="ctext">รู้ว่านี่คือ "รอบอะไร"<small>Portfolio / Quota / Admission / Direct</small></span></div>
+      <div class="citem"><span class="box"></span><span class="ctext">เกรด/เปอร์เซ็นไทล์ของเราถึงเกณฑ์<small>เช็กทั้งเกณฑ์รวมและเกณฑ์เฉพาะสาขา</small></span></div>
+      <div class="citem"><span class="box"></span><span class="ctext">คุณสมบัติพื้นที่/เพศ/สุขภาพ ผ่าน<small>โครงการพิเศษมักมีเงื่อนไขซ่อนอยู่</small></span></div>
+      <div class="citem"><span class="box"></span><span class="ctext">รู้ว่าใช้คะแนนหรือผลงานอะไร น้ำหนักเท่าไหร่<small>วิชาที่เราถนัดตรงกับที่สาขาให้ค่าไหม</small></span></div>
+      <div class="citem"><span class="box"></span><span class="ctext">จดวันสำคัญลงปฏิทินครบ<small>วันสมัคร · ประกาศผล · ยืนยันสิทธิ์ Clearing House</small></span></div>
+      <div class="citem"><span class="box"></span><span class="ctext">เตรียมเอกสารครบ โดยเฉพาะใบรับรองเปอร์เซ็นไทล์<small>ใบนี้ต้องขอจากครู/โรงเรียนล่วงหน้า</small></span></div>
+      <div class="citem"><span class="box"></span><span class="ctext">ลงทะเบียน mytcas แล้ว<small>ทุกคนต้องมีบัญชี mytcas ก่อนยืนยันสิทธิ์</small></span></div>
+      <div class="citem"><span class="box"></span><span class="ctext">เตรียมค่าสมัคร + รู้ช่องทางจ่าย<small>จำไว้: ส่วนใหญ่จ่ายแล้วไม่คืนเงิน</small></span></div>
+    </div>
+
+    <div class="callout" style="margin-top:20px;">
+      📌 <b>คำเตือนสำคัญของ TCAS:</b> เมื่อ "ยืนยันสิทธิ์" ในระบบ Clearing House แล้ว จะสมัครรอบถัดไปไม่ได้ ถ้าอยากไปรอบหน้าต้อง "สละสิทธิ์" ตามวันที่กำหนดเท่านั้น — ต้องคิดให้รอบคอบก่อนกดยืนยัน
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div><b>บทเรียนแนะแนว · การอ่านประกาศ TCAS</b><br/><span style="font-size:.85rem;">อ้างอิงจากประกาศจริง: เพชรตะวันออก ม.บูรพา 2569 และ จุฬาฯ รอบ 3 TCAS69</span></div>
+    <div style="font-size:.82rem; text-align:right;">วันเวลาในเอกสารอาจเปลี่ยนแปลงได้<br/>ตรวจสอบประกาศฉบับล่าสุดทุกครั้งก่อนสมัคร</div>
+  </div>
+</footer>
+
+<script>
+  // ---- Section 1: round cards ----
+  document.querySelectorAll('.round').forEach(card => {
+    const toggle = () => card.classList.toggle('open');
+    card.addEventListener('click', toggle);
+    card.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } });
+  });
+
+  // ---- Section 2: highlighter decoder ----
+  const keys = document.querySelectorAll('.key');
+  const clauses = document.querySelectorAll('.clause');
+  function lightUp(k){
+    keys.forEach(x => x.classList.toggle('lit', x.dataset.k===k));
+    clauses.forEach(c => c.classList.toggle('active', c.dataset.k===k));
+  }
+  keys.forEach(key => key.addEventListener('click', () => lightUp(key.dataset.k)));
+  clauses.forEach(c => c.addEventListener('click', () => lightUp(c.dataset.k)));
+  lightUp('1');
+
+  // ---- Section 3: compare toggle ----
+  const tBtns = document.querySelectorAll('.toggle button');
+  function applyView(v){
+    tBtns.forEach(b => b.classList.toggle('on', b.dataset.view===v));
+    document.querySelectorAll('.col-buu').forEach(el => el.classList.toggle('hidecol', v==='cu'));
+    document.querySelectorAll('.col-cu').forEach(el => el.classList.toggle('hidecol', v==='buu'));
+  }
+  tBtns.forEach(b => b.addEventListener('click', () => applyView(b.dataset.view)));
+
+  // ---- Section 4: quiz ----
+  const questions = [
+    {
+      scenario: "ตัดสินใจเลือกรอบ",
+      q: "นักเรียนคนหนึ่งมีพอร์ตงานวิจัยและรางวัลเยอะมาก แต่ยังไม่ได้สอบ TGAT/TPAT รอบไหนเหมาะที่สุด?",
+      opts: ["รอบ 1 Portfolio", "รอบ 3 Admission", "รอบ 4 Direct Admission", "ไม่มีรอบไหนสมัครได้"],
+      correct: 0,
+      ok: "ถูกต้อง! รอบ 1 เน้นแฟ้มสะสมผลงาน ไม่ต้องใช้คะแนนสอบกลาง",
+      no: "รอบ 1 Portfolio คือคำตอบ เพราะเน้นผลงาน ไม่ต้องใช้คะแนนสอบกลาง"
+    },
+    {
+      scenario: "เช็กคุณสมบัติพื้นที่",
+      q: "นักเรียนเรียนอยู่โรงเรียนในจังหวัดสมุทรปราการ จะสมัครโครงการเพชรตะวันออกได้ไหม?",
+      opts: ["ไม่ได้ เพราะไม่ใช่ภาคตะวันออก", "ได้ เพราะสมุทรปราการอยู่ใน 12 จังหวัดของโครงการ", "ได้ แต่ต้องย้ายทะเบียนบ้านก่อน", "ได้เฉพาะถ้าเกรด 4.00"],
+      correct: 1,
+      ok: "ใช่เลย! สมุทรปราการเป็นหนึ่งใน 12 จังหวัดที่โครงการกำหนด",
+      no: "ดูข้อคุณสมบัติให้ดี — สมุทรปราการอยู่ใน 12 จังหวัดของโครงการ จึงสมัครได้"
+    },
+    {
+      scenario: "อ่านเกณฑ์ตัวเลข",
+      q: "เพชรตะวันออกกำหนดค่าเปอร์เซ็นไทล์ของผลการเรียนขั้นต่ำเท่าไหร่?",
+      opts: ["ตั้งแต่ 50 ขึ้นไป", "ตั้งแต่ 70 ขึ้นไป", "ตั้งแต่ 85 ขึ้นไป", "ไม่กำหนด"],
+      correct: 2,
+      ok: "ถูกต้อง! ต้องมีเปอร์เซ็นไทล์ ≥ 85",
+      no: "ประกาศระบุชัดว่าต้องมีเปอร์เซ็นไทล์ตั้งแต่ 85 ขึ้นไป"
+    },
+    {
+      scenario: "ความต่างของรอบ",
+      q: "รอบ 3 Admission (จุฬาฯ) ใช้อะไรเป็นเกณฑ์หลักในการคัดเลือก?",
+      opts: ["เปอร์เซ็นไทล์ + สัมภาษณ์", "คะแนน TGAT/TPAT/A-Level ตามน้ำหนัก", "แฟ้มสะสมผลงาน", "ภูมิลำเนาในภาคตะวันออก"],
+      correct: 1,
+      ok: "ใช่! รอบ 3 ใช้คะแนนสอบกลางตามน้ำหนักของแต่ละสาขา",
+      no: "รอบ 3 ใช้คะแนน TGAT/TPAT/A-Level ตามน้ำหนัก ไม่ได้ใช้เปอร์เซ็นไทล์หรือพอร์ต"
+    },
+    {
+      scenario: "วางแผนการสมัคร",
+      q: "ในรอบ 3 จุฬาฯ ผ่านระบบ mytcas นักเรียนเลือกสมัครได้สูงสุดกี่อันดับ?",
+      opts: ["1 อันดับ", "4 อันดับ", "6 อันดับ", "สูงสุด 10 อันดับ"],
+      correct: 3,
+      ok: "ถูกต้อง! รอบ 3 เลือกได้สูงสุด 10 อันดับแบบเรียงลำดับ",
+      no: "รอบ 3 เลือกได้ถึง 10 อันดับ (ต่างจากเพชรตะวันออกที่เลือกได้แค่ 1 อันดับ)"
+    },
+    {
+      scenario: "เกณฑ์เฉพาะสาขา",
+      q: "นักเรียนมี GPAX 2.90 อยากสมัครเภสัชศาสตร์ เพชรตะวันออก (ต้องการ 3.50) จะเป็นอย่างไร?",
+      opts: ["สมัครได้ เพราะเกินเกณฑ์รวม 3.00", "สมัครไม่ได้ เพราะไม่ถึงเกณฑ์เฉพาะสาขา 3.50", "สมัครได้ถ้าเปอร์เซ็นไทล์สูง", "สมัครได้ทุกกรณี"],
+      correct: 1,
+      ok: "เยี่ยม! ต้องดูเกณฑ์เฉพาะสาขาด้วย เภสัชฯ ต้องการ 3.50 จึงสมัครไม่ได้",
+      no: "อย่าดูแค่เกณฑ์รวม — เภสัชฯ มีเกณฑ์เฉพาะสาขา GPAX 3.50 ซึ่ง 2.90 ยังไม่ถึง"
+    },
+    {
+      scenario: "ระบบ TCAS",
+      q: "หลังจาก 'ยืนยันสิทธิ์' ใน Clearing House แล้ว จะเกิดอะไรขึ้น?",
+      opts: ["สมัครรอบถัดไปได้ตามปกติ", "สมัครรอบถัดไปไม่ได้ เว้นแต่สละสิทธิ์ก่อน", "ต้องจ่ายค่าสมัครใหม่", "ระบบจะเลือกคณะให้อัตโนมัติ"],
+      correct: 1,
+      ok: "ถูกต้อง! ยืนยันสิทธิ์แล้วล็อกเลย ถ้าจะไปรอบหน้าต้องสละสิทธิ์ตามกำหนด",
+      no: "ยืนยันสิทธิ์แล้วจะสมัครรอบถัดไปไม่ได้ นอกจากจะ 'สละสิทธิ์' ตามวันที่กำหนด"
+    },
+    {
+      scenario: "อ่านน้ำหนักคะแนน",
+      q: "สาขาเทคนิคการแพทย์ (รอบ 3) ให้น้ำหนัก เคมี 30% + ชีววิทยา 30% นักเรียนแบบไหนได้เปรียบที่สุด?",
+      opts: ["คนที่เก่งภาษาอังกฤษเป็นพิเศษ", "คนที่ถนัดเคมีและชีววิทยา", "คนที่เก่งคณิตศาสตร์อย่างเดียว", "ทุกคนได้เปรียบเท่ากัน"],
+      correct: 1,
+      ok: "ถูกต้อง! เคมีกับชีววิทยารวมกัน 60% เป็นตัวตัดสินหลัก คนที่แข็งสองวิชานี้ได้เปรียบ",
+      no: "ดูที่น้ำหนัก — เคมี 30 + ชีววิทยา 30 = 60% คนที่ถนัดสองวิชานี้จะได้เปรียบที่สุด"
+    },
+    {
+      scenario: "เกณฑ์ขั้นต่ำรายวิชา",
+      q: "นักเรียนได้คะแนนรวมสูงมาก แต่วิชาเคมีได้ต่ำกว่า 'เกณฑ์ขั้นต่ำ' ที่สาขากำหนดไว้ ผลจะเป็นอย่างไร?",
+      opts: ["ผ่านแน่นอน เพราะคะแนนรวมสูง", "ถูกตัดสิทธิ์ แม้คะแนนรวมจะสูง", "ระบบจะเฉลี่ยให้ผ่านเอง", "ใช้คะแนนวิชาอื่นมาทดแทนได้"],
+      correct: 1,
+      ok: "ใช่เลย! เกณฑ์ขั้นต่ำรายวิชาคือกับดัก ถ้าวิชาที่กำหนดไม่ถึงขั้นต่ำ = ตกทันที",
+      no: "ระวังกับดักนี้ — ถ้าวิชาที่มีเกณฑ์ขั้นต่ำไม่ถึงเกณฑ์ จะถูกตัดสิทธิ์ แม้คะแนนรวมจะสูง"
+    }
+  ];
+
+  const quizEl = document.getElementById('quiz');
+  const scoreEl = document.getElementById('score');
+  let answered = {};
+
+  function renderQuiz(){
+    quizEl.innerHTML = '';
+    answered = {};
+    scoreEl.textContent = '0';
+    questions.forEach((item, qi) => {
+      const q = document.createElement('div');
+      q.className = 'q';
+      q.innerHTML = `<span class="scenario">${item.scenario}</span><h4>${qi+1}. ${item.q}</h4>`;
+      item.opts.forEach((opt, oi) => {
+        const b = document.createElement('button');
+        b.className = 'opt';
+        b.textContent = opt;
+        b.addEventListener('click', () => choose(qi, oi, item, q));
+        q.appendChild(b);
+      });
+      const fb = document.createElement('div');
+      fb.className = 'feedback';
+      fb.id = `fb-${qi}`;
+      q.appendChild(fb);
+      quizEl.appendChild(q);
+    });
+  }
+
+  function choose(qi, oi, item, qNode){
+    if(answered[qi] !== undefined) return;
+    answered[qi] = oi;
+    const opts = qNode.querySelectorAll('.opt');
+    opts.forEach((b, i) => {
+      b.disabled = true;
+      if(i === item.correct) b.classList.add('correct');
+      if(i === oi && oi !== item.correct) b.classList.add('wrong');
+    });
+    const fb = document.getElementById(`fb-${qi}`);
+    const right = oi === item.correct;
+    fb.textContent = right ? '✓ ' + item.ok : '✗ ' + item.no;
+    fb.className = 'feedback show ' + (right ? 'ok' : 'no');
+    let s = 0;
+    Object.keys(answered).forEach(k => { if(answered[k] === questions[k].correct) s++; });
+    scoreEl.textContent = s;
+  }
+
+  document.getElementById('resetQuiz').addEventListener('click', () => {
+    renderQuiz();
+    document.getElementById('quiz').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+  renderQuiz();
+
+  // ---- Section 4: weight reader ----
+  const C = {
+    tgat:'#A9D6EB', tpat:'#D6C2F0', math:'#FFE17A', phys:'#FFD0A1',
+    chem:'#FFB3C6', bio:'#B8E6B0', thai:'#E8D5A8', soc:'#C9E4DE',
+    eng:'#F4C7A1', lang3:'#C7B3E8'
+  };
+  const programs = [
+    {
+      name:'วิศวกรรมศาสตร์', stream:'สายวิทย์–วิศวกรรม · รับ 215 คน · GPAX ขั้นต่ำ 2.00',
+      comp:[
+        {l:'TGAT ความถนัดทั่วไป', p:20, c:C.tgat},
+        {l:'TPAT3 ถนัดวิทย์–เทคโน–วิศวะ', p:30, c:C.tpat},
+        {l:'A-Level คณิต1', p:20, c:C.math},
+        {l:'A-Level ฟิสิกส์', p:20, c:C.phys},
+        {l:'A-Level เคมี', p:10, c:C.chem}
+      ],
+      take:'น้ำหนักเทไปทาง TPAT3 + คณิต–ฟิสิกส์ ใครถนัดสายคำนวณและฟิสิกส์จะได้เปรียบ ภาษาแทบไม่มีผล'
+    },
+    {
+      name:'สหเวชศาสตร์ · เทคนิคการแพทย์', stream:'สายวิทย์–สุขภาพ · GPAX ขั้นต่ำ 3.00',
+      comp:[
+        {l:'TGAT ความถนัดทั่วไป', p:20, c:C.tgat},
+        {l:'A-Level เคมี', p:30, c:C.chem},
+        {l:'A-Level ชีววิทยา', p:30, c:C.bio},
+        {l:'A-Level คณิต1', p:10, c:C.math},
+        {l:'A-Level ภาษาอังกฤษ', p:10, c:C.eng}
+      ],
+      take:'เคมี + ชีววิทยา รวมกัน 60% เป็นหัวใจ เหมาะกับคนแข็งสายชีว–เคมี ส่วนคณิต–อังกฤษเป็นตัวเสริม'
+    },
+    {
+      name:'นิติศาสตร์ (เลือกสอบคณิต2)', stream:'สายสังคม · รับ 125 คน',
+      comp:[
+        {l:'TGAT ความถนัดทั่วไป', p:20, c:C.tgat},
+        {l:'A-Level คณิต2', p:20, c:C.math},
+        {l:'A-Level สังคมศึกษา', p:20, c:C.soc},
+        {l:'A-Level ภาษาไทย', p:20, c:C.thai},
+        {l:'A-Level ภาษาอังกฤษ', p:20, c:C.eng}
+      ],
+      take:'ถ่วงน้ำหนักเท่ากันทุกวิชา (20%) ต้องเก่งรอบด้าน ไม่มีวิชาไหนช่วยพยุงได้มากเป็นพิเศษ'
+    },
+    {
+      name:'อักษรศาสตร์ (เลือกภาษาฝรั่งเศส)', stream:'สายภาษา · GPAX ขั้นต่ำ 2.75',
+      comp:[
+        {l:'A-Level สังคมศึกษา', p:25, c:C.soc},
+        {l:'A-Level ภาษาไทย', p:25, c:C.thai},
+        {l:'A-Level ภาษาอังกฤษ', p:25, c:C.eng},
+        {l:'A-Level ภาษาฝรั่งเศส', p:25, c:C.lang3}
+      ],
+      take:'ไม่ใช้ TGAT/TPAT เลย วัดที่ภาษา 3 วิชา + สังคม ใครเก่งภาษาที่สามจะได้เปรียบเต็ม ๆ ถึง 25%'
+    }
+  ];
+
+  const wpick = document.getElementById('wpick');
+  const wcard = document.getElementById('wcard');
+  programs.forEach((p, i) => {
+    const b = document.createElement('button');
+    b.textContent = p.name;
+    if(i===0) b.classList.add('on');
+    b.addEventListener('click', () => renderW(i));
+    wpick.appendChild(b);
+  });
+
+  function renderW(idx){
+    [...wpick.children].forEach((b,i) => b.classList.toggle('on', i===idx));
+    const p = programs[idx];
+    const seg = p.comp.map(c =>
+      `<div class="wseg" style="flex:0 0 ${c.p}%; background:${c.c}">${c.p>=15? c.p+'%':''}</div>`
+    ).join('');
+    const rows = p.comp.map(c =>
+      `<div class="wrow">
+         <span class="lab"><span class="dot" style="background:${c.c}"></span>${c.l}</span>
+         <span class="wtrack"><span class="wfill" style="width:${c.p*2}%; background:${c.c}"></span></span>
+         <span class="pct">${c.p}%</span>
+       </div>`).join('');
+    wcard.innerHTML =
+      `<h3>${p.name}</h3>
+       <p class="stream">${p.stream}</p>
+       <div class="wbar">${seg}</div>
+       <div class="wlist">${rows}</div>
+       <div class="wtake">💡 <b>อ่านยังไง:</b> ${p.take}</div>`;
+  }
+  renderW(0);
+
+  // ---- Section 6: checklist ----
+  document.querySelectorAll('#checklist .citem').forEach(item => {
+    item.addEventListener('click', () => item.classList.toggle('done'));
+  });
+</script>
+</body>
+</html>
