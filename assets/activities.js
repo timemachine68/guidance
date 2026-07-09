@@ -75,7 +75,7 @@ window.ACTIVITIES = [
 
    { grade: 6, category: "TCAS", file: "tgat-prep-app.html",
     title: "ทำข้อสอบเวลาจริง",
-    desc: "ฝึกทำข้อสอบแบบจับเวลาเสมือนจริง" },
+    desc: "ฝึกทำข้อสอบแบบจับเวลาเสมือนจริงเลย" },
 
    { grade: 6, category: "TCAS", file: "tcas70_lesson.html",
   title: "รู้จัก TCAS70",
