@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เส้นทางของโรโรโนอา</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,500;0,600;1,400&family=Mitr:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#FBF7F0;--cream2:#F5EFE4;--cream3:#EDE4D5;
+  --ink:#3D2B1A;--mid:#7A5C3E;--lt:#B8936A;--pale:#D9C4A8;
+  --sage:#6B7F62;--sage-lt:#C8D5C0;--sage-pale:#EAF0E6;
+  --rose:#C45C5C;--rose-lt:#F2C8C8;--rose-pale:#FBF0F0;
+  --sky:#5C7FA0;--sky-lt:#C2D4E6;--sky-pale:#EEF4FA;
+  --amb:#C48A2A;--amb-lt:#F5D98A;--amb-pale:#FDF7E4;
+  --r:10px;--rlg:16px;--rsm:6px;
+}
+html,body{height:100%;font-family:'Sarabun',sans-serif;background:var(--cream);color:var(--ink);overflow:hidden}
+.screen{display:none;width:100%;height:100vh;flex-direction:column;align-items:center;justify-content:center}
+.screen.active{display:flex}
+
+/* ── TITLE ── */
+#screen-title{background:var(--cream);padding:1.5rem;position:relative;overflow:hidden}
+.tdeco{position:absolute;font-size:7rem;opacity:.05;pointer-events:none;line-height:1}
+.title-card{
+  background:var(--cream2);border:1px solid var(--pale);border-radius:20px;
+  padding:1.8rem 2rem;max-width:460px;width:100%;text-align:center;position:relative;z-index:1
+}
+.eyebrow{
+  display:inline-block;font-family:'Mitr',sans-serif;font-size:10px;font-weight:500;
+  letter-spacing:2px;text-transform:uppercase;color:var(--lt);margin-bottom:1rem
+}
+.title-card h1{font-family:'Mitr',sans-serif;font-size:1.8rem;font-weight:600;color:var(--ink);line-height:1.25;margin-bottom:.4rem}
+.title-card h1 span{color:var(--lt)}
+.title-sub{font-size:.88rem;color:var(--mid);line-height:1.7;margin-bottom:.25rem}
+.title-sch{font-size:.73rem;color:var(--lt);margin-bottom:1.6rem}
+.char-strip{
+  display:flex;align-items:center;gap:.85rem;
+  background:var(--cream);border:1px solid var(--pale);border-radius:var(--r);
+  padding:.8rem .95rem;margin-bottom:1.4rem;text-align:left
+}
+.cav-big{
+  width:48px;height:48px;border-radius:50%;background:var(--cream3);
+  border:2px solid var(--pale);display:flex;align-items:center;justify-content:center;
+  font-size:1.55rem;flex-shrink:0
+}
+.cname{font-family:'Mitr',sans-serif;font-size:.86rem;font-weight:600;color:var(--ink);margin-bottom:.18rem}
+.cdesc{font-size:.77rem;color:var(--mid);line-height:1.55}
+.btn-start{
+  display:block;width:100%;background:var(--ink);color:var(--cream);
+  border:none;border-radius:var(--r);padding:.82rem;
+  font-family:'Mitr',sans-serif;font-size:.95rem;font-weight:500;
+  cursor:pointer;transition:background .2s,transform .1s;letter-spacing:.4px
+}
+.btn-start:hover{background:var(--mid)}.btn-start:active{transform:scale(.98)}
+.hint-t{font-size:.72rem;color:var(--lt);margin-top:.5rem}
+
+/* ── GAME ── */
+#screen-game{background:var(--cream);flex-direction:column;padding:0;justify-content:flex-start;overflow:hidden}
+.pb-wrap{width:100%;height:3px;background:var(--cream3);flex-shrink:0}
+.pb-fill{height:3px;background:var(--lt);transition:width .5s ease}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.5rem .9rem;background:var(--cream);border-bottom:1px solid var(--cream3);flex-shrink:0
+}
+.topbar-ch{font-family:'Mitr',sans-serif;font-size:.76rem;font-weight:600;color:var(--mid);letter-spacing:.5px}
+.scores{display:flex;gap:.45rem}
+.spill{display:flex;align-items:center;gap:4px;font-size:.73rem;font-weight:500;padding:3px 9px;border-radius:20px}
+.spill.cou{background:var(--sage-pale);color:var(--sage);border:1px solid var(--sage-lt)}
+.spill.wis{background:var(--amb-pale);color:var(--amb);border:1px solid var(--amb-lt)}
+
+/* scroll area */
+.scene{
+  flex:1;overflow-y:auto;
+  padding:.8rem .85rem 2rem;
+  display:flex;flex-direction:column;gap:.65rem;
+  scroll-behavior:smooth;
+}
+.scene::-webkit-scrollbar{width:3px}
+.scene::-webkit-scrollbar-thumb{background:var(--pale);border-radius:4px}
+
+/* scene block = header card + action card separate */
+.sc-header{
+  display:flex;gap:0;
+  background:var(--cream2);border:1px solid var(--pale);border-radius:var(--rlg);
+  overflow:hidden; /* safe here — header only, no buttons inside */
+}
+.sc-left{
+  width:64px;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;
+  padding:.75rem .35rem .75rem;gap:.35rem;
+  border-right:1px solid var(--cream3);
+}
+.sc-icon{
+  width:44px;height:44px;border-radius:var(--rsm);
+  display:flex;align-items:center;justify-content:center;font-size:1.7rem;
+}
+.sc-loc{
+  font-family:'Mitr',sans-serif;font-size:7.5px;font-weight:500;color:var(--lt);
+  text-align:center;line-height:1.45;writing-mode:vertical-rl;
+  transform:rotate(180deg);letter-spacing:.4px;
+}
+.sc-right{flex:1;min-width:0;padding:.8rem .9rem .85rem .55rem;display:flex;flex-direction:column;gap:.55rem}
+.sc-ch{font-family:'Mitr',sans-serif;font-size:8.5px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--lt)}
+.sc-title{font-family:'Mitr',sans-serif;font-size:.95rem;font-weight:600;color:var(--ink);line-height:1.3}
+.sc-sit{font-size:.82rem;color:var(--mid);font-style:italic;line-height:1.65;padding-left:.55rem;border-left:2px solid var(--pale)}
+.info-rib{background:var(--sky-pale);border-left:2px solid var(--sky-lt);border-radius:0 var(--rsm) var(--rsm) 0;padding:.42rem .6rem;font-size:.77rem;color:var(--sky);line-height:1.55}
+
+/* dialogues */
+.dl-block{display:flex;flex-direction:column;gap:.4rem}
+.brow{display:flex;align-items:flex-end;gap:.38rem}
+.brow.r{flex-direction:row-reverse}
+.bav{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.9rem;border:1px solid var(--pale);background:var(--cream)}
+.bname{font-size:.63rem;color:var(--lt);font-weight:500;margin-bottom:1px;padding:0 3px}
+.bname.r{text-align:right}
+.bub{max-width:83%;padding:.4rem .68rem;border-radius:11px;font-size:.83rem;line-height:1.6}
+.bub.l  {background:var(--cream);border:1px solid var(--cream3);color:var(--ink);border-bottom-left-radius:3px}
+.bub.r  {background:var(--sage-pale);border:1px solid var(--sage-lt);color:var(--ink);border-bottom-right-radius:3px}
+.bub.bad{background:var(--rose-pale);border:1px solid var(--rose-lt);color:var(--rose);border-bottom-left-radius:3px}
+.bub.th {background:var(--amb-pale);border:1px solid var(--amb-lt);color:var(--mid);border-radius:11px;font-style:italic}
+.bub.warn{background:var(--sky-pale);border:1px solid var(--sky-lt);color:var(--sky);border-bottom-right-radius:3px}
+.sc-div{height:1px;background:var(--cream3)}
+
+/* action card — SEPARATE from header, no overflow:hidden */
+.sc-action{
+  background:var(--cream2);border:1px solid var(--pale);border-radius:var(--rlg);
+  padding:.85rem .9rem .9rem;display:flex;flex-direction:column;gap:.5rem;
+}
+.q-label{font-family:'Mitr',sans-serif;font-size:.84rem;font-weight:600;color:var(--ink)}
+.choices{display:flex;flex-direction:column;gap:.38rem}
+.cbtn{
+  display:flex;align-items:flex-start;gap:.5rem;
+  background:var(--cream);border:1px solid var(--cream3);border-radius:var(--r);
+  padding:.52rem .72rem;font-family:'Sarabun',sans-serif;font-size:.82rem;
+  color:var(--ink);cursor:pointer;text-align:left;line-height:1.55;
+  transition:border-color .15s,background .15s,transform .1s;
+}
+.cbtn:hover{border-color:var(--pale);background:var(--cream2)}
+.cbtn:active{transform:scale(.99)}
+.cbtn.cg{border-color:var(--sage);background:var(--sage-pale);color:var(--sage);pointer-events:none}
+.cbtn.cb{border-color:var(--rose);background:var(--rose-pale);color:var(--rose);pointer-events:none}
+.cbtn.co{border-color:var(--amb);background:var(--amb-pale);color:var(--amb);pointer-events:none}
+.cbtn.dis{opacity:.3;pointer-events:none}
+.cnum{
+  width:21px;height:21px;border-radius:50%;background:var(--cream3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.66rem;font-weight:600;color:var(--mid);flex-shrink:0;margin-top:1px;
+  transition:background .15s,color .15s;
+}
+.cbtn.cg .cnum{background:var(--sage);color:#fff}
+.cbtn.cb .cnum{background:var(--rose);color:#fff}
+.cbtn.co .cnum{background:var(--amb);color:#fff}
+
+.fb-box{border-radius:var(--r);padding:.55rem .78rem;font-size:.81rem;line-height:1.65;display:none}
+.fb-box.good{background:var(--sage-pale);border-left:3px solid var(--sage);color:var(--sage)}
+.fb-box.bad {background:var(--rose-pale);border-left:3px solid var(--rose);color:var(--rose)}
+.fb-box.ok  {background:var(--amb-pale);border-left:3px solid var(--amb);color:var(--amb)}
+.fb-box.vis{display:block}
+
+.tip-box{
+  background:var(--sky-pale);border:1px solid var(--sky-lt);
+  border-radius:var(--r);padding:.52rem .78rem;font-size:.77rem;color:var(--sky);
+  display:none;line-height:1.65;
+}
+.tip-box.vis{display:block}
+
+/* NEXT button lives OUTSIDE both cards in the scene flex column */
+.btn-next{
+  display:none;width:100%;
+  background:var(--ink);color:var(--cream);
+  border:none;border-radius:var(--r);padding:.68rem;
+  font-family:'Mitr',sans-serif;font-size:.9rem;font-weight:500;
+  cursor:pointer;transition:background .2s,transform .1s;letter-spacing:.3px;
+}
+.btn-next.vis{display:block}
+.btn-next:hover{background:var(--mid)}.btn-next:active{transform:scale(.98)}
+.sc-pad{height:1.5rem;flex-shrink:0}
+
+/* ── RESULT ── */
+#screen-result{background:var(--cream);padding:1.4rem;overflow-y:auto}
+.res-card{
+  background:var(--cream2);border:1px solid var(--pale);border-radius:20px;
+  padding:1.7rem 1.9rem;max-width:440px;width:100%;text-align:center;
+}
+.res-emoji{font-size:2.6rem;margin-bottom:.35rem}
+.res-title{font-family:'Mitr',sans-serif;font-size:1.3rem;font-weight:600;color:var(--ink);margin-bottom:.25rem}
+.res-sub{font-size:.84rem;color:var(--mid);margin-bottom:1.1rem;line-height:1.7}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem}
+.sb{border-radius:var(--r);padding:.65rem}
+.sb .sl{font-size:.69rem;font-weight:600;margin-bottom:.15rem}
+.sb .sv{font-family:'Mitr',sans-serif;font-size:1.55rem;font-weight:600}
+.sb.c1{background:var(--sage-pale);border:1px solid var(--sage-lt)}
+.sb.c1 .sl,.sb.c1 .sv{color:var(--sage)}
+.sb.c2{background:var(--amb-pale);border:1px solid var(--amb-lt)}
+.sb.c2 .sl,.sb.c2 .sv{color:var(--amb)}
+.lv-badge{display:inline-block;padding:4px 15px;border-radius:20px;font-family:'Mitr',sans-serif;font-size:.83rem;font-weight:500;margin-bottom:.95rem}
+.lv1{background:var(--sage-pale);color:var(--sage);border:1px solid var(--sage-lt)}
+.lv2{background:var(--amb-pale);color:var(--amb);border:1px solid var(--amb-lt)}
+.lv3{background:var(--cream3);color:var(--mid);border:1px solid var(--pale)}
+.les-list{text-align:left;list-style:none;display:flex;flex-direction:column;gap:.38rem;margin-bottom:1.1rem}
+.les-list li{display:flex;gap:.45rem;font-size:.79rem;color:var(--mid);line-height:1.55;align-items:flex-start}
+.ldot{width:18px;height:18px;border-radius:50%;background:var(--cream3);color:var(--lt);display:flex;align-items:center;justify-content:center;font-size:.61rem;font-weight:600;flex-shrink:0;margin-top:1px}
+.btn-retry{display:block;width:100%;background:var(--ink);color:var(--cream);border:none;border-radius:var(--r);padding:.72rem;font-family:'Mitr',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;margin-bottom:.48rem;transition:background .2s}
+.btn-retry:hover{background:var(--mid)}
+.btn-dis{display:block;width:100%;background:transparent;color:var(--mid);border:1px solid var(--pale);border-radius:var(--r);padding:.6rem;font-family:'Mitr',sans-serif;font-size:.82rem;font-weight:500;cursor:pointer;transition:background .2s}
+.btn-dis:hover{background:var(--cream3)}
+
+/* scene bg tones */
+.bg-class{background:var(--sky-pale)}
+.bg-senior{background:var(--rose-pale)}
+.bg-cyber{background:var(--cream3)}
+.bg-teacher{background:var(--sage-pale)}
+.bg-voc{background:var(--amb-pale)}
+.bg-future{background:var(--sky-pale)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px){
+  .title-card{padding:1.4rem 1.3rem}
+  .title-card h1{font-size:1.5rem}
+  .sc-left{width:52px}
+  .sc-icon{width:36px;height:36px;font-size:1.4rem}
+  .sc-loc{font-size:6.5px}
+  .sc-right{padding:.7rem .75rem .75rem .45rem}
+  .bub{max-width:86%;font-size:.8rem}
+  .sc-action{padding:.75rem .78rem .8rem}
+  .cbtn{font-size:.8rem;padding:.48rem .65rem}
+  .res-card{padding:1.4rem 1.4rem}
+}
+@media(min-width:768px){
+  .sc-left{width:80px}
+  .sc-icon{width:54px;height:54px;font-size:2rem}
+  .sc-loc{font-size:8.5px}
+}
+</style>
+</head>
+<body>
+
+<!-- TITLE -->
+<div id="screen-title" class="screen active">
+  <div class="tdeco" style="top:-1rem;left:-1rem">📖</div>
+  <div class="tdeco" style="bottom:-2rem;right:-1rem">🌿</div>
+  <div class="title-card">
+    <div class="eyebrow">Visual Novel · ม.4 · แนะแนว</div>
+    <h1>เส้นทางของ<br><span>โรโรโนอา</span></h1>
+    <p class="title-sub">ม.4 มาแล้ว — แต่ทางข้างหน้ายังไม่ชัดเจน<br>ทั้งเรื่องเรียน เพื่อน และสิ่งที่ตัวเองอยากเป็น</p>
+    <p class="title-sch">วิชาแนะแนว · โรงเรียนพูลเจริญวิทยาคม</p>
+    <div class="char-strip">
+      <div class="cav-big">🧑‍🎓</div>
+      <div>
+        <div class="cname">โรโรโนอา · ม.4/1 (วิทย์-คณิต)</div>
+        <div class="cdesc">เรียนสายสามัญตามที่พ่อแม่อยาก แต่ตัวเองฝันอยากเรียนช่างยนต์มาตลอด วันแรก ม.4 ยังไม่รู้ว่าเทอมนี้จะเปลี่ยนชีวิตเขาไปอย่างไร</div>
+      </div>
+    </div>
+    <button class="btn-start" onclick="startGame()">เปิดบท →</button>
+    <p class="hint-t">6 บทตอน · ประมาณ 25–30 นาที</p>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="screen-game" class="screen">
+  <div class="pb-wrap"><div class="pb-fill" id="pb" style="width:0%"></div></div>
+  <div class="topbar">
+    <div class="topbar-ch" id="hudCh">บทที่ 1</div>
+    <div class="scores">
+      <div class="spill cou">💎 <span id="hudC">0</span></div>
+      <div class="spill wis">✨ <span id="hudW">0</span></div>
+    </div>
+  </div>
+  <div class="scene" id="sceneArea"></div>
+</div>
+
+<!-- RESULT -->
+<div id="screen-result" class="screen">
+  <div class="res-card">
+    <div class="res-emoji" id="rEmoji"></div>
+    <div class="res-title" id="rTitle"></div>
+    <div class="res-sub" id="rSub"></div>
+    <div class="sg">
+      <div class="sb c1"><div class="sl">💎 ความกล้า</div><div class="sv" id="fC">0</div></div>
+      <div class="sb c2"><div class="sl">✨ ความฉลาดรู้</div><div class="sv" id="fW">0</div></div>
+    </div>
+    <div class="lv-badge" id="lvBadge"></div>
+    <ul class="les-list" id="lesList"></ul>
+    <button class="btn-retry" onclick="startGame()">อ่านใหม่อีกครั้ง</button>
+    <button class="btn-dis" onclick="openDiscuss()">💬 คำถามอภิปรายในห้องเรียน</button>
+  </div>
+</div>
+
+<script>
+let cv=0,wv=0,si=0;
+
+const scenes=[
+{id:1,bg:'bg-class',em:'🏫',loc:['ห้อง ม.4/1','เช้าวันแรก'],ch:'บทที่ 1',title:'ห้องเรียนที่ไม่มีใครเลือก',
+sit:'โรโรโนอานั่งรอในห้องใหม่ เพื่อนข้างๆ ชื่อ "เด่น" เริ่มพูดเสียงดังตั้งแต่ยังไม่ถึงคาบแรก...',info:null,
+dl:[
+  {av:'😤',n:'เด่น',s:'bad',t:'โอ้โห ทำไมต้องมาอยู่ห้องนี้วะ วิทย์-คณิตหัวจะแตก ฉันไม่อยากเรียนเลยสักนิด'},
+  {av:'😤',n:'เด่น',s:'bad',t:'ใครให้คะแนนฉันมาอยู่ห้องนี้ โง่จริงๆ เสียเวลาชีวิต'},
+  {av:'😶',n:'เพื่อนในห้อง',s:'l',t:'(นั่งเงียบ ก้มหน้าเล่นโทรศัพท์ ไม่มีใครพูดอะไร)'},
+  {av:'🧑‍🎓',n:'โรโรโนอา · ในใจ',s:'th',t:'เด่นระบายแรงมาก... แต่ก็ไม่ต่างจากเราเลย เราก็ไม่ได้อยากมาห้องนี้เหมือนกัน'},
+],
+q:'จะรับมือกับบรรยากาศนี้อย่างไร?',
+cs:[
+  {t:'นิ่งเงียบ เล่นโทรศัพท์ตาม ไม่อยากยุ่งกับใครวันแรก',type:'ok',c:0,w:1},
+  {t:'พูดกับเด่นว่า "เข้าใจนะ ฉันก็ไม่ได้อยากมาห้องนี้เหมือนกัน" แล้วเริ่มคุย',type:'good',c:2,w:2},
+  {t:'บอกเด่นให้เงียบ เพราะทำให้ห้องบรรยากาศแย่',type:'ok',c:1,w:1},
+  {t:'ยกมือถามครูว่าจะขอย้ายห้องได้ไหม ทำเป็นตลกๆ ให้ทุกคนหัวเราะ',type:'good',c:2,w:2},
+],
+fb:{ok0:'บางครั้งการเงียบก็ปลอดภัย แต่บรรยากาศห้องยังตึง คำพูดสั้นๆ ก็พอเปลี่ยนอะไรได้',good1:'✓ ดีมาก — การแสดงให้เด่นเห็นว่าไม่ได้อยู่คนเดียวช่วยลดความตึงเครียดได้มาก และอาจเปิดมิตรภาพที่ไม่คาดคิด',ok2:'การบอกให้เงียบอาจทำให้เด่นเคืองตั้งแต่วันแรก ลองหาวิธีที่ทั้งคู่รู้สึกดีขึ้นแทน',good3:'✓ ไหวพริบดี — อารมณ์ขันในช่วงตึงเครียดเป็นทักษะสังคมที่มีค่า และยังเปิดทางให้คุยต่อได้'},
+tip:'เพื่อนที่ระบายแรงๆ วันแรก อาจแค่กลัวหรือผิดหวัง ไม่ต่างจากเรา การรับฟังโดยไม่ตัดสินเป็นจุดเริ่มของมิตรภาพที่ดี'},
+
+{id:2,bg:'bg-senior',em:'📚',loc:['ร้านค้าหน้า','โรงเรียน'],ch:'บทที่ 2',title:'รุ่นพี่ที่มีความเห็นมากเกินไป',
+sit:'โรโรโนอาซื้อข้าวกลางวัน เจอรุ่นพี่ ม.6 สองคน พอเห็นชุดห้องวิทย์-คณิต บทสนทนาก็เริ่มขึ้น...',
+info:'แผนการเรียนทุกแผนมีคุณค่าในแบบของตัวเอง ไม่มีแผนไหนที่ "ดีกว่า" หรือ "ด้อยกว่า" — ขึ้นอยู่กับเส้นทางของแต่ละคน',
+dl:[
+  {av:'😏',n:'รุ่นพี่ ม.6 (ก)',s:'bad',t:'เฮ้น้อง วิทย์-คณิตเหรอ? โอ้โห แผนนั้นน่ะ สายปั้มเกรดตัวโกง เรียนไปก็ไม่ได้ใช้หรอก'},
+  {av:'😏',n:'รุ่นพี่ ม.6 (ข)',s:'bad',t:'จริง ถ้าไม่ได้เข้าหมอหรือวิศวะ เรียนวิทย์-คณิตทำไม เสียเวลาเปล่าๆ'},
+  {av:'🧑‍🎓',n:'โรโรโนอา · ในใจ',s:'th',t:'ฉันก็ไม่ได้อยากเรียนห้องนี้ตั้งแต่แรกด้วยซ้ำ แต่รุ่นพี่ไม่รู้เรื่องของฉันเลย มันรู้สึกไม่ดี'},
+],
+q:'จะตอบรุ่นพี่ยังไง?',
+cs:[
+  {t:'ยิ้มแห้งๆ พยักหน้า แล้วเดินออกไปโดยไม่พูดอะไร',type:'ok',c:0,w:1},
+  {t:'พูดว่า "แต่ละคนมีเหตุผลของตัวเองนะครับ/ค่ะ พี่ก็คงมีเส้นทางของตัวเองเหมือนกัน" แล้วยิ้ม',type:'good',c:2,w:3},
+  {t:'เถียงกลับว่า "พี่รู้ได้ยังไงว่าผม/หนูจะไม่สำเร็จ?"',type:'ok',c:1,w:1},
+  {t:'พูดตรงๆ ว่า "จริงๆ ก็อยากเรียนสายอื่นเหมือนกัน แต่ยังหาทางอยู่" แล้วถามรุ่นพี่ว่ามีคำแนะนำไหม',type:'good',c:3,w:2},
+],
+fb:{ok0:'การหลีกเลี่ยงปลอดภัย แต่ทิ้งความรู้สึกแย่ไว้ในใจโดยไม่ได้แก้ไขอะไร',good1:'✓ ดีมาก — การตอบด้วยความสงบและให้เกียรติตัวเองแสดงถึงวุฒิภาวะ ตัดบทสนทนาที่ไม่จำเป็นได้อย่างสวยงาม',ok2:'การเถียงกลับอาจทำให้เรื่องบานปลาย แต่ถ้าทำด้วยความสงบก็ไม่ผิด ขึ้นอยู่กับน้ำเสียง',good3:'✓ กล้าและฉลาด — การเปิดตัวเองและเปลี่ยนบทสนทนาเป็นการขอคำแนะนำแสดงถึงทั้งความกล้าและความฉลาดทางสังคม'},
+tip:'คนที่ตัดสินแผนการเรียนของเรามักไม่รู้บริบทชีวิตเรา การไม่ให้น้ำหนักกับคำพูดเหล่านั้นมากเกินไปคือทักษะสำคัญของ ม.ปลาย'},
+
+{id:3,bg:'bg-cyber',em:'📱',loc:['บ้าน','คืนวันศุกร์'],ch:'บทที่ 3',title:'กลุ่มไลน์ที่ไม่ได้ขอเข้า',
+sit:'มีคนสร้างกลุ่ม LINE ชื่อ "ห้องเรียนลูกจ้าง 4/1 🤡" แล้วเพิ่มทุกคนเข้าไป กลุ่มเต็มไปด้วยมีมล้อเลียนเพื่อนในห้องและรูปตัดต่อ...',
+info:'การสร้างกลุ่มเพื่อล้อเลียน แม้ใช้ภาษาตลกๆ ถือเป็น Cyberbullying และอาจมีผลทางกฎหมาย',
+dl:[
+  {av:'👻',n:'แอดมิน (ไม่รู้จัก)',s:'bad',t:'ยินดีต้อนรับสู่ห้องเรียนลูกจ้าง มีใครรู้จักไอ้ที่นั่งหน้าห้องบ้าง หน้าตาตลกมากกกก 😂'},
+  {av:'👻',n:'แอดมิน',s:'bad',t:'[รูปตัดต่อหน้าเพื่อนคนหนึ่งบนตัวการ์ตูน] 5555555'},
+  {av:'🧑‍🎓',n:'โรโรโนอา · ในใจ',s:'th',t:'รูปนั้นเป็นของ "อาร์ม" เพื่อนในห้อง... เขาไม่รู้ด้วยซ้ำว่ารูปตัวเองถูกเอาไปทำแบบนี้ รู้สึกไม่ดีเลย'},
+],
+q:'จะทำอย่างไรกับกลุ่มนี้?',
+cs:[
+  {t:'อยู่ในกลุ่มแต่ไม่ส่งอะไร เพราะไม่อยากเป็นปัญหา',type:'ok',c:0,w:1},
+  {t:'แคปหน้าจอกลุ่มเก็บไว้ แล้วออกจากกลุ่ม และไปบอกอาร์มในวันถัดไป',type:'good',c:2,w:3},
+  {t:'ส่งข้อความในกลุ่มว่า "ไม่โอเคนะ อย่าทำแบบนี้กันเลย"',type:'good',c:3,w:2},
+  {t:'Forward กลุ่มนี้ให้ครูประจำชั้นทันที',type:'good',c:2,w:3},
+],
+fb:{ok0:'การนิ่งเฉยทำให้กลุ่มดำเนินต่อไป และอาร์มไม่มีโอกาสรู้ว่ารูปตัวเองถูกนำไปใช้',good1:'✓ ฉลาดมาก — เก็บหลักฐานก่อนออกจากกลุ่ม แล้วแจ้งคนที่ถูกกระทำโดยตรง เป็นสิ่งที่ถูกต้องที่สุด',good2:'✓ กล้ามาก — การพูดในกลุ่มต่อหน้าทุกคนต้องใช้ความกล้าสูง บางครั้งเสียงคนเดียวก็เปลี่ยนบรรยากาศทั้งกลุ่มได้',good3:'✓ ดีมาก — การแจ้งครูทันทีช่วยให้มีผู้ใหญ่จัดการได้อย่างเป็นระบบ'},
+tip:'การอยู่ในกลุ่มบูลลี่โดยไม่ทำอะไรถือเป็น "เห็นด้วยโดยนิ่งเฉย" — เก็บหลักฐานแล้วออกจากกลุ่มคือก้าวแรกที่ปลอดภัยที่สุด'},
+
+{id:4,bg:'bg-teacher',em:'🌿',loc:['ห้องพักครู','หลังเลิกเรียน'],ch:'บทที่ 4',title:'เมื่อผู้ใหญ่ไม่เชื่อ',
+sit:'โรโรโนอาไปหาครูประจำชั้นเพื่อเล่าเรื่องกลุ่มไลน์และรูปของอาร์ม ครูฟังแล้วตอบสนองในแบบที่ไม่คาดคิด...',info:null,
+dl:[
+  {av:'👩‍🏫',n:'ครูประจำชั้น',s:'l',t:'ก็แค่กลุ่มไลน์นะ เด็กๆ เล่นกันทั่วไป อย่าคิดมากเลย เขาก็แค่ตลกๆ'},
+  {av:'👩‍🏫',n:'ครูประจำชั้น',s:'l',t:'อาร์มก็คงไม่ได้เห็นด้วยซ้ำ แล้วจะมาเรื่องทำไม ทำโทษทุกคนไม่ได้หรอกนะ'},
+  {av:'🧑‍🎓',n:'โรโรโนอา · ในใจ',s:'th',t:'ครูไม่เชื่อ... มาเล่าให้ฟังแล้วรู้สึกแย่กว่าเดิมอีก จะทำยังไงต่อดี?'},
+],
+q:'เมื่อครูไม่ตอบสนอง จะทำอะไรต่อ?',
+cs:[
+  {t:'ยอมรับและกลับบ้าน ถ้าครูไม่เชื่อก็คงทำอะไรไม่ได้',type:'bad',c:0,w:0},
+  {t:'ขอให้ครูดูหลักฐาน (แคปหน้าจอ) แล้วพูดว่า "รูปของอาร์มถูกตัดต่อครับ/ค่ะ อยากให้ลองดูก่อนได้ไหม"',type:'good',c:3,w:3},
+  {t:'ไปหาครูแนะแนวแทน เป็นผู้ใหญ่อีกคนที่พูดเรื่องนี้ได้',type:'good',c:2,w:3},
+  {t:'บอกพ่อแม่ที่บ้านให้มาคุยกับโรงเรียนแทน',type:'good',c:2,w:2},
+],
+fb:{bad0:'การยอมแพ้เมื่อผู้ใหญ่คนแรกไม่เชื่อทำให้ปัญหายังอยู่ — มีผู้ใหญ่คนอื่นที่พร้อมจะฟังเสมอ',good1:'✓ ฉลาดมาก — หลักฐานที่จับต้องได้ทำให้ปฏิเสธได้ยาก การพูดอย่างสุภาพแต่มีข้อมูลรองรับได้ผลที่สุด',good2:'✓ ดีมาก — ครูแนะแนวมีหน้าที่รับเรื่องนี้โดยตรงและเป็นกลาง ถ้าครูประจำชั้นไม่ตอบสนองคือตัวเลือกที่เหมาะที่สุด',good3:'✓ ดีเช่นกัน — ผู้ปกครองมีสิทธิ์รับทราบและเข้ามาช่วยในสิ่งที่นักเรียนทำคนเดียวไม่ได้'},
+tip:'ถ้าผู้ใหญ่คนแรกไม่เชื่อ — อย่าหยุด ลองครูแนะแนว รองผู้อำนวยการ หรือผู้ปกครอง การมีหลักฐาน (แคปหน้าจอ) ทำให้ทุกขั้นตอนง่ายขึ้นมาก'},
+
+{id:5,bg:'bg-voc',em:'🔧',loc:['ลานโรงเรียน','หลังเลิกเรียน'],ch:'บทที่ 5',title:'เพื่อนที่กล้าฝัน',
+sit:'เด่นมาคุยส่วนตัว บอกว่าอยากลาออกไปเรียน ปวช.สายช่างยนต์ แต่กลัวพ่อแม่ไม่ยอม และขอให้โรโรโนอาช่วยตัดสินใจ...',
+info:'สายอาชีพ (ปวช./ปวส.) ไม่ได้ด้อยกว่าสายสามัญ นักเรียนที่เรียนสิ่งที่รักและเชี่ยวชาญมีรายได้และความสุขไม่แพ้กัน',
+dl:[
+  {av:'😟',n:'เด่น',s:'l',t:'โรโร... จริงๆ ฉันอยากเรียนช่างยนต์มาตลอดเลย ที่บ้านก็มีอู่ซ่อมรถ แต่พ่อบอกว่าต้องเรียนสายสามัญให้จบก่อน'},
+  {av:'😟',n:'เด่น',s:'l',t:'แต่ฉันก็นั่งเรียนแล้วไม่เข้าหัวเลย ไม่มีแรงจะทำ รู้สึกว่า... ทำไปทำไมวะ'},
+  {av:'🧑‍🎓',n:'โรโรโนอา · ในใจ',s:'th',t:'เด่นพูดแทนความรู้สึกตัวเองทุกอย่างเลย... ฉันก็รู้สึกแบบเดียวกัน แต่จะพูดอะไรกับเขาดี?'},
+],
+q:'จะตอบเด่นอย่างไร?',
+cs:[
+  {t:'พูดว่า "ก็เรียนให้จบก่อนเถอะ พ่อแม่รู้ดีที่สุด"',type:'ok',c:0,w:1},
+  {t:'บอกว่า "ฉันก็รู้สึกแบบเดียวกัน ลองไปคุยกับครูแนะแนวด้วยกันไหม เผื่อมีข้อมูลช่วยคุยกับพ่อแม่ได้"',type:'good',c:2,w:3},
+  {t:'บอกให้เด่นลาออกไปเลย ถ้านั่นคือสิ่งที่อยากทำ',type:'bad',c:1,w:0},
+  {t:'ช่วยเด่นหาข้อมูลเกี่ยวกับหลักสูตร ปวช.ช่างยนต์และโอกาสในสายอาชีพ เพื่อเตรียมคุยกับพ่อแม่อย่างมีข้อมูล',type:'good',c:2,w:3},
+],
+fb:{ok0:'"พ่อแม่รู้ดีที่สุด" อาจไม่เสมอไป โดยเฉพาะเรื่องที่ต้องใช้ความถนัดของแต่ละคน การมีข้อมูลช่วยให้คุยกันได้ดีขึ้น',good1:'✓ ดีมาก — การชวนหาข้อมูลและคุยกับครูแนะแนวด้วยกันเป็นวิธีที่รอบคอบ ไม่ด่วนตัดสิน',bad2:'การแนะนำให้ลาออกทันทีโดยไม่มีข้อมูลและการวางแผนอาจทำให้เด่นเสียโอกาสที่ดีกว่า',good3:'✓ ยอดเยี่ยม — ข้อมูลที่จริงเกี่ยวกับสายอาชีพช่วยให้การคุยกับพ่อแม่มีน้ำหนักมากขึ้น นี่คือการช่วยเพื่อนอย่างแท้จริง'},
+tip:'สายอาชีพไม่ใช่ "ทางเลือกรอง" — นักศึกษา ปวส.สายช่างมีรายได้เริ่มต้นสูงกว่าปริญญาตรีหลายสาขา และเติบโตในสายงานของตัวเองได้อีกมาก'},
+
+{id:6,bg:'bg-future',em:'🌱',loc:['ห้องแนะแนว','สัปดาห์ถัดมา'],ch:'บทที่ 6',title:'เส้นทางที่ใช่',
+sit:'โรโรโนอามาพบครูแนะแนวกับเด่น ครูถามโรโรโนอาโดยตรงว่าตัวเองอยากทำอะไรในชีวิต — คำถามที่เขาหลีกเลี่ยงมาตลอด...',info:null,
+dl:[
+  {av:'👩‍🏫',n:'ครูแนะแนว',s:'l',t:'โรโรโนอา ครูอยากถามตรงๆ นะ ถ้าไม่มีใครมากำหนดให้ ตัวเองอยากเรียนอะไรมากที่สุด?'},
+  {av:'🧑‍🎓',n:'โรโรโนอา',s:'warn',t:'ผม/หนู... ชอบช่างยนต์ครับ/ค่ะ อยากเรียนสายนั้น แต่พ่อแม่บอกว่าต้องเรียนสายสามัญ'},
+  {av:'👩‍🏫',n:'ครูแนะแนว',s:'l',t:'ครูเข้าใจ และมีข้อมูลบางอย่างอยากให้รู้ไว้ — มีหลายทางมากกว่าที่คิดนะ'},
+  {av:'🧑‍🎓',n:'โรโรโนอา · ในใจ',s:'th',t:'นี่อาจเป็นครั้งแรกที่ฉันพูดความจริงออกมา... รู้สึกกลัวแต่ก็โล่งด้วย'},
+],
+q:'โรโรโนอาจะเดินต่อจากนี้ยังไง?',
+cs:[
+  {t:'ขอข้อมูลจากครูแนะแนวเกี่ยวกับสายอาชีพ แล้ววางแผนคุยกับพ่อแม่อย่างมีข้อมูล',type:'good',c:3,w:3},
+  {t:'ยังไม่ตัดสินใจอะไร เรียนไปก่อนแล้วค่อยคิด ม.4 ยังมีเวลา',type:'ok',c:0,w:1},
+  {t:'บอกครูว่าจะลาออกจากโรงเรียนเพื่อไปสมัคร ปวช.โดยไม่บอกพ่อแม่',type:'bad',c:0,w:0},
+  {t:'ขอให้ครูแนะแนวช่วยเป็นตัวกลางนัดคุยกับพ่อแม่ เพื่อได้ยินข้อมูลจากผู้เชี่ยวชาญด้วยกัน',type:'good',c:2,w:3},
+],
+fb:{good0:'✓ ยอดเยี่ยม — ข้อมูลก่อนคุยกับพ่อแม่เปลี่ยนบทสนทนาจาก "ทะเลาะ" เป็น "วางแผนร่วมกัน" ซึ่งได้ผลลัพธ์ที่ดีกว่ามาก',ok1:'การรอก็ไม่ผิด แต่ยิ่งรอนานยิ่งรู้สึกติดอยู่ในที่ที่ไม่ใช่ตัวเอง การหาข้อมูลไว้ก่อนไม่ได้แปลว่าต้องตัดสินใจทันที',bad2:'การตัดสินใจใหญ่ด้วยการหนีปัญหามักสร้างปัญหาใหม่ที่ใหญ่กว่า ครูแนะแนวและพ่อแม่มีส่วนสำคัญในการวางแผนนี้',good3:'✓ ฉลาดมาก — ครูแนะแนวในฐานะตัวกลางช่วยให้พ่อแม่ได้ยินข้อมูลจากผู้เชี่ยวชาญ ซึ่งมักได้ผลดีกว่ามาก'},
+tip:'การเลือกเส้นทางที่ใช่ไม่ใช่การทำให้พ่อแม่ผิดหวัง — แต่คือการเริ่มต้นบทสนทนาที่ซื่อสัตย์ที่สุดในชีวิต ครูแนะแนวอยู่ตรงนี้เพื่อช่วยพอดี'},
+];
+
+const lessons=[
+  'เพื่อนที่ระบายแรงๆ วันแรก อาจแค่กลัวและต้องการคนรับฟัง ไม่ต่างจากเรา',
+  'คำตัดสินจากรุ่นพี่เรื่องแผนการเรียนไม่ใช่ความจริงของทุกคน — แต่ละคนมีเส้นทางของตัวเอง',
+  'การอยู่ในกลุ่มบูลลี่โดยนิ่งเฉยคือการ "เห็นด้วย" — เก็บหลักฐานและออกจากกลุ่มคือก้าวแรก',
+  'ถ้าผู้ใหญ่คนแรกไม่เชื่อ อย่าหยุด — ครูแนะแนว ผู้ปกครอง และหลักฐานคือพลังที่มี',
+  'สายอาชีพไม่ใช่ทางเลือกรอง — ข้อมูลที่แท้จริงช่วยเปลี่ยนบทสนทนากับครอบครัวได้',
+  'การพูดความจริงเกี่ยวกับเส้นทางที่ตัวเองอยากไปคือจุดเริ่มต้นที่กล้าหาญที่สุด',
+];
+
+function renderScene(idx){
+  const s=scenes[idx];
+  const area=document.getElementById('sceneArea');
+  area.innerHTML='';
+  document.getElementById('hudCh').textContent=s.ch;
+  document.getElementById('pb').style.width=`${(idx/scenes.length)*100}%`;
+
+  const dlHtml=s.dl.map(d=>{
+    const isR=d.s==='r'||d.s==='warn';
+    return `<div>
+      <div class="bname${isR?' r':''}">${d.n}</div>
+      <div class="brow${isR?' r':''}">
+        <div class="bav">${d.av}</div>
+        <div class="bub ${bclass(d.s)}">${d.t}</div>
+      </div></div>`;
+  }).join('');
+
+  const infoHtml=s.info?`<div class="info-rib">ℹ ${s.info}</div>`:'';
+  const locHtml=s.loc.join('<br>');
+
+  // Header card (overflow:hidden safe — no buttons here)
+  const hdr=document.createElement('div');
+  hdr.className='sc-header';
+  hdr.innerHTML=`
+    <div class="sc-left">
+      <div class="sc-icon ${s.bg}">${s.em}</div>
+      <div class="sc-loc">${locHtml}</div>
+    </div>
+    <div class="sc-right">
+      <div class="sc-ch">${s.ch}</div>
+      <div class="sc-title">${s.title}</div>
+      <div class="sc-sit">${s.sit}</div>
+      ${infoHtml}
+      <div class="sc-div"></div>
+      <div class="dl-block">${dlHtml}</div>
+    </div>`;
+  area.appendChild(hdr);
+
+  // Action card — separate element, no overflow:hidden
+  const chHtml=s.cs.map((c,ci)=>
+    `<button class="cbtn" onclick="choose(${idx},${ci})" id="c-${idx}-${ci}">
+      <div class="cnum">${ci+1}</div><span>${c.t}</span>
+    </button>`
+  ).join('');
+
+  const act=document.createElement('div');
+  act.className='sc-action';
+  act.innerHTML=`
+    <div class="q-label">${s.q}</div>
+    <div class="choices">${chHtml}</div>
+    <div class="fb-box" id="fb-${idx}"></div>
+    <div class="tip-box" id="tp-${idx}">${s.tip}</div>`;
+  area.appendChild(act);
+
+  // Next button — completely outside both cards
+  const nxt=document.createElement('button');
+  nxt.className='btn-next';
+  nxt.id=`nx-${idx}`;
+  nxt.textContent=idx<scenes.length-1?'บทถัดไป →':'ปิดเรื่อง — ดูผลลัพธ์';
+  nxt.onclick=()=>nextScene(idx);
+  area.appendChild(nxt);
+
+  const pad=document.createElement('div');pad.className='sc-pad';area.appendChild(pad);
+}
+
+function bclass(s){return{bad:'bad',r:'r',th:'th',warn:'warn',l:'l'}[s]||'l';}
+
+function choose(sIdx,cIdx){
+  const s=scenes[sIdx],c=s.cs[cIdx];
+  const map={good:'cg',bad:'cb',ok:'co'};
+  s.cs.forEach((_,ci)=>{
+    document.getElementById(`c-${sIdx}-${ci}`).classList.add(ci===cIdx?map[c.type]:'dis');
+  });
+  cv+=c.c;wv+=c.w;
+  document.getElementById('hudC').textContent=cv;
+  document.getElementById('hudW').textContent=wv;
+
+  // feedback key lookup: try "type+index" first, then just "type"
+  const fb=document.getElementById(`fb-${sIdx}`);
+  const keys=[`${c.type}${cIdx}`,c.type];
+  let txt='';
+  for(const k of keys){if(s.fb[k]){txt=s.fb[k];break;}}
+  if(txt){fb.textContent=txt;fb.className=`fb-box ${c.type} vis`;}
+
+  document.getElementById(`tp-${sIdx}`).classList.add('vis');
+
+  const nxt=document.getElementById(`nx-${sIdx}`);
+  nxt.classList.add('vis');
+
+  setTimeout(()=>{
+    const a=document.getElementById('sceneArea');
+    a.scrollTo({top:a.scrollHeight,behavior:'smooth'});
+  },120);
+}
+
+function nextScene(idx){
+  if(idx<scenes.length-1){si=idx+1;renderScene(si);document.getElementById('sceneArea').scrollTo({top:0,behavior:'smooth'});}
+  else showResult();
+}
+
+function showResult(){
+  document.getElementById('pb').style.width='100%';
+  const total=cv+wv;
+  document.getElementById('fC').textContent=cv;
+  document.getElementById('fW').textContent=wv;
+  let emoji,title,sub,lv;
+  if(total>=28){emoji='🌿';title='โรโรโนอาที่รู้ว่าตัวเองต้องการอะไร';sub='คุณเดินผ่านทุกบทด้วยความกล้าและความฉลาด\nโรโรโนอาในเวอร์ชันนี้พร้อมก้าวไปข้างหน้าอย่างมั่นคง';lv='lv1';}
+  else if(total>=16){emoji='🌾';title='โรโรโนอาที่กำลังค้นหา';sub='คุณเข้าใจหลายอย่างแล้ว แต่ยังลังเลในบางจุด\nลองเปิดบทอีกครั้ง แล้วดูว่าการเลือกต่างออกไปจะเปลี่ยนอะไรบ้าง';lv='lv2';}
+  else{emoji='🌱';title='โรโรโนอาที่เพิ่งเริ่มต้น';sub='ทุกคนเริ่มจากจุดนี้ได้ การรู้จักตัวเองต้องใช้เวลา\nลองกลับไปอ่านใหม่ด้วยมุมมองที่ต่างออกไป';lv='lv3';}
+  document.getElementById('rEmoji').textContent=emoji;
+  document.getElementById('rTitle').textContent=title;
+  document.getElementById('rSub').textContent=sub;
+  const b=document.getElementById('lvBadge');b.textContent=title;b.className=`lv-badge ${lv}`;
+  document.getElementById('lesList').innerHTML=lessons.map((l,i)=>`<li><div class="ldot">${i+1}</div><span>${l}</span></li>`).join('');
+  switchScreen('result');
+}
+
+function switchScreen(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(`screen-${n}`).classList.add('active');}
+
+function startGame(){
+  cv=0;wv=0;si=0;
+  document.getElementById('hudC').textContent=0;
+  document.getElementById('hudW').textContent=0;
+  switchScreen('game');renderScene(0);
+}
+
+function openDiscuss(){
+  alert('💬 คำถามอภิปรายในห้องเรียน\n\n1. ในห้องเรียนใหม่ที่ทุกคน "ไม่ได้เลือกมาเอง" จะสร้างบรรยากาศที่ดีได้ยังไง?\n\n2. รุ่นพี่หรือผู้ใหญ่ที่ตัดสินแผนการเรียนของเรา — ควรรับฟังแค่ไหน ปฏิเสธแค่ไหน?\n\n3. กลุ่มไลน์ที่ล้อเลียนคน — ถ้าเราอยู่ในกลุ่มแต่ไม่ส่งอะไร ถือว่ามีส่วนร่วมไหม?\n\n4. ถ้าครูไม่เชื่อเรื่องบูลลี่ ความรู้สึกของเราจะเป็นยังไง และจะทำอะไรต่อ?\n\n5. สายอาชีพ vs สายสามัญ — ความเชื่อในห้องตอนนี้เป็นยังไง?\n\n6. ถ้าวันนี้มีคนถามว่า "อยากเรียนอะไรจริงๆ" — ใครกล้าตอบตรงๆ บ้าง?');
+}
+</script>
+</body>
+</html>
